@@ -35,7 +35,7 @@ const eventConfig = {
   email: 'drckmuthu@gmail.com',
   phone: '+91 9994439565',
 
-  facultyCoordinator: 'Dr. C.K. Muthukumanan, Professor & Faculty Coordinator, Career Guidance Programme 2026',
+  facultyCoordinator: 'Dr. C.K. Muthukumaran, Professor & Faculty Coordinator, Career Guidance Programme 2026',
   eventCoordinator: 'Prof. S. Karthik, Assistant Professor, MBA',
   studentCoordinator: 'R. Priyanka, MBA Final Year',
 
