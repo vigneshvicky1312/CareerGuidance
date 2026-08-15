@@ -12,8 +12,8 @@ const eventConfig = {
   shortDescription:
     'A one-day guidance program helping final-year Arts & Science undergraduates navigate careers, higher education and employability.',
 
-  date: '18 February 2026',
-  dateISO: '2026-02-18',
+  date: 'September 2026 (Date TBA)',
+  dateISO: '2026-09',
   time: '10:00 AM – 1:00 PM',
 
   venue: 'L.C.T.L Palaniappa Chettiar Memorial Auditorium',
