@@ -36,6 +36,7 @@ export default function AdminAuthProvider({ children }) {
   const logout = async () => {
     await apiLogout()
     setUser(null)
+    setLoading(false)
   }
 
   return (

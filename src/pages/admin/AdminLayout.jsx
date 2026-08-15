@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, ClipboardList, ScanLine, PackageCheck,
   Handshake, FileBarChart, LogOut, Menu, X, ChevronRight,
 } from 'lucide-react'
-import { logoutAdmin } from '../../services/authService'
+import { useAdminAuth } from '../../context/AdminAuthContext'
 import eventConfig from '../../config/eventConfig'
 
 const navItems = [
@@ -19,11 +19,12 @@ const navItems = [
 
 export default function AdminLayout() {
   const [navOpen, setNavOpen] = useState(false)
+  const { logout } = useAdminAuth()
   const navigate = useNavigate()
 
   async function handleLogout() {
-    await logoutAdmin()
-    navigate('/admin/login')
+    await logout()
+    navigate('/admin/login', { replace: true })
   }
 
   const NavContent = () => (
