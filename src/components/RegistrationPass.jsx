@@ -7,7 +7,6 @@ import { Printer, Download } from 'lucide-react'
 export default function RegistrationPass({ student }) {
   const qrRef = useRef(null)
 
-  /* ── Capture QR and open dedicated A4 print window ── */
   function handlePrint() {
     const canvas = qrRef.current?.querySelector('canvas')
     const qrDataUrl = canvas ? canvas.toDataURL('image/png') : ''
@@ -18,444 +17,517 @@ export default function RegistrationPass({ student }) {
 <meta charset="utf-8"/>
 <title>Entry Pass – ${student.registrationId}</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@page { size: A4 portrait; margin: 14mm 16mm; }
+body {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  background: #fff;
+  color: #111;
+  font-size: 10pt;
+  line-height: 1.5;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
 
-  @page {
-    size: A4 portrait;
-    margin: 0;
-  }
+/* ─── Typography ─── */
+.sans { font-family: Arial, 'Helvetica Neue', sans-serif; }
+.mono { font-family: 'Courier New', monospace; }
 
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #fff;
-    width: 210mm;
-    min-height: 297mm;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    color: #0f172a;
-  }
+/* ─── Top Institution Header ─── */
+.inst-header {
+  text-align: center;
+  padding-bottom: 10pt;
+  border-bottom: 2pt solid #1a2744;
+}
+.inst-name {
+  font-family: Arial, sans-serif;
+  font-size: 14pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1a2744;
+}
+.uni-name {
+  font-family: Arial, sans-serif;
+  font-size: 10pt;
+  color: #444;
+  margin-top: 2pt;
+  letter-spacing: 0.02em;
+}
+.inst-address {
+  font-size: 8pt;
+  color: #777;
+  margin-top: 3pt;
+}
+.accred-line {
+  font-size: 7.5pt;
+  color: #999;
+  margin-top: 2pt;
+  font-style: italic;
+}
 
-  .page {
-    width: 210mm;
-    min-height: 297mm;
-    display: flex;
-    flex-direction: column;
-  }
+/* ─── Pass Title Banner ─── */
+.pass-banner {
+  background: #1a2744;
+  color: #fff;
+  text-align: center;
+  padding: 8pt 0;
+  margin: 10pt 0 0 0;
+}
+.event-name {
+  font-family: Arial, sans-serif;
+  font-size: 13pt;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+}
+.pass-type {
+  font-family: Arial, sans-serif;
+  font-size: 8pt;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #c9a84c;
+  margin-top: 3pt;
+}
 
-  /* ── HEADER STRIPE ── */
-  .header {
-    background: linear-gradient(135deg, #0A1330 0%, #1B3A6B 55%, #0c4a6e 100%);
-    padding: 18px 24px 14px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-  }
-  .header-left { display: flex; align-items: flex-start; gap: 14px; }
-  .logo-box {
-    width: 48px; height: 48px; border-radius: 10px;
-    background: #FBBF24;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 13px; color: #0A1330;
-    flex-shrink: 0; letter-spacing: .02em;
-  }
-  .org-name   { color: #fff; font-weight: 700; font-size: 13px; line-height: 1.3; }
-  .uni-name   { color: #93C5FD; font-size: 10px; margin-top: 2px; }
-  .event-badge {
-    background: #FBBF24; color: #0A1330;
-    font-weight: 900; font-size: 11px;
-    padding: 5px 14px; border-radius: 6px;
-    letter-spacing: .1em; white-space: nowrap;
-    align-self: flex-start;
-  }
+/* ─── Gold divider ─── */
+.gold-rule {
+  height: 2pt;
+  background: #c9a84c;
+  margin: 0 0 14pt 0;
+}
 
-  /* ── HERO BANNER ── */
-  .hero {
-    background: linear-gradient(180deg, #0f2855 0%, #1e3a5f 100%);
-    padding: 20px 24px 18px;
-    text-align: center;
-    border-bottom: 4px solid #FBBF24;
-  }
-  .hero-title {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: -.01em;
-    line-height: 1.2;
-  }
-  .hero-tagline {
-    color: #7DD3FC;
-    font-size: 11px;
-    margin-top: 5px;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-  }
-  .hero-pills {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-  .pill {
-    background: rgba(255,255,255,.1);
-    border: 1px solid rgba(255,255,255,.15);
-    color: #fff;
-    font-size: 9.5px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
-    letter-spacing: .04em;
-  }
-  .pill.gold { background: #FBBF24; color: #0A1330; border-color: #FBBF24; }
+/* ─── Main two-column layout ─── */
+.main-layout {
+  display: flex;
+  gap: 16pt;
+  align-items: flex-start;
+}
+.col-left { flex: 1; }
+.col-right {
+  width: 110pt;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8pt;
+}
 
-  /* ── TWO-COLUMN BODY ── */
-  .body-grid {
-    display: grid;
-    grid-template-columns: 1fr 160px;
-    flex: 1;
-    padding: 0;
-  }
+/* ─── Participant block ─── */
+.participant-block {
+  border: 1pt solid #1a2744;
+  padding: 10pt 12pt;
+  margin-bottom: 12pt;
+  position: relative;
+}
+.participant-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4pt;
+  height: 100%;
+  background: #1a2744;
+}
+.participant-inner { padding-left: 8pt; }
+.label-sm {
+  font-family: Arial, sans-serif;
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #888;
+  margin-bottom: 2pt;
+}
+.participant-name {
+  font-family: Arial, sans-serif;
+  font-size: 18pt;
+  font-weight: bold;
+  color: #1a2744;
+  line-height: 1.1;
+}
+.participant-college {
+  font-family: Arial, sans-serif;
+  font-size: 9.5pt;
+  color: #333;
+  margin-top: 4pt;
+  font-weight: bold;
+}
+.participant-dept {
+  font-size: 8.5pt;
+  color: #555;
+  margin-top: 1pt;
+  font-style: italic;
+}
+.reg-id-row {
+  margin-top: 8pt;
+  display: flex;
+  align-items: center;
+  gap: 8pt;
+}
+.reg-id-label {
+  font-family: Arial, sans-serif;
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #888;
+}
+.reg-id-val {
+  font-family: 'Courier New', monospace;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #1a2744;
+  letter-spacing: 0.05em;
+  background: #f5f7fa;
+  padding: 2pt 8pt;
+  border: 1pt solid #d0d8e8;
+}
 
-  /* ── LEFT COLUMN ── */
-  .left-col {
-    padding: 18px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    border-right: 1px dashed #cbd5e1;
-  }
+/* ─── Details table ─── */
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12pt;
+  font-size: 9pt;
+}
+.details-table caption {
+  font-family: Arial, sans-serif;
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #888;
+  text-align: left;
+  padding-bottom: 5pt;
+  border-bottom: 0.5pt solid #ccc;
+  margin-bottom: 4pt;
+  caption-side: top;
+}
+.details-table tr { border-bottom: 0.5pt solid #eee; }
+.details-table tr:last-child { border-bottom: none; }
+.details-table td {
+  padding: 4pt 0;
+  vertical-align: top;
+}
+.details-table .td-label {
+  font-family: Arial, sans-serif;
+  font-size: 8pt;
+  color: #777;
+  width: 80pt;
+  padding-right: 8pt;
+}
+.details-table .td-val {
+  font-size: 9pt;
+  color: #111;
+  font-weight: 600;
+  font-family: Arial, sans-serif;
+}
+.details-table .td-sub {
+  font-family: Arial, sans-serif;
+  font-size: 7.5pt;
+  color: #666;
+  display: block;
+  font-weight: normal;
+}
 
-  .section-title {
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: #64748b;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 8px;
-  }
+/* ─── Section heading ─── */
+.section-heading {
+  font-family: Arial, sans-serif;
+  font-size: 7pt;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #888;
+  border-bottom: 0.5pt solid #ccc;
+  padding-bottom: 4pt;
+  margin-bottom: 7pt;
+}
 
-  /* student card */
-  .student-card {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%);
-    border: 1px solid #bfdbfe;
-    border-radius: 10px;
-    padding: 14px 16px;
-  }
-  .student-label { font-size: 8px; color: #64748b; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 3px; }
-  .student-name  { font-size: 22px; font-weight: 900; color: #0A1330; line-height: 1.1; }
-  .student-dept  { font-size: 10px; color: #3b5285; margin-top: 4px; font-weight: 500; }
-  .student-college { font-size: 11px; color: #1e3a5f; font-weight: 700; margin-top: 6px; }
-  .reg-id-chip {
-    display: inline-block;
-    background: #0A1330;
-    color: #FBBF24;
-    font-family: monospace;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 5px;
-    letter-spacing: .06em;
-    margin-top: 8px;
-  }
+/* ─── Coordinators ─── */
+.coord-row {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12pt;
+}
+.coord-cell {
+  flex: 1;
+  padding-right: 12pt;
+  border-right: 0.5pt solid #e0e0e0;
+  margin-right: 12pt;
+}
+.coord-cell:last-child {
+  border-right: none;
+  margin-right: 0;
+  padding-right: 0;
+}
+.coord-role { font-family: Arial, sans-serif; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.12em; color: #999; margin-bottom: 2pt; }
+.coord-name { font-family: Arial, sans-serif; font-size: 9pt; font-weight: bold; color: #1a2744; }
+.coord-dept { font-size: 8pt; color: #555; font-style: italic; }
 
-  /* event details grid */
-  .details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .detail-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
-  .detail-label { font-size: 7.5px; color: #94a3b8; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 3px; }
-  .detail-value { font-size: 11px; font-weight: 700; color: #0f172a; line-height: 1.3; }
-  .detail-sub   { font-size: 9px; color: #64748b; margin-top: 2px; }
-  .detail-box.wide { grid-column: 1 / -1; }
+/* ─── QR column ─── */
+.qr-box {
+  border: 1pt solid #1a2744;
+  padding: 7pt;
+  text-align: center;
+}
+.qr-box img { display: block; width: 96pt; height: 96pt; }
+.qr-caption {
+  font-family: Arial, sans-serif;
+  font-size: 6.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #888;
+  margin-top: 5pt;
+}
+.qr-reg {
+  font-family: 'Courier New', monospace;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #1a2744;
+  margin-top: 3pt;
+  word-break: break-all;
+}
+.qr-note {
+  font-size: 7pt;
+  color: #777;
+  margin-top: 8pt;
+  text-align: center;
+  line-height: 1.5;
+  font-style: italic;
+}
 
-  /* contact */
-  .contact-row {
-    display: flex;
-    gap: 10px;
-  }
-  .contact-item {
-    flex: 1;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 9px 12px;
-  }
-  .contact-label { font-size: 7.5px; color: #94a3b8; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 2px; }
-  .contact-value { font-size: 10px; font-weight: 600; color: #0f172a; }
+/* ─── Speakers section ─── */
+.speakers-section { margin-bottom: 12pt; }
+.speaker-row {
+  display: flex;
+  gap: 0;
+}
+.speaker-cell {
+  flex: 1;
+  padding: 5pt 8pt 5pt 0;
+  border-right: 0.5pt solid #e0e0e0;
+  margin-right: 8pt;
+}
+.speaker-cell:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+.speaker-role { font-family: Arial, sans-serif; font-size: 6.5pt; text-transform: uppercase; letter-spacing: 0.1em; color: #c9a84c; margin-bottom: 1pt; }
+.speaker-name { font-family: Arial, sans-serif; font-size: 8.5pt; font-weight: bold; color: #1a2744; }
+.speaker-desig { font-size: 7.5pt; color: #555; font-style: italic; line-height: 1.4; }
+.speaker-org   { font-size: 7.5pt; color: #777; }
 
-  /* coordinators */
-  .coord-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-  }
-  .coord-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 9px 12px;
-  }
-  .coord-role  { font-size: 7px; color: #94a3b8; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 2px; }
-  .coord-name  { font-size: 10px; font-weight: 700; color: #0f172a; }
-  .coord-dept  { font-size: 8.5px; color: #64748b; margin-top: 1px; }
+/* ─── Validity strip ─── */
+.validity-strip {
+  border: 1pt solid #1a2744;
+  padding: 5pt 10pt;
+  margin-bottom: 12pt;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16pt;
+  background: #f5f7fa;
+}
+.validity-field { text-align: center; }
+.validity-label { font-family: Arial, sans-serif; font-size: 6.5pt; text-transform: uppercase; letter-spacing: 0.12em; color: #888; margin-bottom: 2pt; }
+.validity-value { font-family: Arial, sans-serif; font-size: 9pt; font-weight: bold; color: #1a2744; }
+.validity-divider { width: 0.5pt; height: 28pt; background: #ccc; }
 
-  /* ── RIGHT COLUMN: QR ── */
-  .right-col {
-    padding: 18px 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  .qr-wrapper {
-    background: #f0f7ff;
-    border: 2px solid #bfdbfe;
-    border-radius: 12px;
-    padding: 10px;
-  }
-  .qr-wrapper img { display: block; width: 120px; height: 120px; }
-  .qr-label   { font-size: 8px; color: #94a3b8; text-transform: uppercase; letter-spacing: .1em; text-align: center; }
-  .qr-reg-id  {
-    font-family: monospace; font-size: 10px; font-weight: 800;
-    color: #0A1330; text-align: center; letter-spacing: .05em;
-    word-break: break-all;
-  }
-  .scan-instruction {
-    font-size: 8px; color: #64748b; text-align: center;
-    line-height: 1.5; background: #f8fafc;
-    border: 1px solid #e2e8f0; border-radius: 8px;
-    padding: 8px 10px;
-  }
-
-  /* ── CHIEF GUEST / SPEAKERS ── */
-  .speakers-bar {
-    background: #0A1330;
-    padding: 12px 24px;
-  }
-  .speakers-bar-title {
-    color: #FBBF24;
-    font-size: 8px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .14em;
-    margin-bottom: 10px;
-  }
-  .speakers-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-  }
-  .speaker-card {
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 8px;
-    padding: 8px 10px;
-    text-align: center;
-  }
-  .speaker-role   { font-size: 7px; color: #FBBF24; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
-  .speaker-name   { font-size: 9.5px; font-weight: 700; color: #fff; line-height: 1.2; }
-  .speaker-org    { font-size: 7.5px; color: #93C5FD; margin-top: 2px; line-height: 1.3; }
-
-  /* ── FOOTER ── */
-  .footer {
-    background: #f1f5f9;
-    border-top: 2px solid #e2e8f0;
-    padding: 10px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-  .footer-text  { font-size: 8px; color: #94a3b8; }
-  .footer-bold  { font-size: 8.5px; font-weight: 700; color: #475569; }
-  .footer-dot   { color: #cbd5e1; }
+/* ─── Footer ─── */
+.doc-footer {
+  border-top: 1.5pt solid #1a2744;
+  padding-top: 7pt;
+  margin-top: 4pt;
+}
+.footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12pt;
+}
+.footer-addr {
+  font-size: 7pt;
+  color: #666;
+  line-height: 1.5;
+}
+.footer-disclaimer {
+  font-size: 7pt;
+  color: #888;
+  text-align: center;
+  font-style: italic;
+  flex: 1;
+}
+.footer-ref {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-size: 7.5pt;
+  color: #1a2744;
+  font-weight: bold;
+}
 </style>
 </head>
 <body>
-<div class="page">
 
-  <!-- ── HEADER ── -->
-  <div class="header">
-    <div class="header-left">
-      <div class="logo-box">${eventConfig.collegeShortName || 'AIM'}</div>
-      <div>
-        <div class="org-name">${eventConfig.collegeName}</div>
-        <div class="uni-name">${eventConfig.universityName}</div>
-        <div class="uni-name" style="margin-top:1px;color:#cbd5e1">${eventConfig.instituteAddress || ''}</div>
-      </div>
-    </div>
-    <div class="event-badge">ENTRY PASS</div>
+  <!-- ── Institution Header ── -->
+  <div class="inst-header">
+    <div class="inst-name">${eventConfig.collegeName}</div>
+    <div class="uni-name">${eventConfig.universityName}</div>
+    <div class="inst-address">${eventConfig.instituteAddress}</div>
+    <div class="accred-line">An Autonomous Institution · Government of Tamil Nadu</div>
   </div>
 
-  <!-- ── HERO BANNER ── -->
-  <div class="hero">
-    <div class="hero-title">${eventConfig.eventName}</div>
-    <div class="hero-tagline">${eventConfig.tagline}</div>
-    <div class="hero-pills">
-      <span class="pill gold">${eventConfig.date}</span>
-      <span class="pill">${eventConfig.time}</span>
-      <span class="pill">${eventConfig.venue}</span>
-    </div>
+  <!-- ── Pass Title Banner ── -->
+  <div class="pass-banner sans">
+    <div class="event-name">${eventConfig.eventName.toUpperCase()}</div>
+    <div class="pass-type">Official Entry Pass &nbsp;·&nbsp; ${eventConfig.eventId}</div>
   </div>
+  <div class="gold-rule"></div>
 
-  <!-- ── BODY ── -->
-  <div class="body-grid" style="flex:1;">
+  <!-- ── Main Layout ── -->
+  <div class="main-layout">
 
-    <!-- LEFT -->
-    <div class="left-col">
+    <!-- Left Column -->
+    <div class="col-left">
 
-      <!-- Student Info -->
-      <div>
-        <div class="section-title">Registered Participant</div>
-        <div class="student-card">
-          <div class="student-label">Name</div>
-          <div class="student-name">${student.name}</div>
-          ${student.department ? `<div class="student-dept">${student.department}</div>` : ''}
-          <div class="student-college">${student.college}</div>
-          <div class="reg-id-chip">${student.registrationId}</div>
+      <!-- Participant -->
+      <div class="participant-block">
+        <div class="participant-inner">
+          <div class="label-sm sans">Registered Participant</div>
+          <div class="participant-name">${student.name}</div>
+          <div class="participant-college">${student.college}</div>
+          ${student.department ? `<div class="participant-dept">${student.department}</div>` : ''}
+          <div class="reg-id-row">
+            <span class="reg-id-label sans">Registration No.</span>
+            <span class="reg-id-val mono">${student.registrationId}</span>
+          </div>
         </div>
       </div>
 
       <!-- Event Details -->
-      <div>
-        <div class="section-title">Event Details</div>
-        <div class="details-grid">
-          <div class="detail-box">
-            <div class="detail-label">Date</div>
-            <div class="detail-value">${eventConfig.date}</div>
-            <div class="detail-sub">${eventConfig.time}</div>
-          </div>
-          <div class="detail-box">
-            <div class="detail-label">Venue</div>
-            <div class="detail-value">${eventConfig.venue}</div>
-            <div class="detail-sub">${eventConfig.landmark || ''}</div>
-          </div>
-          <div class="detail-box wide">
-            <div class="detail-label">Address</div>
-            <div class="detail-value" style="font-size:10px">${eventConfig.venueAddress}</div>
-          </div>
-          <div class="detail-box">
-            <div class="detail-label">Expected Participants</div>
-            <div class="detail-value">${eventConfig.expectedParticipants}+ Students</div>
-          </div>
-          <div class="detail-box">
-            <div class="detail-label">Expert Sessions</div>
-            <div class="detail-value">${eventConfig.expertSessions} Sessions</div>
-          </div>
+      <table class="details-table">
+        <caption>Event Details</caption>
+        <tr>
+          <td class="td-label">Date</td>
+          <td class="td-val">${eventConfig.date} <span class="td-sub">${eventConfig.time}</span></td>
+        </tr>
+        <tr>
+          <td class="td-label">Venue</td>
+          <td class="td-val">${eventConfig.venue} <span class="td-sub">${eventConfig.landmark}</span></td>
+        </tr>
+        <tr>
+          <td class="td-label">Address</td>
+          <td class="td-val">${eventConfig.venueAddress}</td>
+        </tr>
+        <tr>
+          <td class="td-label">Organiser</td>
+          <td class="td-val">${eventConfig.organizer}</td>
+        </tr>
+        <tr>
+          <td class="td-label">Contact</td>
+          <td class="td-val">${eventConfig.phone} <span class="td-sub">${eventConfig.email}</span></td>
+        </tr>
+      </table>
+
+      <!-- Validity Strip -->
+      <div class="validity-strip sans">
+        <div class="validity-field">
+          <div class="validity-label">Event Date</div>
+          <div class="validity-value">${eventConfig.date}</div>
+        </div>
+        <div class="validity-divider"></div>
+        <div class="validity-field">
+          <div class="validity-label">Time</div>
+          <div class="validity-value">${eventConfig.time}</div>
+        </div>
+        <div class="validity-divider"></div>
+        <div class="validity-field">
+          <div class="validity-label">Participants</div>
+          <div class="validity-value">${eventConfig.expectedParticipants}+</div>
+        </div>
+        <div class="validity-divider"></div>
+        <div class="validity-field">
+          <div class="validity-label">Sessions</div>
+          <div class="validity-value">${eventConfig.expertSessions}</div>
         </div>
       </div>
 
-      <!-- Contact -->
-      <div>
-        <div class="section-title">Contact Information</div>
-        <div class="contact-row">
-          <div class="contact-item">
-            <div class="contact-label">Email</div>
-            <div class="contact-value">${eventConfig.email}</div>
+      <!-- Distinguished Guests -->
+      <div class="speakers-section">
+        <div class="section-heading sans">Distinguished Guests &amp; Speakers</div>
+        <div class="speaker-row">
+          <div class="speaker-cell">
+            <div class="speaker-role">${eventConfig.chiefGuest.badge}</div>
+            <div class="speaker-name sans">${eventConfig.chiefGuest.name}</div>
+            <div class="speaker-desig">${eventConfig.chiefGuest.designation}</div>
+            <div class="speaker-org sans">${eventConfig.chiefGuest.organization}</div>
           </div>
-          <div class="contact-item">
-            <div class="contact-label">Phone</div>
-            <div class="contact-value">${eventConfig.phone}</div>
-          </div>
+          ${eventConfig.distinguishedGuests.slice(0, 3).map(g => `
+          <div class="speaker-cell">
+            <div class="speaker-role">${g.roleBadge}</div>
+            <div class="speaker-name sans">${g.name}</div>
+            <div class="speaker-desig">${g.designation}</div>
+            <div class="speaker-org sans">${g.organization}</div>
+          </div>`).join('')}
         </div>
       </div>
 
       <!-- Coordinators -->
       <div>
-        <div class="section-title">Event Coordinators</div>
-        <div class="coord-grid">
-          <div class="coord-box">
-            <div class="coord-role">Faculty Coordinator</div>
-            <div class="coord-name">${eventConfig.facultyCoordinator.split(',')[0]}</div>
+        <div class="section-heading sans">Coordinators</div>
+        <div class="coord-row">
+          <div class="coord-cell">
+            <div class="coord-role sans">Faculty Coordinator</div>
+            <div class="coord-name sans">${eventConfig.facultyCoordinator.split(',')[0]}</div>
             <div class="coord-dept">${eventConfig.facultyCoordinator.split(',').slice(1).join(',').trim()}</div>
           </div>
-          <div class="coord-box">
-            <div class="coord-role">Event Coordinator</div>
-            <div class="coord-name">${eventConfig.eventCoordinator.split(',')[0]}</div>
+          <div class="coord-cell">
+            <div class="coord-role sans">Event Coordinator</div>
+            <div class="coord-name sans">${eventConfig.eventCoordinator.split(',')[0]}</div>
             <div class="coord-dept">${eventConfig.eventCoordinator.split(',').slice(1).join(',').trim()}</div>
           </div>
-          <div class="coord-box">
-            <div class="coord-role">Student Coordinator</div>
-            <div class="coord-name">${eventConfig.studentCoordinator.split(',')[0]}</div>
+          <div class="coord-cell">
+            <div class="coord-role sans">Student Coordinator</div>
+            <div class="coord-name sans">${eventConfig.studentCoordinator.split(',')[0]}</div>
             <div class="coord-dept">${eventConfig.studentCoordinator.split(',').slice(1).join(',').trim()}</div>
           </div>
         </div>
       </div>
 
-    </div><!-- /left-col -->
+    </div><!-- /col-left -->
 
-    <!-- RIGHT: QR Panel -->
-    <div class="right-col">
-      <div class="section-title" style="width:100%;text-align:center;border-color:#e2e8f0">Scan to Check-In</div>
-      <div class="qr-wrapper">
-        ${qrDataUrl ? `<img src="${qrDataUrl}" alt="Entry QR" />` : '<div style="width:120px;height:120px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:9px;color:#94a3b8;border-radius:8px;">QR Code</div>'}
+    <!-- Right Column: QR -->
+    <div class="col-right">
+      <div class="section-heading sans" style="width:100%;text-align:center;border-color:#ccc">Entry QR Code</div>
+      <div class="qr-box">
+        ${qrDataUrl ? `<img src="${qrDataUrl}" alt="QR Code" />` : ''}
+        <div class="qr-caption sans">Scan for entry verification</div>
+        <div class="qr-reg mono">${student.registrationId}</div>
       </div>
-      <div class="qr-label">Registration ID</div>
-      <div class="qr-reg-id">${student.registrationId}</div>
-      <div class="scan-instruction">
-        Present this QR code at the registration desk for entry.<br/>
-        Keep this pass safe — it is non-transferable.
+      <div class="qr-note">
+        Present this pass at the<br/>registration desk for entry.<br/>This pass is non-transferable.
       </div>
-      <div style="margin-top:auto;">
-        <div class="detail-box" style="text-align:center;margin-top:8px;">
-          <div class="detail-label">Event ID</div>
-          <div class="detail-value" style="font-family:monospace;font-size:13px;color:#0A1330;letter-spacing:.06em">${eventConfig.eventId}</div>
-        </div>
-        <div style="font-size:7.5px;color:#94a3b8;text-align:center;margin-top:8px;line-height:1.6">
-          Issued by<br/>
-          <strong style="color:#475569">${eventConfig.collegeName}</strong><br/>
+      <div style="margin-top:12pt;width:100%;border-top:0.5pt solid #ccc;padding-top:8pt;">
+        <div class="section-heading sans" style="text-align:center">Issued By</div>
+        <div style="font-family:Arial,sans-serif;font-size:7.5pt;color:#444;text-align:center;line-height:1.6;">
+          <strong>${eventConfig.collegeShortName}</strong><br/>
+          ${eventConfig.collegeName}<br/>
           ${eventConfig.universityName}
         </div>
       </div>
     </div>
 
-  </div><!-- /body-grid -->
+  </div><!-- /main-layout -->
 
-  <!-- ── SPEAKERS BAR ── -->
-  <div class="speakers-bar">
-    <div class="speakers-bar-title">Distinguished Guests &amp; Speakers</div>
-    <div class="speakers-grid">
-      <div class="speaker-card" style="border-color:rgba(251,191,36,.35)">
-        <div class="speaker-role" style="color:#FBBF24">Chief Guest &amp; Keynote</div>
-        <div class="speaker-name">${eventConfig.chiefGuest.name}</div>
-        <div class="speaker-org">${eventConfig.chiefGuest.designation}<br/>${eventConfig.chiefGuest.organization}</div>
+  <!-- ── Footer ── -->
+  <div class="doc-footer">
+    <div class="footer-row">
+      <div class="footer-addr sans">
+        <strong>${eventConfig.collegeName}</strong><br/>
+        ${eventConfig.address}
       </div>
-      ${eventConfig.distinguishedGuests.map(g => `
-      <div class="speaker-card">
-        <div class="speaker-role">${g.roleBadge}</div>
-        <div class="speaker-name">${g.name}</div>
-        <div class="speaker-org">${g.designation}<br/>${g.organization}</div>
-      </div>`).join('')}
+      <div class="footer-disclaimer">
+        This pass is issued for the sole purpose of attending the above-mentioned event.<br/>
+        It is non-transferable. Misuse will lead to cancellation without notice.
+      </div>
+      <div class="footer-ref">
+        ${eventConfig.eventId}<br/>
+        ${eventConfig.date}
+      </div>
     </div>
   </div>
 
-  <!-- ── FOOTER ── -->
-  <div class="footer">
-    <div>
-      <div class="footer-bold">${eventConfig.collegeName} · ${eventConfig.universityName}</div>
-      <div class="footer-text">${eventConfig.address}</div>
-    </div>
-    <div style="text-align:center">
-      <div class="footer-text">This pass is non-transferable and valid for the event day only.</div>
-      <div class="footer-text">For assistance, contact: ${eventConfig.email} · ${eventConfig.phone}</div>
-    </div>
-    <div style="text-align:right">
-      <div class="footer-bold">${eventConfig.eventId}</div>
-      <div class="footer-text">${eventConfig.date}</div>
-    </div>
-  </div>
-
-</div>
 </body>
 </html>`
 
@@ -465,7 +537,6 @@ export default function RegistrationPass({ student }) {
     win.onload = () => { win.focus(); win.print() }
   }
 
-  /* ── Download just the QR ── */
   function handleDownloadQR() {
     const canvas = qrRef.current?.querySelector('canvas')
     if (!canvas) return
@@ -480,91 +551,89 @@ export default function RegistrationPass({ student }) {
   return (
     <div className="flex flex-col items-center gap-6">
 
-      {/* ── Screen preview card ── */}
-      <div
-        ref={qrRef}
-        style={{
-          width: 480,
-          fontFamily: "'Inter','Segoe UI',sans-serif",
-          display: 'flex',
-          flexDirection: 'column',
-          background: '#fff',
-          borderRadius: 14,
-          overflow: 'hidden',
-          boxShadow: '0 8px 40px rgba(10,19,48,.18)',
-          border: '1px solid #e2e8f0',
-        }}
-      >
+      {/* ── Screen preview ── */}
+      <div ref={qrRef} style={{
+        width: 480,
+        fontFamily: 'Georgia, serif',
+        background: '#fff',
+        border: '1px solid #cbd5e1',
+        boxShadow: '0 2px 20px rgba(0,0,0,.1)',
+      }}>
         {/* Header */}
-        <div style={{
-          background: 'linear-gradient(135deg,#0A1330 0%,#1e3a5f 60%,#0c4a6e 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 18px',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: 8, background: '#FBBF24',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 900, fontSize: 11, color: '#0A1330', flexShrink: 0,
-            }}>{eventConfig.collegeShortName}</div>
-            <div>
-              <div style={{ color: '#fff', fontWeight: 700, fontSize: 12 }}>{eventConfig.eventName}</div>
-              <div style={{ color: '#7DD3FC', fontSize: 9 }}>{eventConfig.organizer}</div>
-            </div>
+        <div style={{ textAlign: 'center', padding: '14px 20px 12px', borderBottom: '2px solid #1a2744' }}>
+          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 14, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '.04em', color: '#1a2744' }}>
+            {eventConfig.collegeName}
           </div>
-          <div style={{
-            background: '#FBBF24', color: '#0A1330', fontWeight: 900,
-            fontSize: 10, padding: '4px 12px', borderRadius: 5, letterSpacing: '.08em',
-          }}>ENTRY PASS</div>
+          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 11, color: '#555', marginTop: 2 }}>
+            {eventConfig.universityName}
+          </div>
         </div>
 
-        {/* Body */}
-        <div style={{ display: 'flex', gap: 0 }}>
-          {/* Left */}
-          <div style={{ flex: 1, padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10, borderRight: '1px dashed #cbd5e1' }}>
-            <div>
-              <div style={{ fontSize: 8, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.12em', marginBottom: 2 }}>Participant</div>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#0A1330', lineHeight: 1.1 }}>{student.name}</div>
-              {student.department && <div style={{ fontSize: 10, color: '#475569', marginTop: 3 }}>{student.department}</div>}
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#1e3a5f', marginTop: 4 }}>{student.college}</div>
-              <div style={{
-                display: 'inline-block', background: '#0A1330', color: '#FBBF24',
-                fontFamily: 'monospace', fontWeight: 700, fontSize: 11,
-                padding: '3px 10px', borderRadius: 5, marginTop: 6, letterSpacing: '.05em',
-              }}>{student.registrationId}</div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '8px 10px' }}>
-                <div style={{ fontSize: 8, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 2 }}>Date</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#0f172a' }}>{eventConfig.date}</div>
-                <div style={{ fontSize: 9, color: '#64748b', marginTop: 1 }}>{eventConfig.time}</div>
-              </div>
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '8px 10px' }}>
-                <div style={{ fontSize: 8, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 2 }}>Venue</div>
-                <div style={{ fontSize: 10, fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>{eventConfig.venue}</div>
-              </div>
-            </div>
+        {/* Banner */}
+        <div style={{ background: '#1a2744', color: '#fff', textAlign: 'center', padding: '10px 20px' }}>
+          <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: 13, letterSpacing: '.02em' }}>
+            {eventConfig.eventName.toUpperCase()}
           </div>
-          {/* Right */}
-          <div style={{ width: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '14px 12px' }}>
-            <div style={{ background: '#f0f7ff', border: '2px solid #bfdbfe', borderRadius: 10, padding: 7 }}>
-              <QRCodeCanvas value={qrValue} size={88} fgColor="#0A1330" bgColor="#f0f7ff" level="M" />
+          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 8, letterSpacing: '.18em', textTransform: 'uppercase', color: '#c9a84c', marginTop: 3 }}>
+            Official Entry Pass · {eventConfig.eventId}
+          </div>
+        </div>
+        <div style={{ height: 2, background: '#c9a84c' }} />
+
+        {/* Body */}
+        <div style={{ display: 'flex', gap: 0, padding: '14px 18px 10px', alignItems: 'flex-start' }}>
+          {/* Left */}
+          <div style={{ flex: 1, borderRight: '1px solid #e5e7eb', paddingRight: 14, marginRight: 14 }}>
+            <div style={{ borderLeft: '3px solid #1a2744', paddingLeft: 10, marginBottom: 12 }}>
+              <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 8, textTransform: 'uppercase', letterSpacing: '.12em', color: '#999', marginBottom: 2 }}>
+                Participant
+              </div>
+              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: 17, color: '#1a2744', lineHeight: 1.1 }}>{student.name}</div>
+              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: '600', fontSize: 10, color: '#333', marginTop: 4 }}>{student.college}</div>
+              {student.department && <div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 9, color: '#666', marginTop: 1 }}>{student.department}</div>}
+              <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 7, textTransform: 'uppercase', letterSpacing: '.12em', color: '#999' }}>Reg. No.</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: 'bold', color: '#1a2744', background: '#f5f7fa', padding: '1px 7px', border: '1px solid #d0d8e8' }}>
+                  {student.registrationId}
+                </span>
+              </div>
             </div>
-            <div style={{ fontSize: 8, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em' }}>Scan at entry</div>
-            <div style={{ fontFamily: 'monospace', fontSize: 9, fontWeight: 800, color: '#0A1330', textAlign: 'center', wordBreak: 'break-all' }}>{student.registrationId}</div>
+
+            {/* Details mini table */}
+            {[
+              ['Date', `${eventConfig.date} · ${eventConfig.time}`],
+              ['Venue', eventConfig.venue],
+              ['Contact', `${eventConfig.phone} · ${eventConfig.email}`],
+            ].map(([label, val]) => (
+              <div key={label} style={{ display: 'flex', borderBottom: '1px solid #f0f0f0', padding: '4px 0', gap: 8 }}>
+                <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 8, color: '#999', width: 52, flexShrink: 0, paddingTop: 1 }}>{label}</span>
+                <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 9, fontWeight: '600', color: '#111' }}>{val}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Right: QR */}
+          <div style={{ width: 106, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+            <div style={{ border: '1px solid #1a2744', padding: 6 }}>
+              <QRCodeCanvas value={qrValue} size={84} fgColor="#1a2744" bgColor="#ffffff" level="M" />
+            </div>
+            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 7, textTransform: 'uppercase', letterSpacing: '.1em', color: '#888', textAlign: 'center' }}>
+              Scan at entry
+            </div>
+            <div style={{ fontFamily: 'monospace', fontSize: 8.5, fontWeight: 'bold', color: '#1a2744', textAlign: 'center', wordBreak: 'break-all' }}>
+              {student.registrationId}
+            </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{
-          background: '#f1f5f9', borderTop: '1px dashed #cbd5e1',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '6px 18px',
-        }}>
-          <span style={{ fontSize: 8, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-            Non-transferable · Valid for event day only · {eventConfig.eventId}
+        <div style={{ borderTop: '1.5px solid #1a2744', padding: '7px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 8, color: '#777' }}>
+            {eventConfig.collegeName} · {eventConfig.universityName}
           </span>
-          <span style={{ fontSize: 8, color: '#94a3b8' }}>{eventConfig.date}</span>
+          <span style={{ fontFamily: 'monospace', fontSize: 8, fontWeight: 'bold', color: '#1a2744' }}>
+            {eventConfig.eventId} · {eventConfig.date}
+          </span>
         </div>
       </div>
 
@@ -572,7 +641,7 @@ export default function RegistrationPass({ student }) {
       <div className="flex gap-3">
         <button
           onClick={handlePrint}
-          className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 transition active:scale-[0.98]"
+          className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-700 transition active:scale-[0.98]"
         >
           <Printer size={15} /> Print / Save as PDF
         </button>
