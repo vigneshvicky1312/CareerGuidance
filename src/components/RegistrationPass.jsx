@@ -18,7 +18,7 @@ export default function RegistrationPass({ student }) {
 <title>Entry Pass – ${student.registrationId}</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-@page { size: A4 portrait; margin: 14mm 16mm; }
+@page { size: A4 portrait; margin: 8mm 14mm; }
 body {
   font-family: 'Times New Roman', 'Georgia', serif;
   background: #fff;
@@ -36,7 +36,7 @@ body {
 /* ─── Top Institution Header ─── */
 .inst-header {
   text-align: center;
-  padding-bottom: 10pt;
+  padding-bottom: 6pt;
   border-bottom: 2pt solid #1a2744;
 }
 .inst-name {
@@ -71,8 +71,8 @@ body {
   background: #1a2744;
   color: #fff;
   text-align: center;
-  padding: 8pt 0;
-  margin: 10pt 0 0 0;
+  padding: 5pt 0;
+  margin: 6pt 0 0 0;
 }
 .event-name {
   font-family: Arial, sans-serif;
@@ -93,7 +93,7 @@ body {
 .gold-rule {
   height: 2pt;
   background: #c9a84c;
-  margin: 0 0 14pt 0;
+  margin: 0 0 8pt 0;
 }
 
 /* ─── Main two-column layout ─── */
@@ -115,8 +115,8 @@ body {
 /* ─── Participant block ─── */
 .participant-block {
   border: 1pt solid #1a2744;
-  padding: 10pt 12pt;
-  margin-bottom: 12pt;
+  padding: 7pt 10pt;
+  margin-bottom: 8pt;
   position: relative;
 }
 .participant-block::before {
@@ -157,7 +157,7 @@ body {
   font-style: italic;
 }
 .reg-id-row {
-  margin-top: 8pt;
+  margin-top: 5pt;
   display: flex;
   align-items: center;
   gap: 8pt;
@@ -184,7 +184,7 @@ body {
 .details-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 12pt;
+  margin-bottom: 7pt;
   font-size: 9pt;
 }
 .details-table caption {
@@ -202,7 +202,7 @@ body {
 .details-table tr { border-bottom: 0.5pt solid #eee; }
 .details-table tr:last-child { border-bottom: none; }
 .details-table td {
-  padding: 4pt 0;
+  padding: 2.5pt 0;
   vertical-align: top;
 }
 .details-table .td-label {
@@ -234,15 +234,15 @@ body {
   letter-spacing: 0.15em;
   color: #888;
   border-bottom: 0.5pt solid #ccc;
-  padding-bottom: 4pt;
-  margin-bottom: 7pt;
+  padding-bottom: 3pt;
+  margin-bottom: 5pt;
 }
 
 /* ─── Coordinators ─── */
 .coord-row {
   display: flex;
   gap: 0;
-  margin-bottom: 12pt;
+  margin-bottom: 7pt;
 }
 .coord-cell {
   flex: 1;
@@ -292,16 +292,16 @@ body {
 }
 
 /* ─── Speakers section ─── */
-.speakers-section { margin-bottom: 12pt; }
+.speakers-section { margin-bottom: 7pt; }
 .speaker-row {
   display: flex;
   gap: 0;
 }
 .speaker-cell {
   flex: 1;
-  padding: 5pt 8pt 5pt 0;
+  padding: 3pt 6pt 3pt 0;
   border-right: 0.5pt solid #e0e0e0;
-  margin-right: 8pt;
+  margin-right: 6pt;
 }
 .speaker-cell:last-child { border-right: none; margin-right: 0; padding-right: 0; }
 .speaker-role { font-family: Arial, sans-serif; font-size: 6.5pt; text-transform: uppercase; letter-spacing: 0.1em; color: #c9a84c; margin-bottom: 1pt; }
@@ -312,8 +312,8 @@ body {
 /* ─── Validity strip ─── */
 .validity-strip {
   border: 1pt solid #1a2744;
-  padding: 5pt 10pt;
-  margin-bottom: 12pt;
+  padding: 4pt 10pt;
+  margin-bottom: 7pt;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -328,8 +328,8 @@ body {
 /* ─── Footer ─── */
 .doc-footer {
   border-top: 1.5pt solid #1a2744;
-  padding-top: 7pt;
-  margin-top: 4pt;
+  padding-top: 5pt;
+  margin-top: 2pt;
 }
 .footer-row {
   display: flex;
