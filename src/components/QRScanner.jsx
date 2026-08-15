@@ -49,14 +49,15 @@ export default function QRScanner({ onScan, active = true }) {
       .then((devices) => {
         if (devices && devices.length > 0) {
           setCameras(devices)
-          // Prefer back/rear camera
+          // Prefer back/rear camera by label; if not found, leave null so
+          // facingMode: 'environment' is used (avoids picking front camera)
           const backCam = devices.find(
             (d) =>
               d.label.toLowerCase().includes('back') ||
               d.label.toLowerCase().includes('rear') ||
               d.label.toLowerCase().includes('environment')
           )
-          setSelectedCamera(backCam ? backCam.id : devices[0].id)
+          if (backCam) setSelectedCamera(backCam.id)
         }
       })
       .catch((err) => {
