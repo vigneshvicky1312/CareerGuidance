@@ -32,7 +32,7 @@ function StatCard({ label, value, sub, icon: Icon, gradient, trend }) {
 function RecentRow({ student }) {
   const time = tsToDate(student.registeredAt)
   return (
-    <div className="flex items-center gap-4 rounded-xl px-4 py-3 transition hover:bg-slate-50">
+    <div className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-slate-50">
       <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${student.checkedIn ? 'bg-emerald-500' : 'bg-slate-300'}`}>
         {student.name?.[0] || '?'}
       </div>
@@ -40,11 +40,11 @@ function RecentRow({ student }) {
         <p className="truncate text-sm font-semibold text-slate-800">{student.name}</p>
         <p className="truncate text-xs text-slate-400">{student.college}</p>
       </div>
-      <div className="text-right shrink-0">
+      <div className="hidden sm:block text-right shrink-0">
         <p className="font-mono text-xs font-bold text-indigo-600">{student.registrationId}</p>
         <p className="text-xs text-slate-400">{time ? time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
       </div>
-      <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${student.checkedIn ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+      <span className={`hidden xs:inline-flex shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${student.checkedIn ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
         {student.checkedIn ? '✓ In' : 'Pending'}
       </span>
     </div>
@@ -123,7 +123,7 @@ export default function Dashboard() {
           </div>
 
           {/* Bottom Grid */}
-          <div className="grid gap-6 lg:grid-cols-5">
+          <div className="grid gap-6 lg:grid-cols-5 min-w-0">
             {/* Recent Registrations */}
             <div className="rounded-2xl border border-slate-200 bg-white lg:col-span-3">
               <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">

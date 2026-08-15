@@ -12,7 +12,7 @@ export default function RegistrationSuccess() {
   }
 
   return (
-    <section className="section max-w-2xl text-center">
+    <section className="section max-w-2xl w-full overflow-x-hidden text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
         <PartyPopper size={26} />
       </div>
@@ -21,7 +21,7 @@ export default function RegistrationSuccess() {
       </h1>
       <p className="mt-2 text-slate-600">
         Thank you for registering for the {eventConfig.eventName}.
-        Your entry pass is ready — print or save the QR code below.
+        Your entry pass is ready — tap the button below to download your PDF.
       </p>
 
       <div className="mt-10">
