@@ -46,7 +46,7 @@ export default function CheckIn() {
   const [busy, setBusy] = useState(false)
   const [materials, setMaterials] = useState({})
   const [soundEnabled, setSoundEnabled] = useState(true)
-  const [autoNext, setAutoNext] = useState(true)
+  const [autoNext, setAutoNext] = useState(false)
   const [countdown, setCountdown] = useState(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [allStudents, setAllStudents] = useState([])
@@ -61,14 +61,23 @@ export default function CheckIn() {
     return () => unsub()
   }, [])
 
-  // Auto-countdown to return to scanner after successful confirmation
+  function cancelCountdown() {
+    if (countdownTimer.current) {
+      clearInterval(countdownTimer.current)
+      countdownTimer.current = null
+    }
+    setCountdown(null)
+  }
+
+  // Auto-countdown to return to scanner after successful confirmation (only if enabled)
   useEffect(() => {
     if (mode === 'confirmed' && autoNext) {
-      setCountdown(4)
+      setCountdown(6)
       countdownTimer.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownTimer.current)
+            countdownTimer.current = null
             scanNext()
             return null
           }
@@ -76,12 +85,11 @@ export default function CheckIn() {
         })
       }, 1000)
     } else {
-      if (countdownTimer.current) clearInterval(countdownTimer.current)
-      setCountdown(null)
+      cancelCountdown()
     }
 
     return () => {
-      if (countdownTimer.current) clearInterval(countdownTimer.current)
+      cancelCountdown()
     }
   }, [mode, autoNext])
 
@@ -94,6 +102,9 @@ export default function CheckIn() {
         if (mode === 'verified') {
           e.preventDefault()
           handleConfirm()
+        } else if (mode === 'confirmed' || mode === 'already' || mode === 'invalid') {
+          e.preventDefault()
+          scanNext()
         }
       } else if (e.key === ' ' || e.key === 'Escape') {
         if (mode === 'confirmed' || mode === 'already' || mode === 'invalid') {
@@ -112,6 +123,7 @@ export default function CheckIn() {
     async (registrationId) => {
       if (!registrationId) return
       setBusy(true)
+      cancelCountdown()
       try {
         const found = await findStudentByRegistrationId(registrationId)
         if (!found || (found.eventId && found.eventId !== eventConfig.eventId)) {
@@ -121,7 +133,11 @@ export default function CheckIn() {
           return
         }
         setStudent(found)
-        setMaterials(found.materials || {})
+        // Default to all checked if new check-in or use existing materials
+        const studentMats = found.materials && Object.keys(found.materials).length > 0
+          ? found.materials
+          : eventConfig.materialsChecklist.reduce((acc, m) => ({ ...acc, [m.key]: true }), {})
+        setMaterials(studentMats)
 
         if (found.checkedIn) {
           setMode('already')
@@ -159,28 +175,26 @@ export default function CheckIn() {
     lookup(manualId.trim())
   }
 
-  async function handleConfirm(distributeAll = false) {
+  async function handleConfirm(customMaterials = null) {
     if (!student) return
     setBusy(true)
     try {
       await confirmAttendance(student.id)
 
-      let updatedMaterials = { ...materials }
-      if (distributeAll) {
-        eventConfig.materialsChecklist.forEach((m) => {
-          updatedMaterials[m.key] = true
-        })
-        await updateMaterials(student.id, updatedMaterials, true)
-      }
+      const finalMaterials = customMaterials !== null ? customMaterials : materials
+      const anyChecked = Object.values(finalMaterials).some(Boolean)
+      const allChecked = eventConfig.materialsChecklist.every((m) => finalMaterials[m.key])
+
+      await updateMaterials(student.id, finalMaterials, anyChecked)
 
       setStudent((s) => ({
         ...s,
         checkedIn: true,
         checkInTime: new Date().toISOString(),
-        materials: updatedMaterials,
-        materialsDistributed: distributeAll,
+        materials: finalMaterials,
+        materialsDistributed: anyChecked,
       }))
-      setMaterials(updatedMaterials)
+      setMaterials(finalMaterials)
       setMode('confirmed')
       if (soundEnabled) playSuccessBeep()
     } catch (err) {
@@ -194,6 +208,7 @@ export default function CheckIn() {
   async function handleUndoCheckIn() {
     if (!student) return
     setBusy(true)
+    cancelCountdown()
     try {
       await undoAttendance(student.id)
       setStudent((s) => ({ ...s, checkedIn: false, checkInTime: null }))
@@ -207,28 +222,31 @@ export default function CheckIn() {
   }
 
   function toggleMaterial(key) {
+    cancelCountdown() // Stop any auto-timer so user can select comfortably
     const updated = { ...materials, [key]: !materials[key] }
     setMaterials(updated)
-    if (student) {
-      const allChecked = eventConfig.materialsChecklist.every((m) => updated[m.key])
-      updateMaterials(student.id, updated, allChecked).catch(console.error)
-      setStudent((s) => ({ ...s, materials: updated, materialsDistributed: allChecked }))
+    if (student && student.checkedIn) {
+      const anyChecked = Object.values(updated).some(Boolean)
+      updateMaterials(student.id, updated, anyChecked).catch(console.error)
+      setStudent((s) => ({ ...s, materials: updated, materialsDistributed: anyChecked }))
     }
   }
 
   function handleSelectAllMaterials(checked) {
+    cancelCountdown() // Stop any auto-timer
     const updated = {}
     eventConfig.materialsChecklist.forEach((m) => {
       updated[m.key] = checked
     })
     setMaterials(updated)
-    if (student) {
+    if (student && student.checkedIn) {
       updateMaterials(student.id, updated, checked).catch(console.error)
       setStudent((s) => ({ ...s, materials: updated, materialsDistributed: checked }))
     }
   }
 
   function scanNext() {
+    cancelCountdown()
     lastScan.current = ''
     setStudent(null)
     setManualId('')
@@ -538,24 +556,63 @@ export default function CheckIn() {
             {/* Profile Overview Card */}
             <StudentDetailCard student={student} />
 
+            {/* Materials Checklist (Pre-selection before confirming) */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-800">
+                  <PackageCheck size={16} className="text-indigo-600" />
+                  Kit Materials to Issue
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectAllMaterials(true)}
+                    className="font-semibold text-indigo-600 hover:underline"
+                  >
+                    Select All
+                  </button>
+                  <span className="text-slate-300">|</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectAllMaterials(false)}
+                    className="font-semibold text-slate-500 hover:underline"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                {eventConfig.materialsChecklist.map((m) => (
+                  <label
+                    key={m.key}
+                    className={`flex items-center gap-2.5 rounded-xl border p-2.5 text-sm cursor-pointer transition select-none ${
+                      materials[m.key]
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-900 font-medium'
+                        : 'border-slate-200 bg-white text-slate-600'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-slate-300 accent-emerald-600 cursor-pointer"
+                      checked={!!materials[m.key]}
+                      onChange={() => toggleMaterial(m.key)}
+                    />
+                    <span>{m.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
             {/* Action Buttons */}
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-1">
               <button
                 type="button"
-                onClick={() => handleConfirm(false)}
+                onClick={() => handleConfirm(materials)}
                 disabled={busy}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 transition active:scale-[0.98] disabled:opacity-50"
               >
-                <CheckCircle2 size={18} /> Confirm Attendance (Enter)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleConfirm(true)}
-                disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-indigo-200 bg-indigo-50 px-6 py-3 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 transition"
-              >
-                <PackageCheck size={16} /> Fast Check-In + Give All Kit Materials
+                <CheckCircle2 size={18} /> Confirm Attendance &amp; Issue Selected Kits (Enter)
               </button>
 
               <button
@@ -615,7 +672,7 @@ export default function CheckIn() {
                 {eventConfig.materialsChecklist.map((m) => (
                   <label
                     key={m.key}
-                    className={`flex items-center gap-2.5 rounded-xl border p-2.5 text-sm cursor-pointer transition ${
+                    className={`flex items-center gap-2.5 rounded-xl border p-2.5 text-sm cursor-pointer transition select-none ${
                       materials[m.key]
                         ? 'border-emerald-300 bg-emerald-50 text-emerald-900 font-medium'
                         : 'border-slate-200 bg-white text-slate-600'
@@ -623,7 +680,7 @@ export default function CheckIn() {
                   >
                     <input
                       type="checkbox"
-                      className="h-4 w-4 rounded border-slate-300 accent-emerald-600"
+                      className="h-4 w-4 rounded border-slate-300 accent-emerald-600 cursor-pointer"
                       checked={!!materials[m.key]}
                       onChange={() => toggleMaterial(m.key)}
                     />
@@ -641,18 +698,30 @@ export default function CheckIn() {
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-indigo-600 transition active:scale-[0.98]"
               >
                 <ScanLine size={18} />
-                Scan Next Student {countdown !== null && `(${countdown}s)`}
+                Done &amp; Scan Next Student {countdown !== null ? `(${countdown}s)` : '➡️'}
               </button>
 
-              <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-                <label className="flex items-center gap-1.5 cursor-pointer">
+              {countdown !== null && (
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={cancelCountdown}
+                    className="text-xs text-amber-600 font-semibold hover:underline"
+                  >
+                    ⏸ Pause auto-advance timer
+                  </button>
+                </div>
+              )}
+
+              <div className="flex items-center justify-center gap-2 text-xs text-slate-500 pt-1">
+                <label className="flex items-center gap-1.5 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={autoNext}
                     onChange={(e) => setAutoNext(e.target.checked)}
-                    className="rounded border-slate-300 accent-indigo-600"
+                    className="rounded border-slate-300 accent-indigo-600 cursor-pointer"
                   />
-                  Auto-advance to next student
+                  Auto-advance to next student after confirmation
                 </label>
               </div>
             </div>
@@ -697,16 +766,23 @@ export default function CheckIn() {
                   {student.materialsDistributed ? 'All Distributed' : 'Pending Items'}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                 {eventConfig.materialsChecklist.map((m) => (
-                  <label key={m.key} className="flex items-center gap-2 text-slate-700 cursor-pointer">
+                  <label
+                    key={m.key}
+                    className={`flex items-center gap-2.5 rounded-xl border p-2 text-xs cursor-pointer transition select-none ${
+                      materials[m.key]
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-900 font-medium'
+                        : 'border-slate-200 bg-white text-slate-600'
+                    }`}
+                  >
                     <input
                       type="checkbox"
+                      className="h-3.5 w-3.5 rounded border-slate-300 accent-emerald-600 cursor-pointer"
                       checked={!!materials[m.key]}
                       onChange={() => toggleMaterial(m.key)}
-                      className="rounded border-slate-300 accent-indigo-600"
                     />
-                    {m.label}
+                    <span>{m.label}</span>
                   </label>
                 ))}
               </div>
@@ -719,7 +795,7 @@ export default function CheckIn() {
                 onClick={scanNext}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 transition active:scale-[0.98]"
               >
-                <ScanLine size={18} /> Scan Next Student (Space)
+                <ScanLine size={18} /> Scan Next Student (Space / Enter)
               </button>
 
               <button

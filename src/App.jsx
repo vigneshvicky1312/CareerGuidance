@@ -23,52 +23,46 @@ import AdminAuthProvider from './context/AdminAuthContext'
 
 export default function App() {
   return (
-    <Routes>
-      {/* Public site */}
-      <Route element={<PublicLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/registration-success" element={<RegistrationSuccess />} />
-        <Route path="/location" element={<LocationPage />} />
-        <Route path="/sponsors" element={<SponsorsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-      </Route>
+    <AdminAuthProvider>
+      <Routes>
+        {/* Public site */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/registration-success" element={<RegistrationSuccess />} />
+          <Route path="/location" element={<LocationPage />} />
+          <Route path="/sponsors" element={<SponsorsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Route>
 
-      {/* Event volunteer check-in — standalone, mobile-first */}
-      <Route element={<PublicLayout />}>
-        <Route path="/check-in" element={<CheckIn />} />
-      </Route>
+        {/* Event volunteer check-in & scan — standalone, mobile-first */}
+        <Route element={<PublicLayout />}>
+          <Route path="/check-in" element={<CheckIn />} />
+          <Route path="/scan" element={<CheckIn />} />
+        </Route>
 
-      {/* Admin — one shared auth listener for login + all protected routes */}
-      <Route
-        path="/admin/login"
-        element={
-          <AdminAuthProvider>
-            <AdminLogin />
-          </AdminAuthProvider>
-        }
-      />
-      <Route
-        path="/admin"
-        element={
-          <AdminAuthProvider>
+        {/* Admin — one shared auth listener for login + all protected routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin"
+          element={
             <ProtectedRoute>
               <AdminLayout />
             </ProtectedRoute>
-          </AdminAuthProvider>
-        }
-      >
-        <Route index element={<Dashboard />} />
-        <Route path="attendees" element={<Attendees />} />
-        <Route path="registrations" element={<Registrations />} />
-        <Route path="distribution" element={<Distribution />} />
-        <Route path="sponsors" element={<AdminSponsors />} />
-        <Route path="reports" element={<Reports />} />
-      </Route>
+          }
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="attendees" element={<Attendees />} />
+          <Route path="registrations" element={<Registrations />} />
+          <Route path="distribution" element={<Distribution />} />
+          <Route path="sponsors" element={<AdminSponsors />} />
+          <Route path="reports" element={<Reports />} />
+        </Route>
 
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AdminAuthProvider>
   )
 }
 

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loginAdmin } from '../../services/authService'
+import { useAdminAuth } from '../../context/AdminAuthContext'
 import eventConfig from '../../config/eventConfig'
 import { ShieldCheck, Loader2, Eye, EyeOff } from 'lucide-react'
 
@@ -10,18 +10,25 @@ export default function AdminLogin() {
   const [showPass, setShowPass] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const { user, loading: authLoading, login } = useAdminAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/admin', { replace: true })
+    }
+  }, [user, authLoading, navigate])
 
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
     setError('')
     try {
-      await loginAdmin(email, password)
-      navigate('/admin')
+      await login(email.trim(), password)
+      navigate('/admin', { replace: true })
     } catch (err) {
       console.error(err)
-      setError('Invalid email or password. Please try again.')
+      setError(err.message || 'Invalid username/email or password. Please try again.')
     } finally {
       setLoading(false)
     }
