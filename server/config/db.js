@@ -266,7 +266,7 @@ function writeData(data) {
 
 async function initDefaultAdminJson(data) {
   if (!data.admin_users) data.admin_users = []
-  const defaultPassword = process.env.ADMIN_PASSWORD || 'admin'
+  const defaultPassword = process.env.ADMIN_PASSWORD || 'cgp2026'
   const hashed = await bcrypt.hash(defaultPassword, 10)
   
   // Ensure 'admin' user entry
@@ -422,7 +422,7 @@ export async function initDatabase() {
         ) ENGINE=InnoDB;
       `)
 
-      const defaultPassword = process.env.ADMIN_PASSWORD || 'admin'
+      const defaultPassword = process.env.ADMIN_PASSWORD || 'cgp2026'
       const hashed = await bcrypt.hash(defaultPassword, 10)
       
       // MySQL sync for admin & admin@cgp2026.org
