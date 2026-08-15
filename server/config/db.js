@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import os from 'os'
 import bcrypt from 'bcryptjs'
 import mysql from 'mysql2/promise'
 import dotenv from 'dotenv'
@@ -45,12 +46,16 @@ const password = dbConfig.password
 const port = dbConfig.port
 const database = dbConfig.database
 
-const dbDir = path.join(process.cwd(), 'server', 'data')
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+const dbDir = isServerless
+  ? path.join(os.tmpdir(), 'cgp2026-data')
+  : path.join(process.cwd(), 'server', 'data')
 const dbFile = path.join(dbDir, 'db.json')
 
 let useMySQL = false
 let mysqlPool = null
-let isInitialized = false
+let dbInitPromise = null
+let memoryData = null
 
 const initialSampleStudents = [
   {
@@ -201,23 +206,31 @@ const initialSampleSponsors = [
   },
 ]
 
-function ensureDbFile() {
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true })
+function getDefaultData() {
+  return {
+    admin_users: [],
+    counters: [{ event_id: 'CGP2026', value: 5 }],
+    students: initialSampleStudents,
+    sponsors: initialSampleSponsors,
+    sponsor_enquiries: [],
   }
-  if (!fs.existsSync(dbFile)) {
-    const defaultData = {
-      admin_users: [],
-      counters: [{ event_id: 'CGP2026', value: 5 }],
-      students: initialSampleStudents,
-      sponsors: initialSampleSponsors,
-      sponsor_enquiries: [],
+}
+
+function ensureDbFile() {
+  try {
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true })
     }
-    fs.writeFileSync(dbFile, JSON.stringify(defaultData, null, 2))
+    if (!fs.existsSync(dbFile)) {
+      fs.writeFileSync(dbFile, JSON.stringify(getDefaultData(), null, 2))
+    }
+  } catch {
+    // If read-only fs on serverless, fallback cleanly to memory
   }
 }
 
 function readData() {
+  if (memoryData) return memoryData
   ensureDbFile()
   try {
     const raw = fs.readFileSync(dbFile, 'utf8')
@@ -231,21 +244,24 @@ function readData() {
     if (!data.sponsors || data.sponsors.length === 0) {
       data.sponsors = initialSampleSponsors
     }
+    memoryData = data
     return data
   } catch {
-    return {
-      admin_users: [],
-      counters: [{ event_id: 'CGP2026', value: 5 }],
-      students: initialSampleStudents,
-      sponsors: initialSampleSponsors,
-      sponsor_enquiries: [],
+    if (!memoryData) {
+      memoryData = getDefaultData()
     }
+    return memoryData
   }
 }
 
 function writeData(data) {
-  ensureDbFile()
-  fs.writeFileSync(dbFile, JSON.stringify(data, null, 2))
+  memoryData = data
+  try {
+    ensureDbFile()
+    fs.writeFileSync(dbFile, JSON.stringify(data, null, 2))
+  } catch {
+    // Read-only filesystem fallback in memory
+  }
 }
 
 async function initDefaultAdminJson(data) {
@@ -285,175 +301,187 @@ async function initDefaultAdminJson(data) {
 }
 
 export async function initDatabase() {
-  if (isInitialized && (useMySQL || !isRemoteDb)) return
-  isInitialized = true
+  if (useMySQL && mysqlPool) return
+  if (dbInitPromise) return dbInitPromise
 
-  const poolConfig = {
-    host,
-    user,
-    password,
-    port,
-    database,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    connectTimeout: 5000,
-    ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {}),
-  }
+  dbInitPromise = (async () => {
+    // If no MySQL host configured, fallback immediately without failing
+    if (!host || (host === '127.0.0.1' && isServerless)) {
+      useMySQL = false
+      const data = readData()
+      await initDefaultAdminJson(data)
+      return
+    }
 
-  try {
-    // Attempt database creation if user has root/admin rights
+    const poolConfig = {
+      host,
+      user,
+      password,
+      port,
+      database,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      connectTimeout: 5000,
+      ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {}),
+    }
+
     try {
-      const rootConn = await mysql.createConnection({
-        host,
-        user,
-        password,
-        port,
-        connectTimeout: 3000,
-        ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {}),
-      })
-      await rootConn.query(
-        `CREATE DATABASE IF NOT EXISTS \`${database}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
-      )
-      await rootConn.end()
-    } catch {
-      // Ignored if user lacks root CREATE DATABASE permission on managed cloud databases
-    }
-
-    mysqlPool = mysql.createPool(poolConfig)
-    const connection = await mysqlPool.getConnection()
-
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS admin_users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password_hash VARCHAR(255) NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB;
-    `)
-
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS counters (
-        event_id VARCHAR(100) PRIMARY KEY,
-        value INT NOT NULL DEFAULT 0
-      ) ENGINE=InnoDB;
-    `)
-
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS students (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        doc_id VARCHAR(64) NOT NULL UNIQUE,
-        registration_id VARCHAR(64) NOT NULL UNIQUE,
-        event_id VARCHAR(64) NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        gender VARCHAR(50),
-        college VARCHAR(255),
-        degree VARCHAR(100),
-        department VARCHAR(100),
-        year VARCHAR(50),
-        mobile VARCHAR(20),
-        email VARCHAR(255),
-        district VARCHAR(100),
-        career_interest VARCHAR(100),
-        food_preference VARCHAR(50),
-        registered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        checked_in TINYINT(1) DEFAULT 0,
-        check_in_time DATETIME NULL,
-        materials_distributed TINYINT(1) DEFAULT 0,
-        material_distribution_time DATETIME NULL,
-        materials JSON,
-        INDEX idx_registration_id (registration_id),
-        INDEX idx_event_id (event_id)
-      ) ENGINE=InnoDB;
-    `)
-
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS sponsors (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        doc_id VARCHAR(64) NOT NULL UNIQUE,
-        name VARCHAR(255) NOT NULL,
-        tier VARCHAR(100),
-        category VARCHAR(100),
-        logo_url TEXT,
-        website_url TEXT,
-        order_num INT DEFAULT 0,
-        active TINYINT(1) DEFAULT 1,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB;
-    `)
-
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS sponsor_enquiries (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        doc_id VARCHAR(64) NOT NULL UNIQUE,
-        company_name VARCHAR(255) NOT NULL,
-        contact_person VARCHAR(255),
-        email VARCHAR(255),
-        phone VARCHAR(50),
-        tier VARCHAR(100),
-        message TEXT,
-        status VARCHAR(50) DEFAULT 'new',
-        submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB;
-    `)
-
-    const defaultPassword = process.env.ADMIN_PASSWORD || 'admin'
-    const hashed = await bcrypt.hash(defaultPassword, 10)
-    
-    // MySQL sync for admin & admin@cgp2026.org
-    const [users] = await connection.query(`SELECT * FROM admin_users WHERE email IN (?, ?)`, ['admin', 'admin@cgp2026.org'])
-    if (users.length === 0) {
-      await connection.query(`INSERT INTO admin_users (email, password_hash) VALUES (?, ?)`, ['admin', hashed])
-      console.log(`✅ Default admin user created in MySQL (username: admin / password: ${defaultPassword})`)
-    } else {
-      await connection.query(`UPDATE admin_users SET password_hash = ? WHERE email IN (?, ?)`, [hashed, 'admin', 'admin@cgp2026.org'])
-      console.log(`✅ Admin password synced in MySQL (username: admin / password: ${defaultPassword})`)
-    }
-
-    // Seed initial sponsors in MySQL if empty
-    const [sponsorRows] = await connection.query('SELECT COUNT(*) as count FROM sponsors')
-    if (sponsorRows[0].count === 0) {
-      for (const sp of initialSampleSponsors) {
-        await connection.query(
-          `INSERT INTO sponsors (doc_id, name, tier, category, logo_url, website_url, order_num, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [sp.doc_id, sp.name, sp.tier, sp.category, sp.logo_url, sp.website_url, sp.order_num, sp.active]
+      // Attempt database creation if user has root/admin rights
+      try {
+        const rootConn = await mysql.createConnection({
+          host,
+          user,
+          password,
+          port,
+          connectTimeout: 3000,
+          ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {}),
+        })
+        await rootConn.query(
+          `CREATE DATABASE IF NOT EXISTS \`${database}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
         )
+        await rootConn.end()
+      } catch {
+        // Ignored if user lacks root CREATE DATABASE permission on managed cloud databases
       }
-      console.log('✅ Seeded initial sample sponsors in MySQL')
-    }
 
-    // Seed initial students in MySQL if empty
-    const [studentRows] = await connection.query('SELECT COUNT(*) as count FROM students')
-    if (studentRows[0].count === 0) {
-      for (const st of initialSampleStudents) {
+      mysqlPool = mysql.createPool(poolConfig)
+      const connection = await mysqlPool.getConnection()
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS admin_users (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          email VARCHAR(255) NOT NULL UNIQUE,
+          password_hash VARCHAR(255) NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB;
+      `)
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS counters (
+          event_id VARCHAR(100) PRIMARY KEY,
+          value INT NOT NULL DEFAULT 0
+        ) ENGINE=InnoDB;
+      `)
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS students (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          doc_id VARCHAR(64) NOT NULL UNIQUE,
+          registration_id VARCHAR(64) NOT NULL UNIQUE,
+          event_id VARCHAR(64) NOT NULL,
+          name VARCHAR(255) NOT NULL,
+          gender VARCHAR(50),
+          college VARCHAR(255),
+          degree VARCHAR(100),
+          department VARCHAR(100),
+          year VARCHAR(50),
+          mobile VARCHAR(20),
+          email VARCHAR(255),
+          district VARCHAR(100),
+          career_interest VARCHAR(100),
+          food_preference VARCHAR(50),
+          registered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          checked_in TINYINT(1) DEFAULT 0,
+          check_in_time DATETIME NULL,
+          materials_distributed TINYINT(1) DEFAULT 0,
+          material_distribution_time DATETIME NULL,
+          materials JSON,
+          INDEX idx_registration_id (registration_id),
+          INDEX idx_event_id (event_id)
+        ) ENGINE=InnoDB;
+      `)
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS sponsors (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          doc_id VARCHAR(64) NOT NULL UNIQUE,
+          name VARCHAR(255) NOT NULL,
+          tier VARCHAR(100),
+          category VARCHAR(100),
+          logo_url TEXT,
+          website_url TEXT,
+          order_num INT DEFAULT 0,
+          active TINYINT(1) DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB;
+      `)
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS sponsor_enquiries (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          doc_id VARCHAR(64) NOT NULL UNIQUE,
+          company_name VARCHAR(255) NOT NULL,
+          contact_person VARCHAR(255),
+          email VARCHAR(255),
+          phone VARCHAR(50),
+          tier VARCHAR(100),
+          message TEXT,
+          status VARCHAR(50) DEFAULT 'new',
+          submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB;
+      `)
+
+      const defaultPassword = process.env.ADMIN_PASSWORD || 'admin'
+      const hashed = await bcrypt.hash(defaultPassword, 10)
+      
+      // MySQL sync for admin & admin@cgp2026.org
+      const [users] = await connection.query(`SELECT * FROM admin_users WHERE email IN (?, ?)`, ['admin', 'admin@cgp2026.org'])
+      if (users.length === 0) {
+        await connection.query(`INSERT INTO admin_users (email, password_hash) VALUES (?, ?)`, ['admin', hashed])
+        console.log(`✅ Default admin user created in MySQL (username: admin / password: ${defaultPassword})`)
+      } else {
+        await connection.query(`UPDATE admin_users SET password_hash = ? WHERE email IN (?, ?)`, [hashed, 'admin', 'admin@cgp2026.org'])
+        console.log(`✅ Admin password synced in MySQL (username: admin / password: ${defaultPassword})`)
+      }
+
+      // Seed initial sponsors in MySQL if empty
+      const [sponsorRows] = await connection.query('SELECT COUNT(*) as count FROM sponsors')
+      if (sponsorRows[0].count === 0) {
+        for (const sp of initialSampleSponsors) {
+          await connection.query(
+            `INSERT INTO sponsors (doc_id, name, tier, category, logo_url, website_url, order_num, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [sp.doc_id, sp.name, sp.tier, sp.category, sp.logo_url, sp.website_url, sp.order_num, sp.active]
+          )
+        }
+        console.log('✅ Seeded initial sample sponsors in MySQL')
+      }
+
+      // Seed initial students in MySQL if empty
+      const [studentRows] = await connection.query('SELECT COUNT(*) as count FROM students')
+      if (studentRows[0].count === 0) {
+        for (const st of initialSampleStudents) {
+          await connection.query(
+            `INSERT INTO students (
+              doc_id, registration_id, event_id, name, gender, college, degree,
+              department, year, mobile, email, district, career_interest, food_preference,
+              checked_in, check_in_time, materials_distributed, material_distribution_time, materials, registered_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              st.doc_id, st.registration_id, st.event_id, st.name, st.gender, st.college, st.degree,
+              st.department, st.year, st.mobile, st.email, st.district, st.career_interest, st.food_preference,
+              st.checked_in, st.check_in_time, st.materials_distributed, st.material_distribution_time, st.materials, st.registered_at
+            ]
+          )
+        }
         await connection.query(
-          `INSERT INTO students (
-            doc_id, registration_id, event_id, name, gender, college, degree,
-            department, year, mobile, email, district, career_interest, food_preference,
-            checked_in, check_in_time, materials_distributed, material_distribution_time, materials, registered_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            st.doc_id, st.registration_id, st.event_id, st.name, st.gender, st.college, st.degree,
-            st.department, st.year, st.mobile, st.email, st.district, st.career_interest, st.food_preference,
-            st.checked_in, st.check_in_time, st.materials_distributed, st.material_distribution_time, st.materials, st.registered_at
-          ]
+          `INSERT INTO counters (event_id, value) VALUES ('CGP2026', 5) ON DUPLICATE KEY UPDATE value = GREATEST(value, 5)`
         )
+        console.log('✅ Seeded initial sample students in MySQL')
       }
-      await connection.query(
-        `INSERT INTO counters (event_id, value) VALUES ('CGP2026', 5) ON DUPLICATE KEY UPDATE value = GREATEST(value, 5)`
-      )
-      console.log('✅ Seeded initial sample students in MySQL')
-    }
 
-    connection.release()
-    useMySQL = true
-    console.log(`✅ MySQL database '${database}' initialized successfully.`)
-  } catch (err) {
-    console.warn(`⚠️ Could not connect to MySQL server (${err.message}). Using persistent file-backed database engine.`)
-    useMySQL = false
-    const data = readData()
-    await initDefaultAdminJson(data)
-  }
+      connection.release()
+      useMySQL = true
+      console.log(`✅ MySQL database '${database}' initialized successfully.`)
+    } catch (err) {
+      console.warn(`⚠️ Could not connect to MySQL server (${err.message}). Using persistent fallback database engine.`)
+      useMySQL = false
+      const data = readData()
+      await initDefaultAdminJson(data)
+    }
+  })()
+
+  return dbInitPromise
 }
 
 // Custom JSON SQL Query Emulator for fallback

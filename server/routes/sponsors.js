@@ -7,10 +7,19 @@ import { getPool } from '../config/db.js'
 
 const router = express.Router()
 
-// Configure storage for file uploads (sponsor logos)
-const uploadsDir = path.join(process.cwd(), 'server', 'uploads')
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true })
+import os from 'os'
+
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+const uploadsDir = isServerless
+  ? path.join(os.tmpdir(), 'cgp2026-uploads')
+  : path.join(process.cwd(), 'server', 'uploads')
+
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true })
+  }
+} catch (err) {
+  console.warn('Could not initialize uploadsDir:', err.message)
 }
 
 const storage = multer.diskStorage({
