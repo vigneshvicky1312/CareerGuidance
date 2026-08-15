@@ -32,10 +32,10 @@ const eventConfig = {
   expectedParticipants: 800,
   expertSessions: 5,
 
-  email: 'mba.careerguidance@example.edu.in',
-  phone: '+91 98765 43210',
+  email: 'drckmuthu@gmail.com',
+  phone: '+91 9994439565',
 
-  facultyCoordinator: 'Dr. A. Meenakshi, Head, Department of MBA',
+  facultyCoordinator: 'Dr. C.K. Muthukumanan, Professor & Faculty Coordinator, Career Guidance Programme 2026',
   eventCoordinator: 'Prof. S. Karthik, Assistant Professor, MBA',
   studentCoordinator: 'R. Priyanka, MBA Final Year',
 
