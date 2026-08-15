@@ -410,6 +410,41 @@ export async function initDatabase() {
       console.log(`✅ Admin password synced in MySQL (username: admin / password: ${defaultPassword})`)
     }
 
+    // Seed initial sponsors in MySQL if empty
+    const [sponsorRows] = await connection.query('SELECT COUNT(*) as count FROM sponsors')
+    if (sponsorRows[0].count === 0) {
+      for (const sp of initialSampleSponsors) {
+        await connection.query(
+          `INSERT INTO sponsors (doc_id, name, tier, category, logo_url, website_url, order_num, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [sp.doc_id, sp.name, sp.tier, sp.category, sp.logo_url, sp.website_url, sp.order_num, sp.active]
+        )
+      }
+      console.log('✅ Seeded initial sample sponsors in MySQL')
+    }
+
+    // Seed initial students in MySQL if empty
+    const [studentRows] = await connection.query('SELECT COUNT(*) as count FROM students')
+    if (studentRows[0].count === 0) {
+      for (const st of initialSampleStudents) {
+        await connection.query(
+          `INSERT INTO students (
+            doc_id, registration_id, event_id, name, gender, college, degree,
+            department, year, mobile, email, district, career_interest, food_preference,
+            checked_in, check_in_time, materials_distributed, material_distribution_time, materials, registered_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            st.doc_id, st.registration_id, st.event_id, st.name, st.gender, st.college, st.degree,
+            st.department, st.year, st.mobile, st.email, st.district, st.career_interest, st.food_preference,
+            st.checked_in, st.check_in_time, st.materials_distributed, st.material_distribution_time, st.materials, st.registered_at
+          ]
+        )
+      }
+      await connection.query(
+        `INSERT INTO counters (event_id, value) VALUES ('CGP2026', 5) ON DUPLICATE KEY UPDATE value = GREATEST(value, 5)`
+      )
+      console.log('✅ Seeded initial sample students in MySQL')
+    }
+
     connection.release()
     useMySQL = true
     console.log(`✅ MySQL database '${database}' initialized successfully.`)
