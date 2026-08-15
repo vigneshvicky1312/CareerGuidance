@@ -44,6 +44,11 @@ export default function Attendees() {
     [students]
   )
 
+  const allCollegeOptions = useMemo(() => {
+    const fromData = students.map((s) => s.college).filter(Boolean)
+    return Array.from(new Set([...colleges, ...fromData])).sort()
+  }, [students])
+
   const filtered = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
     return students.filter((s) => {
@@ -119,7 +124,7 @@ export default function Attendees() {
           </select>
           <select value={collegeFilter} onChange={(e) => setCollegeFilter(e.target.value)}>
             <option>All</option>
-            {colleges.map((c) => <option key={c}>{c}</option>)}
+            {allCollegeOptions.map((c) => <option key={c}>{c}</option>)}
           </select>
           <select value={careerFilter} onChange={(e) => setCareerFilter(e.target.value)}>
             <option value="All">All Career Interests</option>

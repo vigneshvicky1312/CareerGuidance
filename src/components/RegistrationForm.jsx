@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import eventConfig from '../config/eventConfig'
-import colleges from '../config/colleges'
+import CollegeSearchSelect from './CollegeSearchSelect'
 import { registerStudent } from '../services/studentService'
 import { Loader2 } from 'lucide-react'
 import Toast from './Toast'
@@ -25,7 +25,7 @@ function validate(form) {
   const errors = {}
   if (!form.name.trim()) errors.name = 'Name is required.'
   if (!form.gender) errors.gender = 'Please select gender.'
-  if (!form.college) errors.college = 'Please select your college.'
+  if (!form.college || !form.college.trim()) errors.college = 'Please select or enter your college.'
   if (!form.degree.trim()) errors.degree = 'Degree is required.'
   if (!form.department.trim()) errors.department = 'Department is required.'
   if (!form.year) errors.year = 'Please select your year.'
@@ -117,12 +117,13 @@ export default function RegistrationForm() {
 
           <div className="sm:col-span-2">
             <label htmlFor="college">College Name *</label>
-            <select id="college" value={form.college} onChange={(e) => update('college', e.target.value)}>
-              <option value="">Select your college</option>
-              {colleges.map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-            </select>
+            <CollegeSearchSelect
+              id="college"
+              value={form.college}
+              onChange={(val) => update('college', val)}
+              error={errors.college}
+              placeholder="Search from participating colleges or type your own..."
+            />
             {errors.college && <p className="mt-1 text-xs text-red-600">{errors.college}</p>}
           </div>
 
