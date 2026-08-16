@@ -49,8 +49,8 @@ export default function Contact() {
 
         <div className="card space-y-4">
           {[
+            ['Director cum Head of Department', eventConfig.director],
             ['Faculty Coordinator', eventConfig.facultyCoordinator],
-            ['Event Coordinator', eventConfig.eventCoordinator],
             ['Student Coordinator', eventConfig.studentCoordinator],
           ].map(([label, value]) => (
             <div key={label} className="flex items-start gap-3">

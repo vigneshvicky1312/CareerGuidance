@@ -465,17 +465,17 @@ body {
 
       <!-- Coordinators -->
       <div>
-        <div class="section-heading sans">Coordinators</div>
+        <div class="section-heading sans">Organising Leadership &amp; Coordinators</div>
         <div class="coord-row">
+          <div class="coord-cell">
+            <div class="coord-role sans">Director &amp; Head</div>
+            <div class="coord-name sans">${eventConfig.director.split(',')[0]}</div>
+            <div class="coord-dept">${eventConfig.director.split(',').slice(1).join(',').trim()}</div>
+          </div>
           <div class="coord-cell">
             <div class="coord-role sans">Faculty Coordinator</div>
             <div class="coord-name sans">${eventConfig.facultyCoordinator.split(',')[0]}</div>
             <div class="coord-dept">${eventConfig.facultyCoordinator.split(',').slice(1).join(',').trim()}</div>
-          </div>
-          <div class="coord-cell">
-            <div class="coord-role sans">Event Coordinator</div>
-            <div class="coord-name sans">${eventConfig.eventCoordinator.split(',')[0]}</div>
-            <div class="coord-dept">${eventConfig.eventCoordinator.split(',').slice(1).join(',').trim()}</div>
           </div>
           <div class="coord-cell">
             <div class="coord-role sans">Student Coordinator</div>
