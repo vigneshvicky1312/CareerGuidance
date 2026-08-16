@@ -1,67 +1,81 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import PublicLayout from './components/PublicLayout'
-
-import Home from './pages/Home'
-import About from './pages/About'
-import Register from './pages/Register'
-import RegistrationSuccess from './pages/RegistrationSuccess'
-import LocationPage from './pages/Location'
-import SponsorsPage from './pages/Sponsors'
-import ContactPage from './pages/Contact'
-import CheckIn from './pages/CheckIn'
-
-import AdminLayout from './pages/admin/AdminLayout'
-import AdminLogin from './pages/admin/AdminLogin'
-import Dashboard from './pages/admin/Dashboard'
-import Attendees from './pages/admin/Attendees'
-import Registrations from './pages/admin/Registrations'
-import Distribution from './pages/admin/Distribution'
-import AdminSponsors from './pages/admin/Sponsors'
-import Reports from './pages/admin/Reports'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminAuthProvider from './context/AdminAuthContext'
+import { Loader2 } from 'lucide-react'
+
+// Public pages
+const Home = lazy(() => import('./pages/Home'))
+const About = lazy(() => import('./pages/About'))
+const Register = lazy(() => import('./pages/Register'))
+const RegistrationSuccess = lazy(() => import('./pages/RegistrationSuccess'))
+const LocationPage = lazy(() => import('./pages/Location'))
+const SponsorsPage = lazy(() => import('./pages/Sponsors'))
+const ContactPage = lazy(() => import('./pages/Contact'))
+const CheckIn = lazy(() => import('./pages/CheckIn'))
+
+// Admin pages
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'))
+const Attendees = lazy(() => import('./pages/admin/Attendees'))
+const Registrations = lazy(() => import('./pages/admin/Registrations'))
+const Distribution = lazy(() => import('./pages/admin/Distribution'))
+const AdminSponsors = lazy(() => import('./pages/admin/Sponsors'))
+const Reports = lazy(() => import('./pages/admin/Reports'))
+
+function PageFallback() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center py-20 text-slate-400">
+      <Loader2 size={32} className="animate-spin text-indigo-600" />
+    </div>
+  )
+}
 
 export default function App() {
   return (
     <AdminAuthProvider>
-      <Routes>
-        {/* Public site */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/registration-success" element={<RegistrationSuccess />} />
-          <Route path="/location" element={<LocationPage />} />
-          <Route path="/sponsors" element={<SponsorsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-        </Route>
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          {/* Public site */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/registration-success" element={<RegistrationSuccess />} />
+            <Route path="/location" element={<LocationPage />} />
+            <Route path="/sponsors" element={<SponsorsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+          </Route>
 
-        {/* Event volunteer check-in & scan — standalone, mobile-first */}
-        <Route element={<PublicLayout />}>
-          <Route path="/check-in" element={<CheckIn />} />
-          <Route path="/scan" element={<CheckIn />} />
-        </Route>
+          {/* Event volunteer check-in & scan — standalone, mobile-first */}
+          <Route element={<PublicLayout />}>
+            <Route path="/check-in" element={<CheckIn />} />
+            <Route path="/scan" element={<CheckIn />} />
+          </Route>
 
-        {/* Admin — one shared auth listener for login + all protected routes */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Dashboard />} />
-          <Route path="attendees" element={<Attendees />} />
-          <Route path="registrations" element={<Registrations />} />
-          <Route path="distribution" element={<Distribution />} />
-          <Route path="sponsors" element={<AdminSponsors />} />
-          <Route path="reports" element={<Reports />} />
-        </Route>
+          {/* Admin — one shared auth listener for login + all protected routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="attendees" element={<Attendees />} />
+            <Route path="registrations" element={<Registrations />} />
+            <Route path="distribution" element={<Distribution />} />
+            <Route path="sponsors" element={<AdminSponsors />} />
+            <Route path="reports" element={<Reports />} />
+          </Route>
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </AdminAuthProvider>
   )
 }
