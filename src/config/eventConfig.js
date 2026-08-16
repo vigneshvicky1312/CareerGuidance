@@ -12,9 +12,9 @@ const eventConfig = {
   shortDescription:
     'A one-day guidance program helping final-year Arts & Science undergraduates navigate careers, higher education and employability.',
 
-  date: 'September 2026 (Date TBA)',
-  dateISO: '2026-09',
-  time: '10:00 AM – 1:00 PM',
+  date: 'October 2026 (Date TBA)',
+  dateISO: '2026-10',
+  time: '10:00 AM – 4:00 PM',
 
   venue: 'L.C.T.L Palaniappa Chettiar Memorial Auditorium',
   venueAddress: '3QHR+C3H, Alagappa Puram, Karaikudi, Tamil Nadu 630003',
