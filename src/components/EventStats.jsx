@@ -1,11 +1,11 @@
 import eventConfig from '../config/eventConfig'
 
-const speakerCount = 1 + (eventConfig.distinguishedGuests?.length || 4)
+const speakerCount = (eventConfig.chiefGuest ? 1 : 0) + (eventConfig.distinguishedGuests?.length || 0)
 
 const stats = [
   { value: `${eventConfig.expectedParticipants}+`, label: 'Expected Participants' },
   { value: `${speakerCount}`, label: 'Eminent Speakers & Mentors' },
-  { value: `${eventConfig.expertSessions}+`, label: 'Expert Sessions' },
+  { value: `${eventConfig.expertSessions}`, label: 'Expert Sessions' },
   { value: '100%', label: 'Free Registration & Kit' },
 ]
 

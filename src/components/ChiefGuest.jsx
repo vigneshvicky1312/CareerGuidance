@@ -237,7 +237,7 @@ export default function ChiefGuest() {
               </p>
             </div>
 
-            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={`mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 ${guests.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
               {guests.map((g) => {
                 const style = badgeColorMap[g.badgeColor] || badgeColorMap.sky
                 return (

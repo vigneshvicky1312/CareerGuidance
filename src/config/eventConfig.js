@@ -30,7 +30,7 @@ const eventConfig = {
   instituteAddress: '3QXV+H3J, Karaikudi - Thiruchirappalli Rd, Karaikudi, Kalanivasal, Tamil Nadu 630003',
 
   expectedParticipants: 800,
-  expertSessions: 5,
+  expertSessions: 4,
 
   email: 'drckmuthu@gmail.com',
   phone: '+91 9994439565',
@@ -91,19 +91,6 @@ const eventConfig = {
       sessionTopic: 'Next-Gen Careers in Banking, Fintech, Analytics & Wealth Advisory',
       photo: '/images/guests/guest-3.jpg',
       bio: 'Veteran financial strategist who has led digital transformations across retail banking and institutional asset management across APAC regions.',
-    },
-    {
-      id: 'guest-4',
-      name: 'Ms. Deepika Sundaram',
-      roleBadge: 'Distinguished Alumna',
-      badgeColor: 'emerald',
-      designation: 'Founder & Chief Executive Officer',
-      organization: 'NexGen EdTech & Skill Solutions',
-      qualification: 'MBA Alumna, B.Sc (Computer Science)',
-      specialization: 'Entrepreneurship & Startup Incubation',
-      sessionTopic: 'From Campus Idea to Market Reality: The Student Entrepreneur Playbook',
-      photo: '/images/guests/guest-4.jpg',
-      bio: 'Celebrated young entrepreneur featured in Top 30 Women in EdTech, passionate about building student-led ventures and self-reliance.',
     },
   ],
 

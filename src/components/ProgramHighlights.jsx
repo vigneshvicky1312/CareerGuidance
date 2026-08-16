@@ -10,6 +10,7 @@ import {
   MessageCircleQuestion,
   FileCheck,
 } from 'lucide-react'
+import eventConfig from '../config/eventConfig'
 
 const highlights = [
   {
@@ -51,8 +52,8 @@ const highlights = [
 ]
 
 const dayFeatures = [
-  { icon: Clock, label: '3-Hour Power Session' },
-  { icon: Mic, label: '5+ Domain Keynotes' },
+  { icon: Clock, label: 'Full-Day Intensive Guidance' },
+  { icon: Mic, label: `${eventConfig.expertSessions} Expert Sessions` },
   { icon: MessageCircleQuestion, label: 'Interactive Student Q&A' },
   { icon: FileCheck, label: 'Free Material Kit & Certificate' },
 ]
