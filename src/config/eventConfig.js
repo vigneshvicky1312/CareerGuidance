@@ -37,7 +37,7 @@ const eventConfig = {
 
   director: 'Dr. S. Chandramohan, Director & Head, Alagappa Institute of Management',
   facultyCoordinator: 'Dr. C.K. Muthukumaran, Professor & Faculty Coordinator, Career Guidance Programme 2026',
-  studentCoordinator: 'R. Priyanka, MBA Final Year',
+  studentCoordinator: 'Shalini A, MBA Final Year',
 
   chiefGuest: {
     name: 'Mr. Arvind Rajan',
