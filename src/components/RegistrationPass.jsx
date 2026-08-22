@@ -3,6 +3,7 @@ import eventConfig from '../config/eventConfig'
 import { QRCodeCanvas } from 'qrcode.react'
 import { buildStudentQrValue } from '../utils/qrGenerator'
 import { Printer } from 'lucide-react'
+import TicketCard from './TicketCard'
 
 export default function RegistrationPass({ student }) {
   const qrRef = useRef(null)
@@ -544,97 +545,31 @@ body {
   return (
     <div className="w-full flex flex-col items-center gap-6">
 
-      {/* ── Screen preview — responsive, no fixed width ── */}
-      <div
-        ref={qrRef}
-        className="w-full overflow-hidden"
-        style={{
-          maxWidth: 480,
-          fontFamily: 'Georgia, serif',
-          background: '#fff',
-          border: '1px solid #cbd5e1',
-          boxShadow: '0 2px 20px rgba(0,0,0,.1)',
-        }}
-      >
-        {/* Header */}
-        <div style={{ textAlign: 'center', padding: '10px 14px 8px', borderBottom: '2px solid #1a2744' }}>
-          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 13, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '.04em', color: '#1a2744', lineHeight: 1.2 }}>
-            {eventConfig.collegeName}
-          </div>
-          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 10, color: '#555', marginTop: 2 }}>
-            {eventConfig.universityName}
-          </div>
-        </div>
+      {/* ── 3D Interactive Ticket Preview ── */}
+      <TicketCard
+        logoText={eventConfig.collegeShortName ? `${eventConfig.collegeShortName} · CGP` : 'AIM CGP 2026'}
+        type="ENTRY PASS"
+        title={eventConfig.eventName}
+        subtitle={student.name}
+        details={[
+          { label: 'STUDENT', value: student.name },
+          { label: 'COLLEGE', value: student.college },
+          { label: 'REG ID', value: student.registrationId },
+          { label: 'DATE', value: eventConfig.date },
+          { label: 'TIME', value: eventConfig.time },
+          { label: 'VENUE', value: eventConfig.venue },
+        ]}
+        barcodeId={student.registrationId}
+        admitText="ADMIT"
+        admitNum="01"
+      />
 
-        {/* Banner */}
-        <div style={{ background: '#1a2744', color: '#fff', textAlign: 'center', padding: '8px 14px' }}>
-          <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: 12, letterSpacing: '.02em', lineHeight: 1.3 }}>
-            {eventConfig.eventName.toUpperCase()}
-          </div>
-          <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 7.5, letterSpacing: '.15em', textTransform: 'uppercase', color: '#c9a84c', marginTop: 2 }}>
-            Official Entry Pass · {eventConfig.eventId}
-          </div>
-        </div>
-        <div style={{ height: 2, background: '#c9a84c' }} />
-
-        {/* Body — stacks on mobile */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0, padding: '12px 14px 10px', alignItems: 'flex-start' }}>
-          {/* Left: participant info */}
-          <div style={{ flex: '1 1 180px', minWidth: 0, paddingRight: 12, marginRight: 12, borderRight: '1px solid #e5e7eb' }}>
-            <div style={{ borderLeft: '3px solid #1a2744', paddingLeft: 8, marginBottom: 10 }}>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 7.5, textTransform: 'uppercase', letterSpacing: '.12em', color: '#999', marginBottom: 2 }}>
-                Participant
-              </div>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', fontSize: 16, color: '#1a2744', lineHeight: 1.1, wordBreak: 'break-word' }}>{student.name}</div>
-              <div style={{ fontFamily: 'Arial, sans-serif', fontWeight: '600', fontSize: 10, color: '#333', marginTop: 4, wordBreak: 'break-word' }}>{student.college}</div>
-              {student.department && <div style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', fontSize: 9, color: '#666', marginTop: 1 }}>{student.department}</div>}
-              <div style={{ marginTop: 5, display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 7, textTransform: 'uppercase', letterSpacing: '.12em', color: '#999' }}>Reg. No.</span>
-                <span style={{ fontFamily: 'monospace', fontSize: 10, fontWeight: 'bold', color: '#1a2744', background: '#f5f7fa', padding: '1px 6px', border: '1px solid #d0d8e8', wordBreak: 'break-all' }}>
-                  {student.registrationId}
-                </span>
-              </div>
-            </div>
-
-            {/* Details rows */}
-            {[
-              ['Date', `${eventConfig.date} · ${eventConfig.time}`],
-              ['Venue', eventConfig.venue],
-              ['Contact', eventConfig.phone],
-            ].map(([label, val]) => (
-              <div key={label} style={{ display: 'flex', borderBottom: '1px solid #f0f0f0', padding: '3px 0', gap: 6 }}>
-                <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 7.5, color: '#999', width: 46, flexShrink: 0, paddingTop: 1 }}>{label}</span>
-                <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 8.5, fontWeight: '600', color: '#111', wordBreak: 'break-word', minWidth: 0 }}>{val}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Right: QR code */}
-          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, paddingTop: 4 }}>
-            <div style={{ border: '1px solid #1a2744', padding: 5 }}>
-              <QRCodeCanvas value={qrValue} size={80} fgColor="#1a2744" bgColor="#ffffff" level="M" />
-            </div>
-            <div style={{ fontFamily: 'Arial, sans-serif', fontSize: 7, textTransform: 'uppercase', letterSpacing: '.1em', color: '#888', textAlign: 'center' }}>
-              Scan at entry
-            </div>
-            <div style={{ fontFamily: 'monospace', fontSize: 8.5, fontWeight: 'bold', color: '#1a2744', textAlign: 'center', wordBreak: 'break-all', maxWidth: 90 }}>
-              {student.registrationId}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div style={{ borderTop: '1.5px solid #1a2744', padding: '6px 14px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
-          <span style={{ fontFamily: 'Arial, sans-serif', fontSize: 7.5, color: '#777', minWidth: 0, wordBreak: 'break-word' }}>
-            {eventConfig.collegeName}
-          </span>
-          <span style={{ fontFamily: 'monospace', fontSize: 7.5, fontWeight: 'bold', color: '#1a2744', whiteSpace: 'nowrap' }}>
-            {eventConfig.eventId} · {eventConfig.date}
-          </span>
-        </div>
+      {/* Hidden QR canvas used for high-res PDF generation */}
+      <div ref={qrRef} style={{ display: 'none' }}>
+        <QRCodeCanvas value={qrValue} size={200} fgColor="#1a2744" bgColor="#ffffff" level="H" />
       </div>
 
-      {/* Single action button */}
+      {/* Download Action Button */}
       <button
         onClick={handlePrint}
         className="w-full max-w-xs inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-700 transition active:scale-[0.98] shadow-md"
@@ -645,3 +580,4 @@ body {
     </div>
   )
 }
+
