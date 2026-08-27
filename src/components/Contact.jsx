@@ -49,7 +49,7 @@ export default function Contact() {
 
         <div className="card space-y-4 min-w-0 p-5 sm:p-6">
           {[
-            ['Director cum Head of Department', eventConfig.director],
+            ['Director', eventConfig.director],
             ['Faculty Coordinator', eventConfig.facultyCoordinator],
             ['Student Coordinator', eventConfig.studentCoordinator],
           ].map(([label, value]) => (

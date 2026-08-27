@@ -471,7 +471,7 @@ body {
         <div class="section-heading sans">Organising Leadership &amp; Coordinators</div>
         <div class="coord-row">
           <div class="coord-cell">
-            <div class="coord-role sans">Director &amp; Head</div>
+            <div class="coord-role sans">Director</div>
             <div class="coord-name sans">${eventConfig.director.split(',')[0]}</div>
             <div class="coord-dept">${eventConfig.director.split(',').slice(1).join(',').trim()}</div>
           </div>

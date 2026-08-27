@@ -33,7 +33,7 @@ const scheduleData = [
     period: 'morning',
     track: 'inaugural',
     title: 'Grand Inauguration & Welcome Address',
-    speaker: 'Dr. S. Chandramohan, Director, AIM & University Dignitaries',
+    speaker: 'Dr. S. Chandramohan, Senior Professor, AIM & University Dignitaries',
     venue: 'Main Auditorium Stage',
     badge: 'Inaugural Session',
     badgeColor: 'gold',

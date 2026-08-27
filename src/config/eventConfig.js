@@ -35,9 +35,9 @@ const eventConfig = {
   email: 'drckmuthu@gmail.com',
   phone: '+91 9994439565',
 
-  director: 'Dr. S. Chandramohan, Director & Head, Alagappa Institute of Management',
+  director: 'Dr. S. Chandramohan, Senior Professor, Alagappa Institute of Management',
   facultyCoordinator: 'Dr. C.K. Muthukumaran, Professor & Faculty Coordinator, Career Guidance Programme 2026',
-  studentCoordinator: 'Thilagar Aravindh M, MBA Final Year',
+  studentCoordinator: 'M. Thilagar Aravindh, MBA Final Year',
 
   chiefGuest: {
     name: 'Mr. Arvind Rajan',
