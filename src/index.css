@@ -2,16 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-html { scroll-behavior: smooth; }
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 
-body {
-  @apply bg-paper text-ink font-body antialiased;
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  body {
+    @apply bg-paper text-ink font-body selection:bg-sky-500 selection:text-white;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
+  }
+
+  #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-navy-950;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  p, span, div, a, li, label {
+    overflow-wrap: break-word;
+  }
 }
 
-h1, h2, h3, h4 { @apply font-display; }
+/* ─────────────────────────────────────────────────────────────
+   GLASSMORPHISM & SURFACE TOKENS
+   ───────────────────────────────────────────────────────────── */
+.glass-panel-dark {
+  background: rgba(10, 19, 48, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
 
-/* Ticket stub perforation — the recurring signature motif across hero,
-   passes and stat cards, echoing the event's paper ticket / QR journey. */
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-card {
+  @apply rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-card backdrop-blur-md transition-all duration-300 hover:border-slate-300 hover:shadow-card-hover;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CONFERENCE STYLING & PERFORATION SIGNATURE
+   ───────────────────────────────────────────────────────────── */
 .perforated-edge {
   position: relative;
 }
@@ -27,20 +80,64 @@ h1, h2, h3, h4 { @apply font-display; }
   background-repeat: repeat-x;
 }
 
-.eyebrow {
-  @apply font-mono text-xs tracking-[0.2em] uppercase text-sky-500;
+.perforated-edge-dark::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.25) 1.5px, transparent 1.6px);
+  background-size: 14px 2px;
+  background-repeat: repeat-x;
 }
 
+.eyebrow {
+  @apply inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-[0.2em] uppercase text-sky-500;
+}
+
+.eyebrow-gold {
+  @apply inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-[0.2em] uppercase text-gold-400;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PREMIUM BUTTON DESIGN SYSTEM
+   ───────────────────────────────────────────────────────────── */
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-6 py-3 font-display font-semibold text-navy-950 shadow-card transition hover:bg-gold-400 active:scale-[0.98];
+  @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-amber-400 via-gold-500 to-amber-500 px-6 py-3 font-display text-sm font-bold text-navy-950 shadow-md shadow-amber-500/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-amber-500/30 active:scale-[0.98];
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.35) 25%,
+    transparent 30%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.btn-primary:hover::after {
+  transform: translateX(100%);
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 font-display font-semibold text-white backdrop-blur transition hover:bg-white/20 active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-6 py-3 font-display text-sm font-semibold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-[1.02] active:scale-[0.98];
 }
 
 .btn-outline {
-  @apply inline-flex items-center justify-center gap-2 rounded-full border border-navy-700 px-6 py-3 font-display font-semibold text-navy-800 transition hover:bg-navy-800 hover:text-white active:scale-[0.98];
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-navy-800/80 bg-white px-6 py-3 font-display text-sm font-semibold text-navy-900 shadow-sm transition-all duration-300 hover:bg-navy-900 hover:text-white hover:shadow-md active:scale-[0.98];
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-display text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-navy-950;
 }
 
 .section {
@@ -48,30 +145,59 @@ h1, h2, h3, h4 { @apply font-display; }
 }
 
 .card {
-  @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-card;
+  @apply rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card transition-all duration-300 hover:shadow-card-hover;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   INTERACTIVE HOLOGRAPHIC PASS STYLES
+   ───────────────────────────────────────────────────────────── */
+.holo-sheen {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 30%,
+    rgba(56, 189, 248, 0.25) 45%,
+    rgba(234, 179, 8, 0.25) 55%,
+    rgba(255, 255, 255, 0.1) 70%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   FORM INPUTS
+   ───────────────────────────────────────────────────────────── */
 input, select, textarea {
-  @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-navy-600 focus:ring-2 focus:ring-navy-600/20;
+  @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm outline-none transition duration-200 focus:border-navy-600 focus:ring-2 focus:ring-navy-600/15;
 }
 label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
 
+/* ─────────────────────────────────────────────────────────────
+   ANIMATIONS & SCROLLBAR
+   ───────────────────────────────────────────────────────────── */
 @keyframes scan {
-  0% {
-    top: 5%;
-    opacity: 0.8;
-  }
-  50% {
-    top: 92%;
-    opacity: 1;
-  }
-  100% {
-    top: 5%;
-    opacity: 0.8;
-  }
+  0% { top: 6%; opacity: 0.9; }
+  50% { top: 90%; opacity: 1; }
+  100% { top: 6%; opacity: 0.9; }
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(-10px) scale(.96); }
-  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Subtle custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #060B18;
+}
+::-webkit-scrollbar-thumb {
+  background: #182E6E;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2A51BD;
 }

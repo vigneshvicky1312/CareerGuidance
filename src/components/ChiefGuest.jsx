@@ -132,17 +132,17 @@ export default function ChiefGuest() {
               </div>
 
               {/* Speaker Content */}
-              <div>
+              <div className="min-w-0 w-full">
                 <div>
-                  <h3 className="font-display text-2xl font-bold text-navy-950 sm:text-3xl md:text-4xl">
+                  <h3 className="font-display text-2xl font-bold text-navy-950 sm:text-3xl md:text-4xl break-words">
                     {cg.name}
                   </h3>
-                  <p className="mt-1.5 text-base font-semibold text-sky-600 sm:text-lg">
+                  <p className="mt-1.5 text-base font-semibold text-sky-600 sm:text-lg break-words">
                     {cg.designation}
                   </p>
-                  <p className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mt-1">
+                  <p className="flex items-center gap-1.5 text-sm font-medium text-slate-600 mt-1 break-words">
                     <Building2 size={15} className="text-slate-400 shrink-0" />
-                    {cg.organization}
+                    <span className="break-words">{cg.organization}</span>
                   </p>
                 </div>
 
@@ -168,7 +168,7 @@ export default function ChiefGuest() {
                 {/* Key Credentials Pills */}
                 <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-slate-50/70 p-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-xs text-navy-700">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm text-navy-700">
                       <GraduationCap size={16} />
                     </div>
                     <div>
@@ -182,7 +182,7 @@ export default function ChiefGuest() {
                   </div>
 
                   <div className="flex items-center gap-3 rounded-xl border border-slate-200/70 bg-slate-50/70 p-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-xs text-navy-700">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm text-navy-700">
                       <Briefcase size={16} />
                     </div>
                     <div>
@@ -203,7 +203,7 @@ export default function ChiefGuest() {
                     {cg.expertise.map((e) => (
                       <span
                         key={e}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-navy-950 shadow-xs"
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-navy-950 shadow-sm"
                       >
                         <BadgeCheck size={13} className="text-sky-500" /> {e}
                       </span>

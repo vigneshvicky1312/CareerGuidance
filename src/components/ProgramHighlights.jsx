@@ -84,7 +84,7 @@ export default function ProgramHighlights() {
                   <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-navy-950 text-sky-400 shadow-sm transition-all duration-300 group-hover:bg-navy-900 group-hover:text-gold-400">
                     <Icon size={22} />
                   </span>
-                  <span className="rounded-full bg-white px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-600 shadow-xs border border-slate-200/80">
+                  <span className="rounded-full bg-white px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-600 shadow-sm border border-slate-200/80">
                     {tag}
                   </span>
                 </div>
