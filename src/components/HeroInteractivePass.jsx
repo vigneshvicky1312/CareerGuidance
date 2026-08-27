@@ -74,9 +74,13 @@ export default function HeroInteractivePass() {
 
         {/* Pass Header Band */}
         <div className="relative z-10 flex items-center justify-between border-b border-navy-800/20 bg-gradient-to-r from-navy-950 via-navy-900 to-navy-850 px-5 py-3.5 text-white">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gold-500/20 text-gold-400 ring-1 ring-gold-400/40">
-              <GraduationCap size={14} />
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 p-1 ring-1 ring-white/20">
+              <img
+                src="/images/cgp-logo-mark-dark-bg.png"
+                alt="CGP Logo"
+                className="h-full w-full object-contain"
+              />
             </div>
             <div>
               <div className="font-mono text-[10px] uppercase tracking-widest text-sky-400">

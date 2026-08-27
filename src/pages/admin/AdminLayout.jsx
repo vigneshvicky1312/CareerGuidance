@@ -31,12 +31,16 @@ export default function AdminLayout() {
     <>
       <div className="px-5 py-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500 text-sm font-bold text-white">
-            {eventConfig.collegeShortName?.[0] || 'A'}
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 p-1.5 border border-white/15 shadow-sm">
+            <img
+              src="/images/cgp-logo-mark-dark-bg.png"
+              alt="CGP 2026 Logo"
+              className="h-full w-full object-contain"
+            />
           </div>
-          <div>
-            <div className="text-sm font-bold text-white">{eventConfig.eventId} Admin</div>
-            <div className="text-xs text-slate-400">{eventConfig.organizer}</div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-bold text-white truncate">{eventConfig.eventId} Admin</div>
+            <div className="text-xs text-slate-400 truncate">{eventConfig.organizer}</div>
           </div>
         </div>
       </div>
@@ -107,8 +111,12 @@ export default function AdminLayout() {
         {/* Mobile Top Bar */}
         <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3 shadow-sm lg:hidden">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white">
-              {eventConfig.collegeShortName?.[0] || 'A'}
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 p-1 border border-slate-700">
+              <img
+                src="/images/cgp-logo-mark-dark-bg.png"
+                alt="CGP 2026 Logo"
+                className="h-full w-full object-contain"
+              />
             </div>
             <span className="font-bold text-slate-800">{eventConfig.eventId}</span>
           </div>

@@ -36,9 +36,11 @@ export default function TicketCard({
               {/* Header */}
               <div className="t-header">
                 <div className="t-logo">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z" />
-                  </svg>
+                  <img
+                    src="/images/cgp-logo-mark-dark-bg.png"
+                    alt="CGP Logo"
+                    className="t-logo-img"
+                  />
                   <span>{logoText}</span>
                 </div>
                 <div className="t-type">{type}</div>

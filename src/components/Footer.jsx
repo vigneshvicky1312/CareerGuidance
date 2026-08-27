@@ -25,15 +25,19 @@ export default function Footer() {
           {/* Col 1: Brand & Organizer */}
           <div className="min-w-0">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-navy-600 shadow-md">
-                <TicketCheck size={20} className="text-white" />
-              </span>
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 p-1.5 backdrop-blur-md border border-white/15 shadow-md">
+                <img
+                  src="/images/cgp-logo-mark-dark-bg.png"
+                  alt="CGP 2026 Logo"
+                  className="h-full w-full object-contain"
+                />
+              </div>
               <div className="min-w-0 flex-1">
                 <span className="font-display text-base font-extrabold tracking-tight text-white block leading-tight break-words">
                   {eventConfig.eventName}
                 </span>
                 <span className="font-mono text-[10px] text-sky-400 tracking-wider block uppercase break-words">
-                  Alagappa Institute of Management
+                  {eventConfig.collegeName}
                 </span>
               </div>
             </div>

@@ -37,15 +37,19 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5">
         {/* Brand Logo & Event Title */}
         <Link to="/" className="flex items-center gap-2.5 sm:gap-3 text-white group min-w-0 max-w-[calc(100vw-80px)] sm:max-w-none">
-          <span className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-sky-500 to-navy-600 shadow-md transition duration-300 group-hover:scale-105 group-hover:shadow-glow-sky">
-            <TicketCheck size={18} className="text-white sm:w-5 sm:h-5" />
-          </span>
+          <div className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 p-1.5 backdrop-blur-md border border-white/15 shadow-md transition duration-300 group-hover:scale-105 group-hover:border-sky-400/50 group-hover:shadow-glow-sky">
+            <img
+              src="/images/cgp-logo-mark-dark-bg.png"
+              alt="CGP 2026 Logo"
+              className="h-full w-full object-contain"
+            />
+          </div>
           <div className="min-w-0 flex-1">
             <span className="font-display text-sm sm:text-base font-extrabold tracking-tight text-white transition group-hover:text-sky-300 block leading-tight truncate">
               {eventConfig.eventName}
             </span>
             <span className="font-mono text-[9px] sm:text-[10px] text-sky-400 tracking-wider block uppercase truncate">
-              Alagappa Institute of Management
+              {eventConfig.collegeName}
             </span>
           </div>
         </Link>

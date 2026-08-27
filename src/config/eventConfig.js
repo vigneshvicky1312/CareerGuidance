@@ -8,7 +8,7 @@
 const eventConfig = {
   eventId: 'CGP2026',
   eventName: 'Career Guidance Program 2026',
-  tagline: 'Shape Your Career. Build Your Future.',
+  tagline: 'Discover your direction',
   shortDescription:
     'A one-day guidance program helping final-year Arts & Science undergraduates navigate careers, higher education and employability.',
 
@@ -94,7 +94,10 @@ const eventConfig = {
     },
   ],
 
-  logo: '/images/event-logo.png',
+  logo: '/images/cgp-logo-full.png',
+  logoMark: '/images/cgp-logo-mark.png',
+  logoDark: '/images/cgp-logo-dark-bg.png',
+  logoMarkDark: '/images/cgp-logo-mark-dark-bg.png',
   heroImage: '/images/hero-illustration.jpg',
 
   careerInterests: [

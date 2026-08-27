@@ -47,8 +47,12 @@ export default function AdminLogin() {
         <div className="rounded-3xl bg-white/5 p-1 shadow-2xl backdrop-blur-xl ring-1 ring-white/10">
           <div className="rounded-[22px] bg-white p-8">
             {/* Logo */}
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg shadow-indigo-500/30">
-              <ShieldCheck size={26} className="text-white" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 p-2.5 shadow-xl shadow-slate-950/20 border border-slate-800">
+              <img
+                src="/images/cgp-logo-mark-dark-bg.png"
+                alt="CGP 2026 Logo"
+                className="h-full w-full object-contain"
+              />
             </div>
 
             <h1 className="mt-5 text-center text-2xl font-bold text-slate-900">Admin Login</h1>

@@ -362,11 +362,13 @@ body {
 <body>
 
   <!-- ── Institution Header ── -->
-  <div class="inst-header">
-    <div class="inst-name">${eventConfig.collegeName}</div>
-    <div class="uni-name">${eventConfig.universityName}</div>
-    <div class="inst-address">${eventConfig.instituteAddress}</div>
-    <div class="accred-line">An Autonomous Institution · Government of Tamil Nadu</div>
+  <div class="inst-header" style="display:flex;align-items:center;justify-content:center;gap:16px;text-align:left;">
+    <img src="${window.location.origin}/images/cgp-logo-mark.png" alt="CGP Logo" style="height:54px;width:auto;object-fit:contain;" onerror="this.style.display='none'" />
+    <div>
+      <div class="inst-name">${eventConfig.collegeName}</div>
+      <div class="uni-name">${eventConfig.universityName}</div>
+      <div class="inst-address">${eventConfig.instituteAddress}</div>
+    </div>
   </div>
 
   <!-- ── Pass Title Banner ── -->

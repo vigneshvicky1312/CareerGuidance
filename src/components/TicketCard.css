@@ -144,9 +144,12 @@
   color: #fff;
 }
 
-.t-logo svg {
+.t-logo svg,
+.t-logo-img,
+.t-logo img {
   width: 1.5em;
   height: 1.5em;
+  object-fit: contain;
   fill: var(--t-accent);
   filter: drop-shadow(0 0 5px var(--t-accent));
   animation: logo-pulse 3s ease-in-out infinite alternate;
