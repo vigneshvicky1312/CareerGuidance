@@ -202,40 +202,6 @@
       "materials": "{\"kit\":false,\"bag\":false,\"notepad\":false,\"pen\":false,\"certificate\":false,\"badge\":false}"
     }
   ],
-  "sponsors": [
-    {
-      "doc_id": "sponsor-1",
-      "name": "TCS iON",
-      "tier": "Title Sponsor",
-      "category": "Title Sponsor",
-      "logo_url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80",
-      "website_url": "https://tcs.com",
-      "order_num": 1,
-      "active": 1,
-      "created_at": "2026-08-12T14:41:17.609Z"
-    },
-    {
-      "doc_id": "sponsor-2",
-      "name": "HCL TechBee",
-      "tier": "Gold Sponsor",
-      "category": "Gold Sponsor",
-      "logo_url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&auto=format&fit=crop&q=80",
-      "website_url": "https://hcltech.com",
-      "order_num": 2,
-      "active": 1,
-      "created_at": "2026-08-12T14:41:17.609Z"
-    },
-    {
-      "doc_id": "sponsor-3",
-      "name": "Sivagangai Educational Trust",
-      "tier": "Silver Sponsor",
-      "category": "Silver Sponsor",
-      "logo_url": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=200&auto=format&fit=crop&q=80",
-      "website_url": "",
-      "order_num": 3,
-      "active": 1,
-      "created_at": "2026-08-12T14:41:17.609Z"
-    }
-  ],
+  "sponsors": [],
   "sponsor_enquiries": []
 }

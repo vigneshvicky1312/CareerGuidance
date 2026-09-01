@@ -170,48 +170,14 @@ const initialSampleStudents = [
   },
 ]
 
-const initialSampleSponsors = [
-  {
-    doc_id: 'sponsor-1',
-    name: 'TCS iON',
-    tier: 'Title Sponsor',
-    category: 'Title Sponsor',
-    logo_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80',
-    website_url: 'https://tcs.com',
-    order_num: 1,
-    active: 1,
-    created_at: new Date().toISOString(),
-  },
-  {
-    doc_id: 'sponsor-2',
-    name: 'HCL TechBee',
-    tier: 'Gold Sponsor',
-    category: 'Gold Sponsor',
-    logo_url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&auto=format&fit=crop&q=80',
-    website_url: 'https://hcltech.com',
-    order_num: 2,
-    active: 1,
-    created_at: new Date().toISOString(),
-  },
-  {
-    doc_id: 'sponsor-3',
-    name: 'Sivagangai Educational Trust',
-    tier: 'Silver Sponsor',
-    category: 'Silver Sponsor',
-    logo_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=200&auto=format&fit=crop&q=80',
-    website_url: '',
-    order_num: 3,
-    active: 1,
-    created_at: new Date().toISOString(),
-  },
-]
+const initialSampleSponsors = []
 
 function getDefaultData() {
   return {
     admin_users: [],
     counters: [{ event_id: 'CGP2026', value: 5 }],
     students: initialSampleStudents,
-    sponsors: initialSampleSponsors,
+    sponsors: [],
     sponsor_enquiries: [],
   }
 }
@@ -241,8 +207,8 @@ function readData() {
       if (!data.counters) data.counters = []
       data.counters = [{ event_id: 'CGP2026', value: 5 }]
     }
-    if (!data.sponsors || data.sponsors.length === 0) {
-      data.sponsors = initialSampleSponsors
+    if (!data.sponsors) {
+      data.sponsors = []
     }
     memoryData = data
     return data
