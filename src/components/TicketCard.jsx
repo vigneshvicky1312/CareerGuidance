@@ -7,7 +7,7 @@ export default function TicketCard({
   title = 'Career Guidance 2026',
   subtitle = 'Shape Your Career · Build Your Future',
   details = [
-    { label: 'DATE', value: 'OCTOBER 2026' },
+    { label: 'DATE', value: 'OCTOBER 9, 2026' },
     { label: 'TIME', value: '10:00 AM' },
     { label: 'VENUE', value: 'L.C.T.L AUDITORIUM' },
     { label: 'ENTRY', value: 'ALL SESSIONS' },

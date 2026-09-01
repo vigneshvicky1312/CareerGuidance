@@ -3,9 +3,8 @@ import EventStats from '../components/EventStats'
 import AboutEvent from '../components/AboutEvent'
 import ProgramHighlights from '../components/ProgramHighlights'
 import ChiefGuest from '../components/ChiefGuest'
-import EventSchedule from '../components/EventSchedule'
 import Sponsors from '../components/Sponsors'
-import EventDetails from '../components/EventDetails'
+import EventSchedule from '../components/EventSchedule'
 import Contact from '../components/Contact'
 
 export default function Home() {
@@ -16,9 +15,8 @@ export default function Home() {
       <AboutEvent />
       <ProgramHighlights />
       <ChiefGuest />
-      <EventSchedule />
       <Sponsors compact />
-      <EventDetails />
+      <EventSchedule />
       <Contact />
     </>
   )
