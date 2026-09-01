@@ -73,4 +73,85 @@ const colleges = [
   "Alagappa University Model Constituent College of Science",
 ]
 
+/**
+ * Returns metadata for a college name, including category, district, and flags.
+ */
+export function getCollegeMeta(name) {
+  if (!name) return null
+  const lower = name.toLowerCase()
+  
+  const isAutonomous = lower.includes('autonomous')
+  const isWomen = lower.includes('women')
+  const isGovt = lower.includes('government') || lower.includes('govt') || lower.includes('model constituent')
+
+  let district = ''
+  if (
+    lower.includes('pudukkottai') ||
+    lower.includes('alangudi') ||
+    lower.includes('aranthangi') ||
+    lower.includes('karambakudi') ||
+    lower.includes('thirumayam') ||
+    lower.includes("rajah's") ||
+    lower.includes('j.j.') ||
+    lower.includes('mother teresa') ||
+    lower.includes('sri bharathi')
+  ) {
+    district = 'Pudukkottai'
+  } else if (
+    lower.includes('sivagangai') ||
+    lower.includes('alagappa') ||
+    lower.includes('doraisingam') ||
+    lower.includes('karaikudi') ||
+    lower.includes('devakottai') ||
+    lower.includes('seethalakshmi') ||
+    lower.includes('umayal ramanathan') ||
+    lower.includes('vidhyaa giri') ||
+    lower.includes('ananda') ||
+    lower.includes('sevugan annamalai')
+  ) {
+    district = 'Sivagangai'
+  } else if (
+    lower.includes('paramakudi') ||
+    lower.includes('paramakkudi') ||
+    lower.includes('kadaladi') ||
+    lower.includes('thiruvadinai') ||
+    lower.includes('sethupathi') ||
+    lower.includes('ramanathapuram') ||
+    lower.includes('syed ammal') ||
+    lower.includes('syed hameedha') ||
+    lower.includes('thassim beevi') ||
+    lower.includes('mohamed sathak') ||
+    lower.includes('zakir husain') ||
+    lower.includes('abdul kalam')
+  ) {
+    district = 'Ramanathapuram'
+  }
+
+  let typeTag = 'Affiliated'
+  if (isAutonomous) typeTag = 'Autonomous'
+  else if (isGovt) typeTag = 'Government'
+  else if (isWomen) typeTag = "Women's College"
+
+  return {
+    name,
+    isAutonomous,
+    isWomen,
+    isGovt,
+    district,
+    typeTag,
+  }
+}
+
+export const popularColleges = [
+  "H.H. The Rajah's College (Autonomous)",
+  "J.J. College of Arts & Science (Autonomous)",
+  "Kalagnar Karunanidhi Government Arts College for Women (Autonomous)",
+  "Alagappa Government Arts College",
+  "Government Arts & Science College, Alangudi",
+  "Raja Doraisingam Government Arts College",
+  "Government Arts & Science College, Aranthangi",
+  "Sethupathi Government Arts College",
+]
+
 export default colleges
+

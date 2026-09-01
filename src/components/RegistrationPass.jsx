@@ -447,24 +447,26 @@ body {
       </div>
 
       <!-- Distinguished Guests -->
+      ${(eventConfig.chiefGuest || (eventConfig.distinguishedGuests && eventConfig.distinguishedGuests.length > 0)) ? `
       <div class="speakers-section">
         <div class="section-heading sans">Distinguished Guests &amp; Speakers</div>
         <div class="speaker-row">
+          ${eventConfig.chiefGuest ? `
           <div class="speaker-cell">
-            <div class="speaker-role">${eventConfig.chiefGuest.badge}</div>
-            <div class="speaker-name sans">${eventConfig.chiefGuest.name}</div>
-            <div class="speaker-desig">${eventConfig.chiefGuest.designation}</div>
-            <div class="speaker-org sans">${eventConfig.chiefGuest.organization}</div>
-          </div>
-          ${eventConfig.distinguishedGuests.slice(0, 3).map(g => `
+            <div class="speaker-role">${eventConfig.chiefGuest.badge || 'Chief Guest'}</div>
+            <div class="speaker-name sans">${eventConfig.chiefGuest.name || ''}</div>
+            <div class="speaker-desig">${eventConfig.chiefGuest.designation || ''}</div>
+            <div class="speaker-org sans">${eventConfig.chiefGuest.organization || ''}</div>
+          </div>` : ''}
+          ${(eventConfig.distinguishedGuests || []).slice(0, 3).map(g => `
           <div class="speaker-cell">
-            <div class="speaker-role">${g.roleBadge}</div>
-            <div class="speaker-name sans">${g.name}</div>
-            <div class="speaker-desig">${g.designation}</div>
-            <div class="speaker-org sans">${g.organization}</div>
+            <div class="speaker-role">${g.roleBadge || ''}</div>
+            <div class="speaker-name sans">${g.name || ''}</div>
+            <div class="speaker-desig">${g.designation || ''}</div>
+            <div class="speaker-org sans">${g.organization || ''}</div>
           </div>`).join('')}
         </div>
-      </div>
+      </div>` : ''}
 
       <!-- Coordinators -->
       <div>

@@ -12,10 +12,10 @@ const stats = [
     sub: 'Final-year UG students',
   },
   {
-    icon: Mic,
-    value: `${speakerCount}`,
-    label: 'Distinguished Dignitaries',
-    sub: 'Corporate & administrative leaders',
+    icon: speakerCount > 0 ? Mic : BookOpen,
+    value: speakerCount > 0 ? `${speakerCount}` : `${eventConfig.expertSessions || 4}+`,
+    label: speakerCount > 0 ? 'Distinguished Dignitaries' : 'Expert Sessions',
+    sub: speakerCount > 0 ? 'Corporate & administrative leaders' : 'Career & higher-ed tracks',
   },
   {
     icon: School2,

@@ -72,6 +72,43 @@ export default function ChiefGuest() {
   const cg = eventConfig.chiefGuest
   const guests = eventConfig.distinguishedGuests || []
 
+  if (!cg && guests.length === 0) {
+    return (
+      <section id="chief-guest" className="bg-slate-50/70 py-16 md:py-20 border-t border-slate-200/80">
+        <div className="section !py-0">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-navy-950 px-4 py-1.5 font-mono text-xs uppercase tracking-widest text-sky-300">
+              <Sparkles size={13} className="text-gold-400" />
+              Distinguished Personalities &amp; Speakers
+            </span>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl">
+              Learn From Industry Titans &amp; Eminent Leaders
+            </h2>
+            <p className="mt-3 text-base text-slate-600 sm:text-lg">
+              Guiding Arts &amp; Science undergraduates with actionable roadmaps across corporate recruitment, competitive exams, finance, higher education, and entrepreneurship.
+            </p>
+          </div>
+
+          <div className="mt-10 mx-auto max-w-2xl rounded-3xl border border-dashed border-sky-300/80 bg-gradient-to-br from-sky-50/60 via-white to-amber-50/30 p-8 sm:p-12 text-center shadow-sm">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-navy-950 text-gold-400 shadow-md">
+              <Sparkles size={28} />
+            </div>
+            <h3 className="mt-5 font-display text-xl font-bold text-navy-950 sm:text-2xl">
+              Chief Guest &amp; Speaker Lineup Announcement Coming Soon
+            </h3>
+            <p className="mt-2 text-sm text-slate-600 leading-relaxed max-w-md mx-auto">
+              We are finalizing the distinguished panel of corporate HR leaders, civil administration officers, and academic dignitaries for Career Guidance Program 2026.
+            </p>
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-sky-100/80 px-4 py-1.5 text-xs font-semibold text-sky-800">
+              <span className="h-2 w-2 rounded-full bg-sky-500 animate-ping" />
+              Official Announcement to be Released Shortly
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section id="chief-guest" className="bg-slate-50/70 py-16 md:py-24">
       <div className="section !py-0">

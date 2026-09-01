@@ -46,7 +46,9 @@ const scheduleData = [
     period: 'morning',
     track: 'corporate',
     title: 'Keynote: "Future-Proofing Your Career — AI, Corporate Demands & Campus Hiring"',
-    speaker: `${eventConfig.chiefGuest?.name || 'Mr. Arvind Rajan'} (${eventConfig.chiefGuest?.designation || 'Vice President, Talent Strategy'})`,
+    speaker: eventConfig.chiefGuest
+      ? `${eventConfig.chiefGuest.name} (${eventConfig.chiefGuest.designation})`
+      : 'Keynote Industry Leader (To be announced)',
     venue: 'Main Auditorium Stage',
     badge: 'Keynote Address',
     badgeColor: 'gold',
@@ -59,7 +61,9 @@ const scheduleData = [
     period: 'morning',
     track: 'higher_ed',
     title: 'Session 2: Cracking Post-Graduate Entrances (CUET / TANCET / CAT) & Research Pathways',
-    speaker: 'Dr. K. Meenakshisundaram (Dean of Academic Affairs & Senior Professor)',
+    speaker: eventConfig.distinguishedGuests?.[0]
+      ? `${eventConfig.distinguishedGuests[0].name} (${eventConfig.distinguishedGuests[0].designation})`
+      : 'Academic Dean & Higher Education Advisor (To be announced)',
     venue: 'Main Auditorium Stage',
     badge: 'Higher Studies Track',
     badgeColor: 'emerald',
@@ -71,13 +75,13 @@ const scheduleData = [
     time: '01:00 PM – 01:45 PM',
     period: 'afternoon',
     track: 'break',
-    title: 'Networking Lunch & Sponsor Exhibition Interaction',
-    speaker: 'Open to all Attendees & Sponsors',
+    title: 'Networking Lunch & Partner Exhibition Interaction',
+    speaker: 'Open to all Attendees & Partners',
     venue: 'Auditorium Banquet & Exhibition Lawn',
-    badge: 'Lunch & Exhibition',
+    badge: 'Lunch & Networking',
     badgeColor: 'sky',
     description:
-      'Delegates interact with partner booths, explore course brochures, and network with faculty mentors and peer students from 40+ participating colleges.',
+      'Delegates interact with partner desks, explore career brochures, and network with faculty mentors and peer students from 70+ participating colleges.',
   },
   {
     id: 6,
@@ -85,7 +89,9 @@ const scheduleData = [
     period: 'afternoon',
     track: 'govt_civil',
     title: 'Session 3: Roadmap to Civil Services (TNPSC / UPSC) & Banking Sector Careers',
-    speaker: 'Smt. S. Priyadharshini, IAS & Mr. Ronald Rajesh (Fintech Director)',
+    speaker: eventConfig.distinguishedGuests?.[1]
+      ? `${eventConfig.distinguishedGuests[1].name} & Panelists`
+      : 'Civil Administration & BFSI Leaders (To be announced)',
     venue: 'Main Auditorium Stage',
     badge: 'Public Sector & BFSI',
     badgeColor: 'indigo',

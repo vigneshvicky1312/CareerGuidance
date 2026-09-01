@@ -116,13 +116,21 @@ export default function RegistrationForm() {
           </div>
 
           <div className="sm:col-span-2">
-            <label htmlFor="college">College Name *</label>
+            <div className="flex items-center justify-between mb-1">
+              <label htmlFor="college" className="!mb-0">College Name *</label>
+              <span className="text-[11px] font-medium text-slate-400">70+ Participating Institutions</span>
+            </div>
             <CollegeSearchSelect
               id="college"
               value={form.college}
               onChange={(val) => update('college', val)}
+              onDistrictSuggest={(suggestedDistrict) => {
+                if (!form.district) {
+                  update('district', suggestedDistrict)
+                }
+              }}
               error={errors.college}
-              placeholder="Search from participating colleges or type your own..."
+              placeholder="Search by name, district (e.g. Sivagangai, Pudukkottai), or type custom..."
             />
             {errors.college && <p className="mt-1 text-xs text-red-600">{errors.college}</p>}
           </div>
