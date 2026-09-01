@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import eventConfig from '../config/eventConfig'
-import CollegeSearchSelect from './CollegeSearchSelect'
+import colleges from '../config/colleges'
 import { registerStudent } from '../services/studentService'
 import { Loader2 } from 'lucide-react'
 import Toast from './Toast'
@@ -116,22 +116,20 @@ export default function RegistrationForm() {
           </div>
 
           <div className="sm:col-span-2">
-            <div className="flex items-center justify-between mb-1">
-              <label htmlFor="college" className="!mb-0">College Name *</label>
-              <span className="text-[11px] font-medium text-slate-400">70+ Participating Institutions</span>
-            </div>
-            <CollegeSearchSelect
+            <label htmlFor="college">College Name *</label>
+            <input
               id="college"
+              list="college-options"
               value={form.college}
-              onChange={(val) => update('college', val)}
-              onDistrictSuggest={(suggestedDistrict) => {
-                if (!form.district) {
-                  update('district', suggestedDistrict)
-                }
-              }}
-              error={errors.college}
-              placeholder="Search by name, district (e.g. Sivagangai, Pudukkottai), or type custom..."
+              onChange={(e) => update('college', e.target.value)}
+              placeholder="Enter your college name (e.g. Alagappa Government Arts College)"
+              autoComplete="off"
             />
+            <datalist id="college-options">
+              {colleges.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
             {errors.college && <p className="mt-1 text-xs text-red-600">{errors.college}</p>}
           </div>
 
