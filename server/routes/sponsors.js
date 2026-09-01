@@ -215,4 +215,29 @@ router.get('/enquiries', async (req, res) => {
   }
 })
 
+// PUT /api/sponsors/enquiries/:id - Update enquiry status
+router.put('/enquiries/:id', async (req, res) => {
+  const { status } = req.body
+  try {
+    const pool = getPool()
+    await pool.query('UPDATE sponsor_enquiries SET status = ? WHERE doc_id = ?', [status || 'contacted', req.params.id])
+    res.json({ success: true, status: status || 'contacted' })
+  } catch (err) {
+    console.error('Error updating enquiry:', err)
+    res.status(500).json({ error: 'Failed to update enquiry' })
+  }
+})
+
+// DELETE /api/sponsors/enquiries/:id - Delete sponsor enquiry
+router.delete('/enquiries/:id', async (req, res) => {
+  try {
+    const pool = getPool()
+    await pool.query('DELETE FROM sponsor_enquiries WHERE doc_id = ?', [req.params.id])
+    res.json({ success: true })
+  } catch (err) {
+    console.error('Error deleting enquiry:', err)
+    res.status(500).json({ error: 'Failed to delete enquiry' })
+  }
+})
+
 export default router

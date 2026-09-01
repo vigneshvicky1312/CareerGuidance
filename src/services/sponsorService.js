@@ -62,6 +62,19 @@ export async function submitSponsorEnquiry(enquiry) {
   })
 }
 
+export async function updateSponsorEnquiry(id, payload) {
+  return apiFetch(`/api/sponsors/enquiries/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function deleteSponsorEnquiry(id) {
+  return apiFetch(`/api/sponsors/enquiries/${id}`, {
+    method: 'DELETE',
+  })
+}
+
 export function watchSponsorEnquiries(callback) {
   let active = true
 
@@ -82,3 +95,4 @@ export function watchSponsorEnquiries(callback) {
     clearInterval(interval)
   }
 }
+

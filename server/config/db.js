@@ -692,6 +692,26 @@ function executeJsonQuery(sql, params = []) {
     return [list, []]
   }
 
+  // 17. UPDATE sponsor_enquiries SET status = ? WHERE doc_id = ?
+  if (cleanSql.toUpperCase().startsWith('UPDATE SPONSOR_ENQUIRIES SET STATUS =')) {
+    const [status, docId] = params
+    const item = (data.sponsor_enquiries || []).find((e) => e.doc_id === docId)
+    if (item) {
+      item.status = status
+      writeData(data)
+    }
+    return [{ affectedRows: item ? 1 : 0 }, []]
+  }
+
+  // 18. DELETE FROM sponsor_enquiries WHERE doc_id = ?
+  if (cleanSql.toUpperCase().startsWith('DELETE FROM SPONSOR_ENQUIRIES WHERE DOC_ID =')) {
+    const [docId] = params
+    const beforeLen = (data.sponsor_enquiries || []).length
+    data.sponsor_enquiries = (data.sponsor_enquiries || []).filter((e) => e.doc_id !== docId)
+    writeData(data)
+    return [{ affectedRows: beforeLen !== data.sponsor_enquiries.length ? 1 : 0 }, []]
+  }
+
   return [[], []]
 }
 
