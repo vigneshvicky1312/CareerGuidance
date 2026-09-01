@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import eventConfig from '../config/eventConfig'
-import colleges from '../config/colleges'
 import { registerStudent } from '../services/studentService'
 import { Loader2 } from 'lucide-react'
 import Toast from './Toast'
@@ -119,17 +118,10 @@ export default function RegistrationForm() {
             <label htmlFor="college">College Name *</label>
             <input
               id="college"
-              list="college-options"
               value={form.college}
               onChange={(e) => update('college', e.target.value)}
-              placeholder="Enter your college name (e.g. Alagappa Government Arts College)"
-              autoComplete="off"
+              placeholder="e.g. Alagappa Government Arts College"
             />
-            <datalist id="college-options">
-              {colleges.map((c) => (
-                <option key={c} value={c} />
-              ))}
-            </datalist>
             {errors.college && <p className="mt-1 text-xs text-red-600">{errors.college}</p>}
           </div>
 
