@@ -433,6 +433,9 @@ export async function initDatabase() {
         await connection.query(
           `INSERT INTO counters (event_id, value) VALUES ('CGP2026', 5) ON DUPLICATE KEY UPDATE value = GREATEST(value, 5)`
         )
+        console.log('✅ Seeded initial sample students in MySQL')
+      }
+
       // Cleanup any legacy sample sponsors from MySQL
       try {
         await connection.query(
