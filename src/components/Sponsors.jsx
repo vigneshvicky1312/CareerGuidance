@@ -5,19 +5,39 @@ import SponsorCard from './SponsorCard'
 import { watchSponsors, getActiveSponsorsOnce } from '../services/sponsorService'
 import seedSponsors from '../config/sponsors'
 
+const SAMPLE_SPONSOR_IDS = ['sponsor-1', 'sponsor-2', 'sponsor-3', 'seed-title', 'seed-gold-1', 'seed-knowledge']
+const SAMPLE_SPONSOR_NAMES = [
+  'tcs ion',
+  'hcl techbee',
+  'sivagangai educational trust',
+  'meridian technologies',
+  'nova finserv',
+  'brightpath institute',
+]
+
+function isSampleSponsor(s) {
+  if (!s) return false
+  const id = (s.id || s.docId || '').toLowerCase()
+  const name = (s.name || '').toLowerCase()
+  return SAMPLE_SPONSOR_IDS.includes(id) || SAMPLE_SPONSOR_NAMES.includes(name)
+}
+
 export default function Sponsors({ compact = false }) {
-  const [sponsors, setSponsors] = useState(seedSponsors || [])
+  const [sponsors, setSponsors] = useState([])
 
   useEffect(() => {
     let unsub = () => {}
     try {
       unsub = watchSponsors((list) => {
-        const active = list.filter((s) => s.active !== false)
+        const active = (list || []).filter((s) => s.active !== false && !isSampleSponsor(s))
         setSponsors(active)
       })
     } catch {
       getActiveSponsorsOnce().then((list) => {
-        if (list) setSponsors(list)
+        if (list) {
+          const active = list.filter((s) => s.active !== false && !isSampleSponsor(s))
+          setSponsors(active)
+        }
       })
     }
     return () => unsub()

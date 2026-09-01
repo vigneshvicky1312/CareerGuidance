@@ -63,12 +63,18 @@ function mapRowToEnquiry(row) {
   }
 }
 
+const EXCLUDED_SPONSOR_DOC_IDS = ['sponsor-1', 'sponsor-2', 'sponsor-3', 'seed-title', 'seed-gold-1', 'seed-knowledge']
+const EXCLUDED_SPONSOR_NAMES = ['TCS iON', 'HCL TechBee', 'Sivagangai Educational Trust', 'Meridian Technologies', 'Nova Finserv', 'BrightPath Institute']
+
 // GET /api/sponsors - All sponsors
 router.get('/', async (req, res) => {
   try {
     const pool = getPool()
     const [rows] = await pool.query('SELECT * FROM sponsors ORDER BY order_num ASC, created_at DESC')
-    res.json(rows.map(mapRowToSponsor))
+    const filtered = (rows || []).filter(
+      (r) => !EXCLUDED_SPONSOR_DOC_IDS.includes(r.doc_id) && !EXCLUDED_SPONSOR_NAMES.includes(r.name)
+    )
+    res.json(filtered.map(mapRowToSponsor))
   } catch (err) {
     console.error('Error fetching sponsors:', err)
     res.status(500).json({ error: 'Failed to fetch sponsors' })
@@ -80,7 +86,10 @@ router.get('/active', async (req, res) => {
   try {
     const pool = getPool()
     const [rows] = await pool.query('SELECT * FROM sponsors WHERE active = 1 ORDER BY order_num ASC')
-    res.json(rows.map(mapRowToSponsor))
+    const filtered = (rows || []).filter(
+      (r) => !EXCLUDED_SPONSOR_DOC_IDS.includes(r.doc_id) && !EXCLUDED_SPONSOR_NAMES.includes(r.name)
+    )
+    res.json(filtered.map(mapRowToSponsor))
   } catch (err) {
     console.error('Error fetching active sponsors:', err)
     res.status(500).json({ error: 'Failed to fetch sponsors' })
