@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Clock,
   MapPin,
@@ -12,10 +12,18 @@ import {
   FileCheck,
 } from 'lucide-react'
 import eventConfig from '../config/eventConfig'
+import { watchSchedule } from '../services/scheduleService'
 
-const scheduleData = [
+const initialDefaultSettings = {
+  eyebrow: 'Complete Program Schedule',
+  title: 'A Day Engineered For Your Future',
+  description: `From morning keynote insights to interactive career labs and certificate distribution — plan your day at ${eventConfig.venue}.`,
+  footerNote: 'All attendees receive a printed program agenda schedule sheet placed inside their event file folder upon arrival for easy reference.',
+}
+
+const initialScheduleData = [
   {
-    id: 1,
+    id: 'session-1',
     time: '09:00 AM – 10:00 AM',
     period: 'morning',
     track: 'general',
@@ -26,9 +34,10 @@ const scheduleData = [
     badgeColor: 'sky',
     description:
       'QR code pass verification at entry counters. Registered delegates receive an event file folder with printed program agenda sheets, notepad, pen, and conference materials.',
+    active: true,
   },
   {
-    id: 2,
+    id: 'session-2',
     time: '10:00 AM – 10:30 AM',
     period: 'morning',
     track: 'inaugural',
@@ -39,9 +48,10 @@ const scheduleData = [
     badgeColor: 'gold',
     description:
       'Ceremonial lamp lighting, presidential address by university leadership, overview of Career Guidance Program 2026 objectives, and felicitation of distinguished guests.',
+    active: true,
   },
   {
-    id: 3,
+    id: 'session-3',
     time: '10:30 AM – 11:45 AM',
     period: 'morning',
     track: 'corporate',
@@ -54,9 +64,10 @@ const scheduleData = [
     badgeColor: 'gold',
     description:
       'Masterclass on corporate market transitions, tech adaptation for non-engineering graduates, employer screening criteria, and high-growth trajectories across global MNCs.',
+    active: true,
   },
   {
-    id: 4,
+    id: 'session-4',
     time: '11:45 AM – 01:00 PM',
     period: 'morning',
     track: 'higher_ed',
@@ -69,9 +80,10 @@ const scheduleData = [
     badgeColor: 'emerald',
     description:
       'Step-by-step roadmap for MBA, M.Com, M.Sc admissions, central university fellowships, score cut-offs, and state scholarship schemes for Arts & Science students.',
+    active: true,
   },
   {
-    id: 5,
+    id: 'session-5',
     time: '01:00 PM – 01:45 PM',
     period: 'afternoon',
     track: 'break',
@@ -82,9 +94,10 @@ const scheduleData = [
     badgeColor: 'sky',
     description:
       'Delegates interact with partner desks, explore career brochures, and network with faculty mentors and peer students from 70+ participating colleges.',
+    active: true,
   },
   {
-    id: 6,
+    id: 'session-6',
     time: '01:45 PM – 02:45 PM',
     period: 'afternoon',
     track: 'govt_civil',
@@ -97,9 +110,10 @@ const scheduleData = [
     badgeColor: 'indigo',
     description:
       'Dual-focus session: Strategic preparation for TNPSC (Group 1, 2, 4), Union Civil Services, plus contemporary careers in Digital Banking, Wealth Management & Fintech.',
+    active: true,
   },
   {
-    id: 7,
+    id: 'session-7',
     time: '02:45 PM – 03:45 PM',
     period: 'afternoon',
     track: 'corporate',
@@ -110,9 +124,10 @@ const scheduleData = [
     badgeColor: 'gold',
     description:
       'Direct floor interaction: Students ask burning career questions, mock interview breakdown, resume red flags, and salary negotiation insights.',
+    active: true,
   },
   {
-    id: 8,
+    id: 'session-8',
     time: '03:45 PM – 04:30 PM',
     period: 'afternoon',
     track: 'valedictory',
@@ -123,6 +138,7 @@ const scheduleData = [
     badgeColor: 'emerald',
     description:
       'Distribution of verified participation certificates, announcement of special scholarship/placement follow-up sessions, and formal vote of thanks.',
+    active: true,
   },
 ]
 
@@ -135,10 +151,49 @@ const trackFilters = [
   { id: 'govt_civil', label: 'Govt & Civil Services' },
 ]
 
+const getBadgeStyle = (colorId) => {
+  switch (colorId) {
+    case 'sky':
+      return 'bg-sky-50 text-sky-700 border-sky-200'
+    case 'gold':
+      return 'bg-amber-50 text-amber-700 border-amber-200'
+    case 'emerald':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+    case 'indigo':
+      return 'bg-indigo-50 text-indigo-700 border-indigo-200'
+    case 'rose':
+      return 'bg-rose-50 text-rose-700 border-rose-200'
+    default:
+      return 'bg-slate-100 text-slate-700 border-slate-200'
+  }
+}
+
 export default function EventSchedule() {
   const [activeFilter, setActiveFilter] = useState('all')
+  const [sessions, setSessions] = useState(initialScheduleData)
+  const [settings, setSettings] = useState(initialDefaultSettings)
 
-  const filteredSessions = scheduleData.filter((item) => {
+  useEffect(() => {
+    const unsub = watchSchedule((data) => {
+      if (data) {
+        if (data.items && data.items.length > 0) {
+          const activeOnly = data.items.filter((s) => s.active !== false)
+          setSessions(activeOnly)
+        }
+        if (data.settings) {
+          setSettings({
+            eyebrow: data.settings.eyebrow || initialDefaultSettings.eyebrow,
+            title: data.settings.title || initialDefaultSettings.title,
+            description: data.settings.description || initialDefaultSettings.description,
+            footerNote: data.settings.footerNote || initialDefaultSettings.footerNote,
+          })
+        }
+      }
+    })
+    return unsub
+  }, [])
+
+  const filteredSessions = sessions.filter((item) => {
     if (activeFilter === 'all') return true
     if (activeFilter === 'morning') return item.period === 'morning'
     if (activeFilter === 'afternoon') return item.period === 'afternoon'
@@ -153,13 +208,13 @@ export default function EventSchedule() {
       <div className="section !py-0">
         <div className="mx-auto max-w-3xl text-center">
           <span className="eyebrow">
-            <CalendarDays size={14} className="text-sky-500" /> Complete Program Schedule
+            <CalendarDays size={14} className="text-sky-500" /> {settings.eyebrow}
           </span>
           <h2 className="mt-3 text-3xl font-extrabold text-navy-950 sm:text-4xl">
-            A Day Engineered For Your Future
+            {settings.title}
           </h2>
           <p className="mt-3 text-sm text-slate-600 sm:text-base">
-            From morning keynote insights to interactive career labs and certificate distribution — plan your day at {eventConfig.venue}.
+            {settings.description}
           </p>
         </div>
 
@@ -203,13 +258,21 @@ export default function EventSchedule() {
                     <Clock size={14} className="shrink-0" />
                     <span>{session.time}</span>
                   </div>
-                  <div className="mt-1.5 flex items-start gap-1.5 text-xs text-slate-500">
-                    <MapPin size={13} className="shrink-0 mt-0.5 text-slate-400" />
-                    <span className="leading-tight">{session.venue}</span>
-                  </div>
-                  <span className="mt-3 inline-block rounded-full bg-slate-100 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600">
-                    {session.badge}
-                  </span>
+                  {session.venue && (
+                    <div className="mt-1.5 flex items-start gap-1.5 text-xs text-slate-500">
+                      <MapPin size={13} className="shrink-0 mt-0.5 text-slate-400" />
+                      <span className="leading-tight">{session.venue}</span>
+                    </div>
+                  )}
+                  {session.badge && (
+                    <span
+                      className={`mt-3 inline-block rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold border ${getBadgeStyle(
+                        session.badgeColor
+                      )}`}
+                    >
+                      {session.badge}
+                    </span>
+                  )}
                 </div>
 
                 {/* Session Details Column */}
@@ -218,14 +281,18 @@ export default function EventSchedule() {
                     {session.title}
                   </h3>
 
-                  <div className="mt-2 flex items-center gap-2 text-xs font-medium text-slate-700 break-words">
-                    <User size={14} className="text-amber-600 shrink-0" />
-                    <span className="break-words">{session.speaker}</span>
-                  </div>
+                  {session.speaker && (
+                    <div className="mt-2 flex items-center gap-2 text-xs font-medium text-slate-700 break-words">
+                      <User size={14} className="text-amber-600 shrink-0" />
+                      <span className="break-words">{session.speaker}</span>
+                    </div>
+                  )}
 
-                  <p className="mt-2.5 text-xs leading-relaxed text-slate-600 sm:text-sm">
-                    {session.description}
-                  </p>
+                  {session.description && (
+                    <p className="mt-2.5 text-xs leading-relaxed text-slate-600 sm:text-sm">
+                      {session.description}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -233,14 +300,14 @@ export default function EventSchedule() {
         </div>
 
         {/* Schedule Footer Note */}
-        <div className="mt-10 rounded-2xl border border-sky-200/70 bg-gradient-to-r from-sky-50 via-white to-sky-50/40 p-4 text-center text-xs text-slate-600 max-w-2xl mx-auto">
-          <p className="flex items-center justify-center gap-2 font-medium">
-            <FileCheck size={16} className="text-sky-600 shrink-0" />
-            <span>
-              All attendees receive a printed program agenda schedule sheet placed inside their event file folder upon arrival for easy reference.
-            </span>
-          </p>
-        </div>
+        {settings.footerNote && (
+          <div className="mt-10 rounded-2xl border border-sky-200/70 bg-gradient-to-r from-sky-50 via-white to-sky-50/40 p-4 text-center text-xs text-slate-600 max-w-2xl mx-auto">
+            <p className="flex items-center justify-center gap-2 font-medium">
+              <FileCheck size={16} className="text-sky-600 shrink-0" />
+              <span>{settings.footerNote}</span>
+            </p>
+          </div>
+        )}
       </div>
     </section>
   )

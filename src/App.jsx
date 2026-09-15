@@ -19,6 +19,7 @@ const CheckIn = lazy(() => import('./pages/CheckIn'))
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'))
+const Schedule = lazy(() => import('./pages/admin/Schedule'))
 const Attendees = lazy(() => import('./pages/admin/Attendees'))
 const Registrations = lazy(() => import('./pages/admin/Registrations'))
 const Distribution = lazy(() => import('./pages/admin/Distribution'))
@@ -66,6 +67,7 @@ export default function App() {
             }
           >
             <Route index element={<Dashboard />} />
+            <Route path="schedule" element={<Schedule />} />
             <Route path="attendees" element={<Attendees />} />
             <Route path="registrations" element={<Registrations />} />
             <Route path="distribution" element={<Distribution />} />

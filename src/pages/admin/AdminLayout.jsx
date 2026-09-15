@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, ClipboardList, ScanLine, PackageCheck,
-  Handshake, FileBarChart, LogOut, Menu, X, ChevronRight,
+  Handshake, FileBarChart, LogOut, Menu, X, ChevronRight, CalendarDays,
 } from 'lucide-react'
 import { useAdminAuth } from '../../context/AdminAuthContext'
 import eventConfig from '../../config/eventConfig'
 
 const navItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/admin/schedule', label: 'Schedule', icon: CalendarDays },
   { to: '/admin/attendees', label: 'Attendees', icon: Users },
   { to: '/admin/registrations', label: 'Registrations', icon: ClipboardList },
   { to: '/admin/distribution', label: 'Materials', icon: PackageCheck },

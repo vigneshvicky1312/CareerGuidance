@@ -172,6 +172,147 @@ const initialSampleStudents = [
 
 const initialSampleSponsors = []
 
+export const initialScheduleSettings = {
+  event_id: 'CGP2026',
+  eyebrow: 'Complete Program Schedule',
+  title: 'A Day Engineered For Your Future',
+  description:
+    'From morning keynote insights to interactive career labs and certificate distribution — plan your day at L.C.T.L Palaniappa Chettiar Memorial Auditorium.',
+  footer_note:
+    'All attendees receive a printed program agenda schedule sheet placed inside their event file folder upon arrival for easy reference.',
+}
+
+export const initialScheduleItems = [
+  {
+    doc_id: 'session-1',
+    event_id: 'CGP2026',
+    time: '09:00 AM – 10:00 AM',
+    period: 'morning',
+    track: 'general',
+    title: 'Delegate Arrival, Desk Check-In & Material Kit Handover',
+    speaker: 'AIM Volunteer & Registration Desk Team',
+    venue: 'Main Auditorium Foyer (L.C.T.L Auditorium)',
+    badge: 'Registration & Welcome',
+    badge_color: 'sky',
+    description:
+      'QR code pass verification at entry counters. Registered delegates receive an event file folder with printed program agenda sheets, notepad, pen, and conference materials.',
+    order_num: 1,
+    active: 1,
+  },
+  {
+    doc_id: 'session-2',
+    event_id: 'CGP2026',
+    time: '10:00 AM – 10:30 AM',
+    period: 'morning',
+    track: 'inaugural',
+    title: 'Grand Inauguration & Welcome Address',
+    speaker: 'Dr. S. Chandramohan, Senior Professor, AIM & University Dignitaries',
+    venue: 'Main Auditorium Stage',
+    badge: 'Inaugural Session',
+    badge_color: 'gold',
+    description:
+      'Ceremonial lamp lighting, presidential address by university leadership, overview of Career Guidance Program 2026 objectives, and felicitation of distinguished guests.',
+    order_num: 2,
+    active: 1,
+  },
+  {
+    doc_id: 'session-3',
+    event_id: 'CGP2026',
+    time: '10:30 AM – 11:45 AM',
+    period: 'morning',
+    track: 'corporate',
+    title: 'Keynote: "Future-Proofing Your Career — AI, Corporate Demands & Campus Hiring"',
+    speaker: 'Keynote Industry Leader & Corporate Mentors',
+    venue: 'Main Auditorium Stage',
+    badge: 'Keynote Address',
+    badge_color: 'gold',
+    description:
+      'Masterclass on corporate market transitions, tech adaptation for non-engineering graduates, employer screening criteria, and high-growth trajectories across global MNCs.',
+    order_num: 3,
+    active: 1,
+  },
+  {
+    doc_id: 'session-4',
+    event_id: 'CGP2026',
+    time: '11:45 AM – 01:00 PM',
+    period: 'morning',
+    track: 'higher_ed',
+    title: 'Session 2: Cracking Post-Graduate Entrances (CUET / TANCET / CAT) & Research Pathways',
+    speaker: 'Academic Dean & Higher Education Advisor',
+    venue: 'Main Auditorium Stage',
+    badge: 'Higher Studies Track',
+    badge_color: 'emerald',
+    description:
+      'Step-by-step roadmap for MBA, M.Com, M.Sc admissions, central university fellowships, score cut-offs, and state scholarship schemes for Arts & Science students.',
+    order_num: 4,
+    active: 1,
+  },
+  {
+    doc_id: 'session-5',
+    event_id: 'CGP2026',
+    time: '01:00 PM – 01:45 PM',
+    period: 'afternoon',
+    track: 'break',
+    title: 'Networking Lunch & Partner Exhibition Interaction',
+    speaker: 'Open to all Attendees & Partners',
+    venue: 'Auditorium Banquet & Exhibition Lawn',
+    badge: 'Lunch & Networking',
+    badge_color: 'sky',
+    description:
+      'Delegates interact with partner desks, explore career brochures, and network with faculty mentors and peer students from 70+ participating colleges.',
+    order_num: 5,
+    active: 1,
+  },
+  {
+    doc_id: 'session-6',
+    event_id: 'CGP2026',
+    time: '01:45 PM – 02:45 PM',
+    period: 'afternoon',
+    track: 'govt_civil',
+    title: 'Session 3: Roadmap to Civil Services (TNPSC / UPSC) & Banking Sector Careers',
+    speaker: 'Civil Administration & BFSI Leaders',
+    venue: 'Main Auditorium Stage',
+    badge: 'Public Sector & BFSI',
+    badge_color: 'indigo',
+    description:
+      'Dual-focus session: Strategic preparation for TNPSC (Group 1, 2, 4), Union Civil Services, plus contemporary careers in Digital Banking, Wealth Management & Fintech.',
+    order_num: 6,
+    active: 1,
+  },
+  {
+    doc_id: 'session-7',
+    event_id: 'CGP2026',
+    time: '02:45 PM – 03:45 PM',
+    period: 'afternoon',
+    track: 'corporate',
+    title: 'Session 4: Interview Mastery, Corporate Readiness & Interactive Open Q&A Panel',
+    speaker: 'Combined Industry Panel & Career Mentors',
+    venue: 'Main Auditorium Stage',
+    badge: 'Live Mentorship & Q&A',
+    badge_color: 'gold',
+    description:
+      'Direct floor interaction: Students ask burning career questions, mock interview breakdown, resume red flags, and salary negotiation insights.',
+    order_num: 7,
+    active: 1,
+  },
+  {
+    doc_id: 'session-8',
+    event_id: 'CGP2026',
+    time: '03:45 PM – 04:30 PM',
+    period: 'afternoon',
+    track: 'valedictory',
+    title: 'Valedictory Ceremony, Certificate Presentation & Closing Remarks',
+    speaker: 'Faculty Coordinator Dr. C.K. Muthukumaran & Organizing Committee',
+    venue: 'Main Auditorium Stage',
+    badge: 'Certification & Concluding',
+    badge_color: 'emerald',
+    description:
+      'Distribution of verified participation certificates, announcement of special scholarship/placement follow-up sessions, and formal vote of thanks.',
+    order_num: 8,
+    active: 1,
+  },
+]
+
 function getDefaultData() {
   return {
     admin_users: [],
@@ -179,6 +320,8 @@ function getDefaultData() {
     students: initialSampleStudents,
     sponsors: [],
     sponsor_enquiries: [],
+    schedule_settings: [initialScheduleSettings],
+    schedule_items: initialScheduleItems,
   }
 }
 
@@ -209,6 +352,12 @@ function readData() {
     }
     if (!data.sponsors) {
       data.sponsors = []
+    }
+    if (!data.schedule_settings || data.schedule_settings.length === 0) {
+      data.schedule_settings = [initialScheduleSettings]
+    }
+    if (!data.schedule_items || data.schedule_items.length === 0) {
+      data.schedule_items = initialScheduleItems
     }
     memoryData = data
     return data
@@ -388,6 +537,40 @@ export async function initDatabase() {
         ) ENGINE=InnoDB;
       `)
 
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS schedule_settings (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          event_id VARCHAR(64) NOT NULL UNIQUE,
+          eyebrow VARCHAR(255),
+          title VARCHAR(255),
+          description TEXT,
+          footer_note TEXT,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB;
+      `)
+
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS schedule_items (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          doc_id VARCHAR(64) NOT NULL UNIQUE,
+          event_id VARCHAR(64) NOT NULL DEFAULT 'CGP2026',
+          time VARCHAR(100) NOT NULL,
+          period VARCHAR(50) DEFAULT 'morning',
+          track VARCHAR(50) DEFAULT 'general',
+          title VARCHAR(255) NOT NULL,
+          speaker VARCHAR(255),
+          venue VARCHAR(255),
+          badge VARCHAR(100),
+          badge_color VARCHAR(50) DEFAULT 'sky',
+          description TEXT,
+          order_num INT DEFAULT 0,
+          active TINYINT(1) DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          INDEX idx_order (order_num)
+        ) ENGINE=InnoDB;
+      `)
+
       const defaultPassword = process.env.ADMIN_PASSWORD || 'cgp2026'
       const hashed = await bcrypt.hash(defaultPassword, 10)
       
@@ -434,6 +617,49 @@ export async function initDatabase() {
           `INSERT INTO counters (event_id, value) VALUES ('CGP2026', 5) ON DUPLICATE KEY UPDATE value = GREATEST(value, 5)`
         )
         console.log('✅ Seeded initial sample students in MySQL')
+      }
+
+      // Seed initial schedule settings in MySQL if empty
+      const [scheduleSettingRows] = await connection.query('SELECT COUNT(*) as count FROM schedule_settings')
+      if (scheduleSettingRows[0].count === 0) {
+        await connection.query(
+          `INSERT INTO schedule_settings (event_id, eyebrow, title, description, footer_note) VALUES (?, ?, ?, ?, ?)`,
+          [
+            initialScheduleSettings.event_id,
+            initialScheduleSettings.eyebrow,
+            initialScheduleSettings.title,
+            initialScheduleSettings.description,
+            initialScheduleSettings.footer_note,
+          ]
+        )
+        console.log('✅ Seeded initial schedule settings in MySQL')
+      }
+
+      // Seed initial schedule items in MySQL if empty
+      const [scheduleItemRows] = await connection.query('SELECT COUNT(*) as count FROM schedule_items')
+      if (scheduleItemRows[0].count === 0) {
+        for (const item of initialScheduleItems) {
+          await connection.query(
+            `INSERT INTO schedule_items (doc_id, event_id, time, period, track, title, speaker, venue, badge, badge_color, description, order_num, active)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              item.doc_id,
+              item.event_id,
+              item.time,
+              item.period,
+              item.track,
+              item.title,
+              item.speaker,
+              item.venue,
+              item.badge,
+              item.badge_color,
+              item.description,
+              item.order_num,
+              item.active,
+            ]
+          )
+        }
+        console.log('✅ Seeded initial schedule items in MySQL')
       }
 
       // Cleanup any legacy sample sponsors from MySQL
@@ -710,6 +936,183 @@ function executeJsonQuery(sql, params = []) {
     data.sponsor_enquiries = (data.sponsor_enquiries || []).filter((e) => e.doc_id !== docId)
     writeData(data)
     return [{ affectedRows: beforeLen !== data.sponsor_enquiries.length ? 1 : 0 }, []]
+  }
+
+  // 19. SELECT * FROM schedule_settings
+  if (cleanSql.toUpperCase().includes('FROM SCHEDULE_SETTINGS')) {
+    if (!data.schedule_settings || data.schedule_settings.length === 0) {
+      data.schedule_settings = [initialScheduleSettings]
+      writeData(data)
+    }
+    return [data.schedule_settings, []]
+  }
+
+  // 20. UPDATE schedule_settings SET eyebrow = ?, title = ?, description = ?, footer_note = ? WHERE event_id = ?
+  if (cleanSql.toUpperCase().startsWith('UPDATE SCHEDULE_SETTINGS SET')) {
+    const [eyebrow, title, description, footerNote, eventId] = params
+    if (!data.schedule_settings || data.schedule_settings.length === 0) {
+      data.schedule_settings = [{ ...initialScheduleSettings }]
+    }
+    const setting = data.schedule_settings.find((s) => s.event_id === eventId) || data.schedule_settings[0]
+    if (setting) {
+      setting.eyebrow = eyebrow
+      setting.title = title
+      setting.description = description
+      setting.footer_note = footerNote
+      writeData(data)
+    }
+    return [{ affectedRows: 1 }, []]
+  }
+
+  // 21. INSERT INTO schedule_settings
+  if (cleanSql.toUpperCase().startsWith('INSERT INTO SCHEDULE_SETTINGS')) {
+    const [eventId, eyebrow, title, description, footerNote] = params
+    if (!data.schedule_settings) data.schedule_settings = []
+    const existing = data.schedule_settings.find((s) => s.event_id === eventId)
+    if (existing) {
+      existing.eyebrow = eyebrow
+      existing.title = title
+      existing.description = description
+      existing.footer_note = footerNote
+    } else {
+      data.schedule_settings.push({
+        id: 1,
+        event_id: eventId,
+        eyebrow,
+        title,
+        description,
+        footer_note: footerNote,
+      })
+    }
+    writeData(data)
+    return [{ affectedRows: 1 }, []]
+  }
+
+  // 22. SELECT * FROM schedule_items WHERE doc_id = ?
+  if (cleanSql.toUpperCase().includes('FROM SCHEDULE_ITEMS WHERE DOC_ID =')) {
+    const docId = params[0]
+    const list = (data.schedule_items || []).filter((item) => item.doc_id === docId)
+    return [list, []]
+  }
+
+  // 23. SELECT * FROM schedule_items
+  if (cleanSql.toUpperCase().includes('FROM SCHEDULE_ITEMS')) {
+    let list = [...(data.schedule_items || [])]
+    if (cleanSql.toUpperCase().includes('WHERE ACTIVE = 1')) {
+      list = list.filter((item) => item.active === 1 || item.active === true)
+    }
+    list.sort((a, b) => (Number(a.order_num) || 0) - (Number(b.order_num) || 0))
+    return [list, []]
+  }
+
+  // 24. INSERT INTO schedule_items
+  if (cleanSql.toUpperCase().startsWith('INSERT INTO SCHEDULE_ITEMS')) {
+    const [
+      docId,
+      eventId,
+      time,
+      period,
+      track,
+      title,
+      speaker,
+      venue,
+      badge,
+      badgeColor,
+      description,
+      orderNum,
+      active,
+    ] = params
+
+    if (!data.schedule_items) data.schedule_items = []
+    const newItem = {
+      id: data.schedule_items.length + 1,
+      doc_id: docId,
+      event_id: eventId || 'CGP2026',
+      time,
+      period: period || 'morning',
+      track: track || 'general',
+      title,
+      speaker: speaker || '',
+      venue: venue || '',
+      badge: badge || '',
+      badge_color: badgeColor || 'sky',
+      description: description || '',
+      order_num: Number(orderNum) || 0,
+      active: active ? 1 : 0,
+      created_at: new Date().toISOString(),
+    }
+    data.schedule_items.push(newItem)
+    writeData(data)
+    return [{ affectedRows: 1 }, []]
+  }
+
+  // 25. UPDATE schedule_items SET order_num = ? WHERE doc_id = ?
+  if (cleanSql.toUpperCase().startsWith('UPDATE SCHEDULE_ITEMS SET ORDER_NUM =')) {
+    const [orderNum, docId] = params
+    const item = (data.schedule_items || []).find((s) => s.doc_id === docId)
+    if (item) {
+      item.order_num = Number(orderNum) || 0
+      writeData(data)
+    }
+    return [{ affectedRows: item ? 1 : 0 }, []]
+  }
+
+  // 26. UPDATE schedule_items SET ... WHERE doc_id = ?
+  if (cleanSql.toUpperCase().startsWith('UPDATE SCHEDULE_ITEMS SET')) {
+    const docId = params[params.length - 1]
+    const [
+      time,
+      period,
+      track,
+      title,
+      speaker,
+      venue,
+      badge,
+      badgeColor,
+      description,
+      orderNum,
+      active,
+    ] = params
+
+    const item = (data.schedule_items || []).find((s) => s.doc_id === docId)
+    if (item) {
+      item.time = time
+      item.period = period
+      item.track = track
+      item.title = title
+      item.speaker = speaker
+      item.venue = venue
+      item.badge = badge
+      item.badge_color = badgeColor
+      item.description = description
+      item.order_num = Number(orderNum) || 0
+      item.active = active ? 1 : 0
+      writeData(data)
+    }
+    return [{ affectedRows: item ? 1 : 0 }, []]
+  }
+
+  // 27. DELETE FROM schedule_items WHERE doc_id = ?
+  if (cleanSql.toUpperCase().startsWith('DELETE FROM SCHEDULE_ITEMS WHERE DOC_ID =')) {
+    const [docId] = params
+    const beforeLen = (data.schedule_items || []).length
+    data.schedule_items = (data.schedule_items || []).filter((e) => e.doc_id !== docId)
+    writeData(data)
+    return [{ affectedRows: beforeLen !== data.schedule_items.length ? 1 : 0 }, []]
+  }
+
+  // 28. DELETE FROM schedule_items (bulk reset)
+  if (cleanSql.toUpperCase().startsWith('DELETE FROM SCHEDULE_ITEMS')) {
+    data.schedule_items = []
+    writeData(data)
+    return [{ affectedRows: 1 }, []]
+  }
+
+  // 29. DELETE FROM schedule_settings (bulk reset)
+  if (cleanSql.toUpperCase().startsWith('DELETE FROM SCHEDULE_SETTINGS')) {
+    data.schedule_settings = []
+    writeData(data)
+    return [{ affectedRows: 1 }, []]
   }
 
   return [[], []]

@@ -8,6 +8,7 @@ import { initDatabase } from './config/db.js'
 import authRoutes from './routes/auth.js'
 import studentRoutes from './routes/students.js'
 import sponsorRoutes from './routes/sponsors.js'
+import scheduleRoutes from './routes/schedule.js'
 
 dotenv.config()
 
@@ -44,6 +45,9 @@ app.use('/students', studentRoutes)
 
 app.use('/api/sponsors', sponsorRoutes)
 app.use('/sponsors', sponsorRoutes)
+
+app.use('/api/schedule', scheduleRoutes)
+app.use('/schedule', scheduleRoutes)
 
 // Health check endpoint
 const healthCheck = (req, res) => {
