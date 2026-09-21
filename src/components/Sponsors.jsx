@@ -26,20 +26,28 @@ export default function Sponsors({ compact = false }) {
   const [sponsors, setSponsors] = useState([])
 
   useEffect(() => {
+    // Merge helper: Firebase sponsors take priority; seed sponsors fill the rest (deduped by id/name)
+    function mergeWithSeed(firebaseList) {
+      const base = (firebaseList || []).filter((s) => s.active !== false && !isSampleSponsor(s))
+      const baseIds = new Set(base.map((s) => (s.id || s.docId || s.name || '').toLowerCase()))
+      const seedExtras = seedSponsors.filter(
+        (s) => s.active !== false && !baseIds.has((s.id || s.name || '').toLowerCase())
+      )
+      return [...base, ...seedExtras]
+    }
+
     let unsub = () => {}
     try {
       unsub = watchSponsors((list) => {
-        const active = (list || []).filter((s) => s.active !== false && !isSampleSponsor(s))
-        setSponsors(active)
+        setSponsors(mergeWithSeed(list))
       })
     } catch {
       getActiveSponsorsOnce().then((list) => {
-        if (list) {
-          const active = list.filter((s) => s.active !== false && !isSampleSponsor(s))
-          setSponsors(active)
-        }
+        setSponsors(mergeWithSeed(list))
       })
     }
+    // Always show seed sponsors immediately while Firebase loads
+    setSponsors(mergeWithSeed([]))
     return () => unsub()
   }, [])
 
