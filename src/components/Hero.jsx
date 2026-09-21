@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   Users2,
+  Download,
 } from 'lucide-react'
 import eventConfig from '../config/eventConfig'
 import HeroInteractivePass from './HeroInteractivePass'
@@ -92,6 +93,14 @@ export default function Hero() {
               <span>Register for Free</span>
               <ArrowRight size={16} />
             </Link>
+            <a
+              href="/images/cgp2026-brochure.jpg"
+              download="CGP2026-Brochure.jpg"
+              className="inline-flex items-center gap-2 rounded-xl border border-amber-400/50 bg-amber-400/10 px-5 py-2.5 text-sm font-semibold text-amber-300 backdrop-blur-sm transition-all duration-200 hover:bg-amber-400/20 hover:border-amber-400 hover:text-amber-200 hover:shadow-lg hover:shadow-amber-500/10 active:scale-95 whitespace-nowrap"
+            >
+              <Download size={16} />
+              <span>Download Brochure</span>
+            </a>
             <Link to="/about" className="btn-secondary">
               Explore Program &amp; Speakers
             </Link>

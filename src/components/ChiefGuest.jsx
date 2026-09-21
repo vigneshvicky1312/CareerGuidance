@@ -39,6 +39,8 @@ function GuestAvatar({ src, name, className, initialsClassName = 'text-lg' }) {
     <img
       src={src}
       alt={name}
+      loading="lazy"
+      decoding="async"
       className={`object-cover ${className}`}
       onError={() => setImgError(true)}
     />
@@ -110,7 +112,7 @@ export default function ChiefGuest() {
   }
 
   return (
-    <section id="chief-guest" className="bg-slate-50/70 py-16 md:py-24">
+    <section id="chief-guest" className="bg-slate-50/70 py-16 md:py-24 overflow-hidden">
       <div className="section !py-0">
         {/* Section Heading */}
         <div className="text-center max-w-3xl mx-auto">
@@ -257,91 +259,114 @@ export default function ChiefGuest() {
           </div>
         )}
 
-        {/* ─── 4 ADDITIONAL GUESTS FROM VARIOUS DESIGNATIONS ─── */}
+        {/* ─── GUEST SPEAKERS GRID — 2×2 ─── */}
         {guests.length > 0 && (
           <div className="mt-16">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200 pb-4">
               <div>
                 <p className="font-mono text-xs font-semibold uppercase tracking-wider text-sky-600">
-                  Multidisciplinary Panel
+                  Esteemed Speakers
                 </p>
                 <h3 className="text-2xl font-bold tracking-tight text-navy-950 sm:text-3xl">
-                  Distinguished Guests & Mentors
+                  Guest Speakers & Mentors
                 </h3>
               </div>
               <p className="text-sm text-slate-500 max-w-md">
-                Representing higher education, civil administration, banking & finance, and startup entrepreneurship.
+                Visionaries from entrepreneurship, education, social welfare, and personal development guiding you at CGP 2026.
               </p>
             </div>
 
-            <div className={`mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 ${guests.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
+            <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
               {guests.map((g) => {
                 const style = badgeColorMap[g.badgeColor] || badgeColorMap.sky
                 return (
                   <div
                     key={g.id || g.name}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-slate-300"
+                    className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-navy-950/5 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-slate-300 will-change-transform"
                   >
-                    <div>
-                      {/* Guest Role Badge */}
-                      <div className="flex items-center justify-between gap-2">
+                    {/* Decorative glow */}
+                    <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-sky-100/40 blur-3xl" />
+
+                    <div className="p-7 flex flex-col h-full">
+                      {/* Badge row */}
+                      <div className="flex items-center justify-between gap-2 min-w-0">
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tracking-wide ${style.badge}`}
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold tracking-wide min-w-0 max-w-[75%] ${style.badge}`}
                         >
-                          <Sparkles size={11} /> {g.roleBadge}
+                          <Sparkles size={12} className="shrink-0" />
+                          <span className="truncate">{g.roleBadge}</span>
                         </span>
+                        <span className="text-[11px] font-mono text-slate-400 shrink-0">CGP 2026</span>
                       </div>
 
-                      {/* Avatar & Info */}
-                      <div className="mt-5 flex items-center gap-3.5">
+                      {/* Photo + Identity row */}
+                      <div className="mt-6 flex items-start gap-5">
+                        {/* Large portrait photo */}
                         <div
-                          className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-navy-950 ring-2 ${style.ring}`}
+                          className={`relative h-24 w-20 sm:h-28 sm:w-24 shrink-0 overflow-hidden rounded-2xl bg-navy-950 ring-4 ${style.ring} shadow-lg`}
                         >
                           <GuestAvatar
                             src={g.photo}
                             name={g.name}
-                            className="h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                            initialsClassName="text-base"
+                            className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+                            initialsClassName="text-2xl"
                           />
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="truncate font-display text-base font-bold text-navy-950 group-hover:text-sky-600 transition">
+
+                        {/* Name / title block */}
+                        <div className="min-w-0 flex-1 pt-1">
+                          <h4 className="font-display text-lg sm:text-xl font-bold text-navy-950 group-hover:text-sky-600 transition leading-tight break-words">
                             {g.name}
                           </h4>
-                          <p className="text-xs font-semibold text-slate-700 line-clamp-2 mt-0.5">
+                          <p className="mt-1 text-sm font-semibold text-sky-700 leading-snug break-words">
                             {g.designation}
                           </p>
-                          <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                            {g.organization}
+                          <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
+                            <Building2 size={13} className="shrink-0 text-slate-400" />
+                            <span className="line-clamp-2">{g.organization}</span>
                           </p>
+                          <span className="mt-2 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+                            {g.qualification}
+                          </span>
                         </div>
                       </div>
 
-                      {/* Topic / Specialization Pill */}
-                      <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
-                        <div className="flex items-start gap-2">
-                          <BookOpen size={14} className={`shrink-0 mt-0.5 ${style.accent}`} />
+                      {/* Session Focus */}
+                      <div className="mt-5 rounded-2xl border border-slate-100 bg-gradient-to-r from-slate-50 to-white p-4">
+                        <div className="flex items-start gap-2.5">
+                          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm`}>
+                            <BookOpen size={15} className={style.accent} />
+                          </div>
                           <div>
                             <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                               Session Focus
                             </span>
-                            <p className="text-xs font-semibold text-navy-950 line-clamp-2 leading-tight">
+                            <p className="mt-0.5 text-sm font-semibold text-navy-950 leading-snug">
                               {g.sessionTopic || g.specialization}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      {/* Bio brief */}
-                      <p className="mt-3 text-xs leading-relaxed text-slate-600 line-clamp-3">
+                      {/* Bio */}
+                      <p className="mt-4 text-sm leading-relaxed text-slate-600 line-clamp-4 flex-1">
                         {g.bio}
                       </p>
-                    </div>
 
-                    {/* Footer / Qualification */}
-                    <div className="mt-4 border-t border-slate-100 pt-3 flex items-center justify-between text-[11px] text-slate-500">
-                      <span className="font-medium text-slate-700 truncate">{g.qualification}</span>
-                      <span className="shrink-0 text-sky-600 font-medium">Session Speaker</span>
+                      {/* Footer */}
+                      <div className="mt-5 border-t border-slate-100 pt-4 flex items-center justify-between">
+                        <div className="flex flex-wrap gap-1.5">
+                          {(g.expertise || []).slice(0, 2).map((e) => (
+                            <span
+                              key={e}
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-medium text-navy-800 shadow-sm"
+                            >
+                              <BadgeCheck size={11} className="text-sky-500" /> {e}
+                            </span>
+                          ))}
+                        </div>
+                        <span className="shrink-0 text-xs font-semibold text-sky-600 ml-2">Speaker ✦</span>
+                      </div>
                     </div>
                   </div>
                 )
@@ -349,6 +374,7 @@ export default function ChiefGuest() {
             </div>
           </div>
         )}
+
       </div>
     </section>
   )
