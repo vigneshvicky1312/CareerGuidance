@@ -54,10 +54,9 @@ export default function Hero() {
           {/* Event Theme Title Graphic */}
           <div className="mt-4 sm:mt-5">
             <img
-              src="/images/event-title-the-next-step.jpg"
+              src="/images/event-title-the-next-step.png"
               alt="The Next Step — Dream • Plan • Achieve"
-              className="h-16 sm:h-20 md:h-24 w-auto object-contain drop-shadow-lg"
-              style={{ mixBlendMode: 'screen' }}
+              className="h-16 sm:h-20 md:h-24 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
               loading="eager"
               decoding="async"
             />

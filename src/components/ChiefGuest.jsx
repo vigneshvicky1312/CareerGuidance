@@ -118,10 +118,9 @@ export default function ChiefGuest() {
         <div className="text-center max-w-3xl mx-auto">
           {/* Event Theme Accent */}
           <img
-            src="/images/event-title-the-next-step.jpg"
+            src="/images/event-title-the-next-step.png"
             alt="The Next Step — Dream • Plan • Achieve"
-            className="h-10 sm:h-12 w-auto object-contain mx-auto mb-3 opacity-85"
-            style={{ mixBlendMode: 'multiply' }}
+            className="h-10 sm:h-12 w-auto object-contain mx-auto mb-3"
             loading="lazy"
             decoding="async"
           />

@@ -34,10 +34,9 @@ export default function AboutEvent() {
       <div className="max-w-3xl">
         {/* Event Theme Accent */}
         <img
-          src="/images/event-title-the-next-step.jpg"
+          src="/images/event-title-the-next-step.png"
           alt="The Next Step — Dream • Plan • Achieve"
-          className="h-12 sm:h-14 w-auto object-contain mb-4 opacity-90"
-          style={{ mixBlendMode: 'multiply' }}
+          className="h-12 sm:h-14 w-auto object-contain mb-4"
           loading="lazy"
           decoding="async"
         />
