@@ -32,6 +32,14 @@ export default function AboutEvent() {
   return (
     <section id="about" className="section">
       <div className="max-w-3xl">
+        {/* Event Theme Accent */}
+        <img
+          src="/images/event-title-the-next-step.jpg"
+          alt="The Next Step — Dream • Plan • Achieve"
+          className="h-12 sm:h-14 w-auto object-contain mb-4 opacity-90"
+          loading="lazy"
+          decoding="async"
+        />
         <span className="eyebrow">
           <Sparkles size={14} className="text-sky-500" /> About the Program
         </span>

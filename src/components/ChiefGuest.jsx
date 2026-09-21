@@ -116,9 +116,17 @@ export default function ChiefGuest() {
       <div className="section !py-0">
         {/* Section Heading */}
         <div className="text-center max-w-3xl mx-auto">
+          {/* Event Theme Accent */}
+          <img
+            src="/images/event-title-the-next-step.jpg"
+            alt="The Next Step — Dream • Plan • Achieve"
+            className="h-10 sm:h-12 w-auto object-contain mx-auto mb-3 opacity-85"
+            loading="lazy"
+            decoding="async"
+          />
           <span className="inline-flex items-center gap-1.5 rounded-full bg-navy-950 px-4 py-1.5 font-mono text-xs uppercase tracking-widest text-sky-300">
             <Sparkles size={13} className="text-gold-400" />
-            Distinguished Personalities & Speakers
+            Distinguished Personalities &amp; Speakers
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-navy-950 sm:text-4xl md:text-5xl">
             Learn From Industry Titans & Eminent Leaders

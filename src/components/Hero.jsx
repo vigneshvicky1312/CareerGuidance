@@ -51,9 +51,16 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="mt-3 sm:mt-4 font-display text-base font-medium text-slate-200 sm:text-xl md:text-2xl break-words">
-            "{eventConfig.tagline}"
-          </p>
+          {/* Event Theme Title Graphic */}
+          <div className="mt-4 sm:mt-5">
+            <img
+              src="/images/event-title-the-next-step.jpg"
+              alt="The Next Step — Dream • Plan • Achieve"
+              className="h-16 sm:h-20 md:h-24 w-auto object-contain drop-shadow-lg"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
 
           <p className="mt-3 flex items-start sm:items-center gap-2 text-xs sm:text-base text-slate-300">
             <GraduationCap size={18} className="text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
