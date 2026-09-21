@@ -37,6 +37,7 @@ export default function AboutEvent() {
           src="/images/event-title-the-next-step.jpg"
           alt="The Next Step — Dream • Plan • Achieve"
           className="h-12 sm:h-14 w-auto object-contain mb-4 opacity-90"
+          style={{ mixBlendMode: 'multiply' }}
           loading="lazy"
           decoding="async"
         />

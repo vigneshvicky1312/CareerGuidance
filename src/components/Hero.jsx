@@ -57,6 +57,7 @@ export default function Hero() {
               src="/images/event-title-the-next-step.jpg"
               alt="The Next Step — Dream • Plan • Achieve"
               className="h-16 sm:h-20 md:h-24 w-auto object-contain drop-shadow-lg"
+              style={{ mixBlendMode: 'screen' }}
               loading="eager"
               decoding="async"
             />

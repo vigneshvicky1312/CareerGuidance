@@ -121,6 +121,7 @@ export default function ChiefGuest() {
             src="/images/event-title-the-next-step.jpg"
             alt="The Next Step — Dream • Plan • Achieve"
             className="h-10 sm:h-12 w-auto object-contain mx-auto mb-3 opacity-85"
+            style={{ mixBlendMode: 'multiply' }}
             loading="lazy"
             decoding="async"
           />
