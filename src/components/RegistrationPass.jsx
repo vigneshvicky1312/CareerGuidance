@@ -4,16 +4,8 @@ import { QRCodeCanvas } from 'qrcode.react'
 import { buildStudentQrValue } from '../utils/qrGenerator'
 import { Printer } from 'lucide-react'
 import TicketCard from './TicketCard'
-
-export default function RegistrationPass({ student }) {
-  const qrRef = useRef(null)
-
-  function handlePrint() {
-    const canvas = qrRef.current?.querySelector('canvas')
-    const qrDataUrl = canvas ? canvas.toDataURL('image/png') : ''
-    const origin = window.location.origin
-
-    const html = `<!DOCTYPE html>
+export function generatePassHtml({ student, origin, qrDataUrl, autoPrint = true }) {
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -728,6 +720,7 @@ body {
 
 </div><!-- /pass-card-frame -->
 
+${autoPrint ? `
 <script>
   window.addEventListener('load', function() {
     setTimeout(function() {
@@ -735,9 +728,19 @@ body {
       window.print();
     }, 350);
   });
-</script>
+</script>` : ''}
 </body>
 </html>`
+}
+
+export default function RegistrationPass({ student }) {
+  const qrRef = useRef(null)
+
+  function handlePrint() {
+    const canvas = qrRef.current?.querySelector('canvas')
+    const qrDataUrl = canvas ? canvas.toDataURL('image/png') : ''
+    const origin = window.location.origin
+    const html = generatePassHtml({ student, origin, qrDataUrl, autoPrint: true })
 
     const win = window.open('', '_blank', 'width=950,height=850')
     win.document.write(html)

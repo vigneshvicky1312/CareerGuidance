@@ -14,6 +14,7 @@ const LocationPage = lazy(() => import('./pages/Location'))
 const SponsorsPage = lazy(() => import('./pages/Sponsors'))
 const ContactPage = lazy(() => import('./pages/Contact'))
 const CheckIn = lazy(() => import('./pages/CheckIn'))
+const SamplePassPreview = lazy(() => import('./pages/SamplePassPreview'))
 
 // Admin pages
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'))
@@ -45,6 +46,8 @@ export default function App() {
             <Route path="/about" element={<About />} />
             <Route path="/register" element={<Register />} />
             <Route path="/registration-success" element={<RegistrationSuccess />} />
+            <Route path="/sample-pass" element={<SamplePassPreview />} />
+            <Route path="/pass-preview" element={<SamplePassPreview />} />
             <Route path="/location" element={<LocationPage />} />
             <Route path="/sponsors" element={<SponsorsPage />} />
             <Route path="/contact" element={<ContactPage />} />

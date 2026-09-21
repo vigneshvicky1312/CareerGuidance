@@ -3,13 +3,18 @@ import eventConfig from '../config/eventConfig'
 import RegistrationPass from '../components/RegistrationPass'
 import { PartyPopper } from 'lucide-react'
 
+const sampleStudent = {
+  name: 'Vicky V',
+  college: 'Alagappa Government Arts College, Karaikudi',
+  department: 'B.Sc. Computer Science (Final Year)',
+  registrationId: 'CGP2026-0020',
+  email: 'vicky@example.com',
+  phone: '+91 99944 39565',
+}
+
 export default function RegistrationSuccess() {
   const location = useLocation()
-  const student = location.state?.student
-
-  if (!student) {
-    return <Navigate to="/register" replace />
-  }
+  const student = location.state?.student || sampleStudent
 
   return (
     <section className="section max-w-2xl w-full overflow-x-hidden text-center">
