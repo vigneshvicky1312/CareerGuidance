@@ -11,535 +11,704 @@ export default function RegistrationPass({ student }) {
   function handlePrint() {
     const canvas = qrRef.current?.querySelector('canvas')
     const qrDataUrl = canvas ? canvas.toDataURL('image/png') : ''
+    const origin = window.location.origin
 
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>Entry Pass – ${student.registrationId}</title>
+<title>Official Entry Pass – ${student.registrationId} – ${eventConfig.eventName}</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-@page { size: A4 portrait; margin: 8mm 14mm; }
+@page {
+  size: A4 portrait;
+  margin: 6mm 10mm 6mm 10mm;
+}
 body {
-  font-family: 'Times New Roman', 'Georgia', serif;
-  background: #fff;
-  color: #111;
-  font-size: 10pt;
-  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 8.5pt;
+  line-height: 1.35;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
 
-/* ─── Typography ─── */
-.sans { font-family: Arial, 'Helvetica Neue', sans-serif; }
-.mono { font-family: 'Courier New', monospace; }
-
-/* ─── Top Institution Header ─── */
+/* ─── Institutional Header ─── */
 .inst-header {
-  text-align: center;
-  padding-bottom: 6pt;
-  border-bottom: 2pt solid #1a2744;
-}
-.inst-name {
-  font-family: Arial, sans-serif;
-  font-size: 14pt;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #1a2744;
-}
-.uni-name {
-  font-family: Arial, sans-serif;
-  font-size: 10pt;
-  color: #444;
-  margin-top: 2pt;
-  letter-spacing: 0.02em;
-}
-.inst-address {
-  font-size: 8pt;
-  color: #777;
-  margin-top: 3pt;
-}
-.accred-line {
-  font-size: 7.5pt;
-  color: #999;
-  margin-top: 2pt;
-  font-style: italic;
-}
-
-/* ─── Pass Title Banner ─── */
-.pass-banner {
-  background: #1a2744;
-  color: #fff;
-  text-align: center;
-  padding: 5pt 0;
-  margin: 6pt 0 0 0;
-}
-.event-name {
-  font-family: Arial, sans-serif;
-  font-size: 13pt;
-  font-weight: bold;
-  letter-spacing: 0.03em;
-}
-.pass-type {
-  font-family: Arial, sans-serif;
-  font-size: 8pt;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #c9a84c;
-  margin-top: 3pt;
-}
-
-/* ─── Gold divider ─── */
-.gold-rule {
-  height: 2pt;
-  background: #c9a84c;
-  margin: 0 0 8pt 0;
-}
-
-/* ─── Main two-column layout ─── */
-.main-layout {
-  display: flex;
-  gap: 16pt;
-  align-items: flex-start;
-}
-.col-left { flex: 1; }
-.col-right {
-  width: 110pt;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8pt;
-}
-
-/* ─── Participant block ─── */
-.participant-block {
-  border: 1pt solid #1a2744;
-  padding: 7pt 10pt;
-  margin-bottom: 8pt;
-  position: relative;
-}
-.participant-block::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 4pt;
-  height: 100%;
-  background: #1a2744;
-}
-.participant-inner { padding-left: 8pt; }
-.label-sm {
-  font-family: Arial, sans-serif;
-  font-size: 7pt;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #888;
-  margin-bottom: 2pt;
-}
-.participant-name {
-  font-family: Arial, sans-serif;
-  font-size: 18pt;
-  font-weight: bold;
-  color: #1a2744;
-  line-height: 1.1;
-}
-.participant-college {
-  font-family: Arial, sans-serif;
-  font-size: 9.5pt;
-  color: #333;
-  margin-top: 4pt;
-  font-weight: bold;
-}
-.participant-dept {
-  font-size: 8.5pt;
-  color: #555;
-  margin-top: 1pt;
-  font-style: italic;
-}
-.reg-id-row {
-  margin-top: 5pt;
-  display: flex;
-  align-items: center;
-  gap: 8pt;
-}
-.reg-id-label {
-  font-family: Arial, sans-serif;
-  font-size: 7pt;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #888;
-}
-.reg-id-val {
-  font-family: 'Courier New', monospace;
-  font-size: 11pt;
-  font-weight: bold;
-  color: #1a2744;
-  letter-spacing: 0.05em;
-  background: #f5f7fa;
-  padding: 2pt 8pt;
-  border: 1pt solid #d0d8e8;
-}
-
-/* ─── Details table ─── */
-.details-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 7pt;
-  font-size: 9pt;
-}
-.details-table caption {
-  font-family: Arial, sans-serif;
-  font-size: 7pt;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #888;
-  text-align: left;
-  padding-bottom: 5pt;
-  border-bottom: 0.5pt solid #ccc;
-  margin-bottom: 4pt;
-  caption-side: top;
-}
-.details-table tr { border-bottom: 0.5pt solid #eee; }
-.details-table tr:last-child { border-bottom: none; }
-.details-table td {
-  padding: 2.5pt 0;
-  vertical-align: top;
-}
-.details-table .td-label {
-  font-family: Arial, sans-serif;
-  font-size: 8pt;
-  color: #777;
-  width: 80pt;
-  padding-right: 8pt;
-}
-.details-table .td-val {
-  font-size: 9pt;
-  color: #111;
-  font-weight: 600;
-  font-family: Arial, sans-serif;
-}
-.details-table .td-sub {
-  font-family: Arial, sans-serif;
-  font-size: 7.5pt;
-  color: #666;
-  display: block;
-  font-weight: normal;
-}
-
-/* ─── Section heading ─── */
-.section-heading {
-  font-family: Arial, sans-serif;
-  font-size: 7pt;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #888;
-  border-bottom: 0.5pt solid #ccc;
-  padding-bottom: 3pt;
-  margin-bottom: 5pt;
-}
-
-/* ─── Coordinators ─── */
-.coord-row {
-  display: flex;
-  gap: 0;
-  margin-bottom: 7pt;
-}
-.coord-cell {
-  flex: 1;
-  padding-right: 12pt;
-  border-right: 0.5pt solid #e0e0e0;
-  margin-right: 12pt;
-}
-.coord-cell:last-child {
-  border-right: none;
-  margin-right: 0;
-  padding-right: 0;
-}
-.coord-role { font-family: Arial, sans-serif; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.12em; color: #999; margin-bottom: 2pt; }
-.coord-name { font-family: Arial, sans-serif; font-size: 9pt; font-weight: bold; color: #1a2744; }
-.coord-dept { font-size: 8pt; color: #555; font-style: italic; }
-
-/* ─── QR column ─── */
-.qr-box {
-  border: 1pt solid #1a2744;
-  padding: 7pt;
-  text-align: center;
-}
-.qr-box img { display: block; width: 96pt; height: 96pt; }
-.qr-caption {
-  font-family: Arial, sans-serif;
-  font-size: 6.5pt;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #888;
-  margin-top: 5pt;
-}
-.qr-reg {
-  font-family: 'Courier New', monospace;
-  font-size: 8pt;
-  font-weight: bold;
-  color: #1a2744;
-  margin-top: 3pt;
-  word-break: break-all;
-}
-.qr-note {
-  font-size: 7pt;
-  color: #777;
-  margin-top: 8pt;
-  text-align: center;
-  line-height: 1.5;
-  font-style: italic;
-}
-
-/* ─── Speakers section ─── */
-.speakers-section { margin-bottom: 7pt; }
-.speaker-row {
-  display: flex;
-  gap: 0;
-}
-.speaker-cell {
-  flex: 1;
-  padding: 3pt 6pt 3pt 0;
-  border-right: 0.5pt solid #e0e0e0;
-  margin-right: 6pt;
-}
-.speaker-cell:last-child { border-right: none; margin-right: 0; padding-right: 0; }
-.speaker-role { font-family: Arial, sans-serif; font-size: 6.5pt; text-transform: uppercase; letter-spacing: 0.1em; color: #c9a84c; margin-bottom: 1pt; }
-.speaker-name { font-family: Arial, sans-serif; font-size: 8.5pt; font-weight: bold; color: #1a2744; }
-.speaker-desig { font-size: 7.5pt; color: #555; font-style: italic; line-height: 1.4; }
-.speaker-org   { font-size: 7.5pt; color: #777; }
-
-/* ─── Validity strip ─── */
-.validity-strip {
-  border: 1pt solid #1a2744;
-  padding: 4pt 10pt;
-  margin-bottom: 7pt;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16pt;
-  background: #f5f7fa;
-}
-.validity-field { text-align: center; }
-.validity-label { font-family: Arial, sans-serif; font-size: 6.5pt; text-transform: uppercase; letter-spacing: 0.12em; color: #888; margin-bottom: 2pt; }
-.validity-value { font-family: Arial, sans-serif; font-size: 9pt; font-weight: bold; color: #1a2744; }
-.validity-divider { width: 0.5pt; height: 28pt; background: #ccc; }
-
-/* ─── Footer ─── */
-.doc-footer {
-  border-top: 1.5pt solid #1a2744;
-  padding-top: 5pt;
-  margin-top: 2pt;
-}
-.footer-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12pt;
+  padding-bottom: 5pt;
+  border-bottom: 2pt solid #0f2b5c;
 }
-.footer-addr {
-  font-size: 7pt;
-  color: #666;
-  line-height: 1.5;
-}
-.footer-disclaimer {
-  font-size: 7pt;
-  color: #888;
-  text-align: center;
-  font-style: italic;
+.inst-left {
+  display: flex;
+  align-items: center;
+  gap: 8pt;
   flex: 1;
 }
-.footer-ref {
-  text-align: right;
-  font-family: 'Courier New', monospace;
+.inst-logo {
+  height: 48pt;
+  width: auto;
+  object-fit: contain;
+}
+.inst-text {
+  text-align: left;
+}
+.inst-college {
+  font-size: 13pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0f2b5c;
+  line-height: 1.15;
+}
+.inst-univ {
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 1pt;
+}
+.inst-accred {
+  font-size: 6.8pt;
+  color: #64748b;
+  margin-top: 1pt;
+}
+.inst-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.event-theme-logo {
+  height: 38pt;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ─── Pass Banner ─── */
+.pass-banner {
+  background: linear-gradient(135deg, #0a1931 0%, #0f2b5c 60%, #1e3a8a 100%);
+  color: #ffffff;
+  padding: 4.5pt 10pt;
+  margin-top: 4pt;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 2pt;
+}
+.banner-left {
+  display: flex;
+  flex-direction: column;
+}
+.event-title {
+  font-size: 11.5pt;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+.event-subtitle {
+  font-size: 7.2pt;
+  color: #fbbf24;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.banner-badge {
+  background: #fbbf24;
+  color: #0f172a;
+  font-size: 7pt;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 2.5pt 7pt;
+  border-radius: 2pt;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.gold-line {
+  height: 2pt;
+  background: linear-gradient(90deg, #d97706, #fbbf24, #d97706);
+  margin-bottom: 6pt;
+}
+
+/* ─── Main Two-Column Layout ─── */
+.main-layout {
+  display: flex;
+  gap: 10pt;
+  align-items: flex-start;
+}
+.col-left {
+  flex: 1;
+}
+.col-right {
+  width: 130pt;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6pt;
+}
+
+/* ─── Delegate Card ─── */
+.delegate-box {
+  border: 1pt solid #cbd5e1;
+  border-left: 3.5pt solid #0f2b5c;
+  background: #f8fafc;
+  padding: 5pt 8pt;
+  margin-bottom: 6pt;
+  border-radius: 2pt;
+}
+.section-tag {
+  font-size: 6pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #64748b;
+  margin-bottom: 1pt;
+}
+.delegate-name {
+  font-size: 13pt;
+  font-weight: 800;
+  color: #0f2b5c;
+  line-height: 1.15;
+}
+.delegate-college {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #1e293b;
+  margin-top: 1pt;
+}
+.delegate-dept {
   font-size: 7.5pt;
-  color: #1a2744;
+  color: #475569;
+  font-style: italic;
+}
+.delegate-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 3.5pt;
+  padding-top: 3pt;
+  border-top: 0.5pt dashed #cbd5e1;
+}
+.reg-num-badge {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 9pt;
+  font-weight: 800;
+  color: #0f2b5c;
+  background: #e2e8f0;
+  padding: 1.5pt 6pt;
+  border-radius: 2pt;
+  border: 0.5pt solid #94a3b8;
+}
+.pass-status-pill {
+  font-size: 6.5pt;
+  font-weight: 700;
+  color: #047857;
+  background: #d1fae5;
+  padding: 1.5pt 5pt;
+  border-radius: 2pt;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ─── Event Key Details ─── */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4pt 8pt;
+  border: 1pt solid #e2e8f0;
+  padding: 5pt 7pt;
+  background: #ffffff;
+  margin-bottom: 6pt;
+  border-radius: 2pt;
+}
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+.info-label {
+  font-size: 6pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #64748b;
+}
+.info-val {
+  font-size: 8pt;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+.info-sub {
+  font-size: 7pt;
+  font-weight: normal;
+  color: #475569;
+}
+
+/* ─── Section Header ─── */
+.sec-title {
+  font-size: 6.5pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #0f2b5c;
+  border-bottom: 1pt solid #cbd5e1;
+  padding-bottom: 1.5pt;
+  margin-bottom: 3.5pt;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ─── Speakers 2x2 Grid ─── */
+.speakers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5pt 6pt;
+  margin-bottom: 6pt;
+}
+.speaker-card {
+  display: flex;
+  align-items: center;
+  gap: 5pt;
+  border: 0.75pt solid #e2e8f0;
+  border-radius: 2pt;
+  padding: 3pt 4pt;
+  background: #f8fafc;
+}
+.speaker-avatar {
+  width: 26pt;
+  height: 26pt;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1pt solid #0f2b5c;
+}
+.speaker-info {
+  flex: 1;
+  min-width: 0;
+}
+.speaker-badge {
+  font-size: 5.5pt;
+  font-weight: 700;
+  color: #b45309;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+.speaker-name {
+  font-size: 7.8pt;
+  font-weight: 800;
+  color: #0f2b5c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+.speaker-org {
+  font-size: 6.5pt;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.15;
+}
+
+/* ─── Leadership & Coordinators ─── */
+.coord-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4pt;
+  margin-bottom: 6pt;
+  background: #f1f5f9;
+  border: 0.75pt solid #cbd5e1;
+  padding: 3.5pt 5pt;
+  border-radius: 2pt;
+}
+.coord-box {
+  border-right: 0.5pt solid #cbd5e1;
+  padding-right: 4pt;
+}
+.coord-box:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+.coord-role {
+  font-size: 5.5pt;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.coord-name {
+  font-size: 7.2pt;
+  font-weight: 700;
+  color: #0f2b5c;
+  line-height: 1.2;
+}
+.coord-sub {
+  font-size: 6pt;
+  color: #475569;
+  line-height: 1.15;
+}
+
+/* ─── Instructions & Sponsor ─── */
+.bottom-row {
+  display: flex;
+  gap: 8pt;
+  margin-bottom: 4pt;
+}
+.instructions-box {
+  flex: 1;
+  border: 0.75pt solid #cbd5e1;
+  border-radius: 2pt;
+  padding: 3.5pt 5pt;
+  background: #ffffff;
+}
+.instruction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.instruction-list li {
+  font-size: 6.2pt;
+  color: #334155;
+  margin-bottom: 1.5pt;
+  display: flex;
+  align-items: flex-start;
+  gap: 3pt;
+  line-height: 1.25;
+}
+.instruction-list li::before {
+  content: "•";
+  color: #0f2b5c;
   font-weight: bold;
+}
+.sponsor-box {
+  width: 90pt;
+  border: 0.75pt solid #cbd5e1;
+  border-radius: 2pt;
+  padding: 3.5pt 4pt;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-shrink: 0;
+}
+.sponsor-tag {
+  font-size: 5.5pt;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2pt;
+}
+.sponsor-img {
+  height: 24pt;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 1.5pt;
+}
+.sponsor-title {
+  font-size: 6.5pt;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+/* ─── Right Column: QR, Validation & Stubs ─── */
+.qr-container {
+  border: 1.5pt solid #0f2b5c;
+  border-radius: 2pt;
+  padding: 6pt;
+  text-align: center;
+  background: #ffffff;
+}
+.qr-container img {
+  display: block;
+  margin: 0 auto;
+  width: 88pt;
+  height: 88pt;
+}
+.qr-scan-text {
+  font-size: 6.5pt;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 3pt;
+}
+.qr-reg-text {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 8pt;
+  font-weight: 800;
+  color: #0f2b5c;
+  margin-top: 1pt;
+}
+
+.stub-box {
+  border: 0.75pt dashed #0f2b5c;
+  background: #f8fafc;
+  padding: 4pt 5pt;
+  border-radius: 2pt;
+  text-align: center;
+}
+.stub-title {
+  font-size: 6pt;
+  font-weight: 800;
+  color: #0f2b5c;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.stub-action {
+  font-size: 5.5pt;
+  color: #64748b;
+  margin-top: 1pt;
+}
+.stub-checkbox {
+  display: inline-block;
+  width: 10pt;
+  height: 10pt;
+  border: 1pt solid #0f2b5c;
+  margin-top: 2pt;
+  background: #ffffff;
+}
+
+.issuer-box {
+  border: 0.75pt solid #e2e8f0;
+  padding: 4pt 5pt;
+  border-radius: 2pt;
+  text-align: center;
+  background: #ffffff;
+}
+.issuer-label {
+  font-size: 5.5pt;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.issuer-name {
+  font-size: 6.8pt;
+  font-weight: 800;
+  color: #0f2b5c;
+  line-height: 1.2;
+}
+
+/* ─── Footer ─── */
+.pass-footer {
+  border-top: 1pt solid #cbd5e1;
+  padding-top: 3pt;
+  margin-top: 2pt;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 6pt;
+  color: #64748b;
+}
+.footer-auth {
+  font-weight: 700;
+  color: #0f2b5c;
 }
 </style>
 </head>
 <body>
 
-  <!-- ── Institution Header ── -->
-  <div class="inst-header" style="display:flex;align-items:center;justify-content:center;gap:16px;text-align:left;">
-    <img src="${window.location.origin}/images/cgp-logo-mark.png" alt="CGP Logo" style="height:54px;width:auto;object-fit:contain;" onerror="this.style.display='none'" />
-    <div>
-      <div class="inst-name">${eventConfig.collegeName}</div>
-      <div class="uni-name">${eventConfig.universityName}</div>
-      <div class="inst-address">${eventConfig.instituteAddress}</div>
+  <!-- ── 1. Top Institution Header ── -->
+  <div class="inst-header">
+    <div class="inst-left">
+      <img src="${origin}/images/cgp-logo-mark.png" alt="University Logo" class="inst-logo" onerror="this.style.display='none'" />
+      <div class="inst-text">
+        <div class="inst-college">${eventConfig.collegeName}</div>
+        <div class="inst-univ">${eventConfig.universityName}</div>
+        <div class="inst-accred">A+ Grade by NAAC · Category-I Graded University by MHRD-UGC · Karaikudi, Tamil Nadu</div>
+      </div>
+    </div>
+    <div class="inst-right">
+      <img src="${origin}/images/event-title-the-next-step.png" alt="The Next Step" class="event-theme-logo" onerror="this.style.display='none'" />
     </div>
   </div>
 
-  <!-- ── Pass Title Banner ── -->
-  <div class="pass-banner sans">
-    <div class="event-name">${eventConfig.eventName.toUpperCase()}</div>
-    <div class="pass-type">Official Entry Pass &nbsp;·&nbsp; ${eventConfig.eventId}</div>
+  <!-- ── 2. Pass Title Ribbon ── -->
+  <div class="pass-banner">
+    <div class="banner-left">
+      <div class="event-title">${eventConfig.eventName}</div>
+      <div class="event-subtitle">Official Delegate Entry Pass &amp; Admit Card · ${eventConfig.eventId}</div>
+    </div>
+    <div class="banner-badge">Student Delegate · Admit 1</div>
   </div>
-  <div class="gold-rule"></div>
+  <div class="gold-line"></div>
 
-  <!-- ── Main Layout ── -->
+  <!-- ── 3. Main Content Layout ── -->
   <div class="main-layout">
 
-    <!-- Left Column -->
+    <!-- Left Column: Details, Speakers, Coordinators, Guidelines -->
     <div class="col-left">
 
-      <!-- Participant -->
-      <div class="participant-block">
-        <div class="participant-inner">
-          <div class="label-sm sans">Registered Participant</div>
-          <div class="participant-name">${student.name}</div>
-          <div class="participant-college">${student.college}</div>
-          ${student.department ? `<div class="participant-dept">${student.department}</div>` : ''}
-          <div class="reg-id-row">
-            <span class="reg-id-label sans">Registration No.</span>
-            <span class="reg-id-val mono">${student.registrationId}</span>
+      <!-- Delegate Information -->
+      <div class="delegate-box">
+        <div class="section-tag">Registered Participant</div>
+        <div class="delegate-name">${student.name}</div>
+        <div class="delegate-college">${student.college}</div>
+        ${student.department ? `<div class="delegate-dept">${student.department}</div>` : ''}
+        <div class="delegate-meta-row">
+          <div>
+            <span style="font-size:6pt;color:#64748b;text-transform:uppercase;font-weight:700;margin-right:4pt;">Registration ID:</span>
+            <span class="reg-num-badge">${student.registrationId}</span>
           </div>
+          <div class="pass-status-pill">✓ Verified Registration · Confirmed</div>
         </div>
       </div>
 
-      <!-- Event Details -->
-      <table class="details-table">
-        <caption>Event Details</caption>
-        <tr>
-          <td class="td-label">Date</td>
-          <td class="td-val">${eventConfig.date} <span class="td-sub">${eventConfig.time}</span></td>
-        </tr>
-        <tr>
-          <td class="td-label">Venue</td>
-          <td class="td-val">${eventConfig.venue} <span class="td-sub">${eventConfig.landmark}</span></td>
-        </tr>
-        <tr>
-          <td class="td-label">Address</td>
-          <td class="td-val">${eventConfig.venueAddress}</td>
-        </tr>
-        <tr>
-          <td class="td-label">Organiser</td>
-          <td class="td-val">${eventConfig.organizer}</td>
-        </tr>
-        <tr>
-          <td class="td-label">Contact</td>
-          <td class="td-val">${eventConfig.phone} <span class="td-sub">${eventConfig.email}</span></td>
-        </tr>
-      </table>
-
-      <!-- Validity Strip -->
-      <div class="validity-strip sans">
-        <div class="validity-field">
-          <div class="validity-label">Event Date</div>
-          <div class="validity-value">${eventConfig.date}</div>
+      <!-- Event Schedule & Venue -->
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Date &amp; Timing</span>
+          <span class="info-val">${eventConfig.date}</span>
+          <span class="info-sub">${eventConfig.time} (Reporting: 9:30 AM)</span>
         </div>
-        <div class="validity-divider"></div>
-        <div class="validity-field">
-          <div class="validity-label">Time</div>
-          <div class="validity-value">${eventConfig.time}</div>
+        <div class="info-item">
+          <span class="info-label">Venue &amp; Auditorium</span>
+          <span class="info-val">${eventConfig.venue}</span>
+          <span class="info-sub">${eventConfig.landmark}, Karaikudi</span>
         </div>
-        <div class="validity-divider"></div>
-        <div class="validity-field">
-          <div class="validity-label">Participants</div>
-          <div class="validity-value">${eventConfig.expectedParticipants}+</div>
+        <div class="info-item">
+          <span class="info-label">Organized By</span>
+          <span class="info-val">${eventConfig.collegeShortName}, ${eventConfig.universityName}</span>
+          <span class="info-sub">${eventConfig.instituteAddress.split(',')[0]}</span>
         </div>
-        <div class="validity-divider"></div>
-        <div class="validity-field">
-          <div class="validity-label">Sessions</div>
-          <div class="validity-value">${eventConfig.expertSessions}</div>
+        <div class="info-item">
+          <span class="info-label">Helpdesk &amp; Coordinator</span>
+          <span class="info-val">${eventConfig.phone}</span>
+          <span class="info-sub">${eventConfig.email}</span>
         </div>
       </div>
 
-      <!-- Distinguished Guests -->
-      ${(eventConfig.chiefGuest || (eventConfig.distinguishedGuests && eventConfig.distinguishedGuests.length > 0)) ? `
-      <div class="speakers-section">
-        <div class="section-heading sans">Distinguished Guests &amp; Speakers</div>
-        <div class="speaker-row">
-          ${eventConfig.chiefGuest ? `
-          <div class="speaker-cell">
-            <div class="speaker-role">${eventConfig.chiefGuest.badge || 'Chief Guest'}</div>
-            <div class="speaker-name sans">${eventConfig.chiefGuest.name || ''}</div>
-            <div class="speaker-desig">${eventConfig.chiefGuest.designation || ''}</div>
-            <div class="speaker-org sans">${eventConfig.chiefGuest.organization || ''}</div>
-          </div>` : ''}
-          ${(eventConfig.distinguishedGuests || []).slice(0, 3).map(g => `
-          <div class="speaker-cell">
-            <div class="speaker-role">${g.roleBadge || ''}</div>
-            <div class="speaker-name sans">${g.name || ''}</div>
-            <div class="speaker-desig">${g.designation || ''}</div>
-            <div class="speaker-org sans">${g.organization || ''}</div>
-          </div>`).join('')}
-        </div>
-      </div>` : ''}
+      <!-- Distinguished Personalities & Speakers (All 4 Guests) -->
+      <div class="sec-title">
+        <span>Distinguished Guest Speakers (4 Expert Sessions)</span>
+        <span style="color:#b45309;font-weight:700;">Career Guidance 2026</span>
+      </div>
+      <div class="speakers-grid">
+        ${(eventConfig.distinguishedGuests || []).map(g => `
+        <div class="speaker-card">
+          <img src="${origin}${g.photo}" alt="${g.name}" class="speaker-avatar" onerror="this.style.display='none'" />
+          <div class="speaker-info">
+            <div class="speaker-badge">${g.roleBadge || 'Distinguished Guest'}</div>
+            <div class="speaker-name">${g.name}</div>
+            <div class="speaker-org">${g.organization}</div>
+          </div>
+        </div>`).join('')}
+      </div>
 
-      <!-- Coordinators -->
-      <div>
-        <div class="section-heading sans">Organising Leadership &amp; Coordinators</div>
-        <div class="coord-row">
-          <div class="coord-cell">
-            <div class="coord-role sans">Director</div>
-            <div class="coord-name sans">${eventConfig.director.split(',')[0]}</div>
-            <div class="coord-dept">${eventConfig.director.split(',').slice(1).join(',').trim()}</div>
-          </div>
-          <div class="coord-cell">
-            <div class="coord-role sans">Faculty Coordinator</div>
-            <div class="coord-name sans">${eventConfig.facultyCoordinator.split(',')[0]}</div>
-            <div class="coord-dept">${eventConfig.facultyCoordinator.split(',').slice(1).join(',').trim()}</div>
-          </div>
-          <div class="coord-cell">
-            <div class="coord-role sans">Student Coordinator</div>
-            <div class="coord-name sans">${eventConfig.studentCoordinator.split(',')[0]}</div>
-            <div class="coord-dept">${eventConfig.studentCoordinator.split(',').slice(1).join(',').trim()}</div>
-          </div>
+      <!-- Leadership & Coordinators -->
+      <div class="sec-title">Organising Leadership &amp; Coordinators</div>
+      <div class="coord-grid">
+        <div class="coord-box">
+          <div class="coord-role">Director</div>
+          <div class="coord-name">${eventConfig.director.split(',')[0]}</div>
+          <div class="coord-sub">${eventConfig.director.split(',').slice(1, 2).join('').trim()}</div>
+        </div>
+        <div class="coord-box">
+          <div class="coord-role">Faculty Coordinator</div>
+          <div class="coord-name">${eventConfig.facultyCoordinator.split(',')[0]}</div>
+          <div class="coord-sub">${eventConfig.facultyCoordinator.split(',').slice(1, 2).join('').trim()}</div>
+        </div>
+        <div class="coord-box">
+          <div class="coord-role">Student Coordinator</div>
+          <div class="coord-name">${eventConfig.studentCoordinator.split(',')[0]}</div>
+          <div class="coord-sub">${eventConfig.studentCoordinator.split(',').slice(1).join('').trim()}</div>
+        </div>
+      </div>
+
+      <!-- Guidelines & Sponsor Row -->
+      <div class="bottom-row">
+        <div class="instructions-box">
+          <div class="section-tag" style="margin-bottom:2pt;">Important Delegate Guidelines</div>
+          <ul class="instruction-list">
+            <li><strong>Entry Scan:</strong> Present this pass (printout or digital QR) at the registration desk for check-in.</li>
+            <li><strong>Punctuality:</strong> Registration starts at 9:15 AM. Please occupy your seats before 9:45 AM.</li>
+            <li><strong>Kit &amp; Food:</strong> Event kit, lunch, and refreshments will be provided to all verified delegates.</li>
+            <li><strong>Certificate:</strong> Official participation certificates will be awarded upon program completion.</li>
+          </ul>
+        </div>
+
+        <div class="sponsor-box">
+          <div class="sponsor-tag">Official Sponsor</div>
+          <img src="${origin}/images/sponsors/vel-nutrition-centre.jpg" alt="Vel Nutrition Centre" class="sponsor-img" onerror="this.style.display='none'" />
+          <div class="sponsor-title">Vel Nutrition Centre</div>
         </div>
       </div>
 
     </div><!-- /col-left -->
 
-    <!-- Right Column: QR -->
+    <!-- Right Column: QR Verification & Stubs -->
     <div class="col-right">
-      <div class="section-heading sans" style="width:100%;text-align:center;border-color:#ccc">Entry QR Code</div>
-      <div class="qr-box">
-        ${qrDataUrl ? `<img src="${qrDataUrl}" alt="QR Code" />` : ''}
-        <div class="qr-caption sans">Scan for entry verification</div>
-        <div class="qr-reg mono">${student.registrationId}</div>
+
+      <!-- Entry QR Container -->
+      <div class="qr-container">
+        <div class="section-tag" style="text-align:center;margin-bottom:3pt;">Official Gate QR</div>
+        ${qrDataUrl ? `<img src="${qrDataUrl}" alt="Delegate QR Code" />` : ''}
+        <div class="qr-scan-text">Scan for Desk Check-in</div>
+        <div class="qr-reg-text">${student.registrationId}</div>
       </div>
-      <div class="qr-note">
-        Present this pass at the<br/>registration desk for entry.<br/>This pass is non-transferable.
+
+      <!-- Reception Stamp Stub -->
+      <div class="stub-box">
+        <div class="stub-title">Reception Check-in</div>
+        <div class="stub-action">Auditorium Entry Verified</div>
+        <div class="stub-checkbox"></div>
       </div>
-      <div style="margin-top:12pt;width:100%;border-top:0.5pt solid #ccc;padding-top:8pt;">
-        <div class="section-heading sans" style="text-align:center">Issued By</div>
-        <div style="font-family:Arial,sans-serif;font-size:7.5pt;color:#444;text-align:center;line-height:1.6;">
-          <strong>${eventConfig.collegeShortName}</strong><br/>
-          ${eventConfig.collegeName}<br/>
-          ${eventConfig.universityName}
-        </div>
+
+      <!-- Kit & Lunch Stub -->
+      <div class="stub-box">
+        <div class="stub-title">Kit &amp; Lunch Voucher</div>
+        <div class="stub-action">Admit 1 Delegate</div>
+        <div class="stub-checkbox"></div>
       </div>
-    </div>
+
+      <!-- Issued By Authority -->
+      <div class="issuer-box">
+        <div class="issuer-label">Issued By</div>
+        <div class="issuer-name">${eventConfig.collegeShortName}</div>
+        <div style="font-size:6pt;color:#475569;margin-top:1pt;">${eventConfig.collegeName}<br/>${eventConfig.universityName}</div>
+      </div>
+
+    </div><!-- /col-right -->
 
   </div><!-- /main-layout -->
 
-  <!-- ── Footer ── -->
-  <div class="doc-footer">
-    <div class="footer-row">
-      <div class="footer-addr sans">
-        <strong>${eventConfig.collegeName}</strong><br/>
-        ${eventConfig.address}
-      </div>
-      <div class="footer-disclaimer">
-        This pass is issued for the sole purpose of attending the above-mentioned event.<br/>
-        It is non-transferable. Misuse will lead to cancellation without notice.
-      </div>
-      <div class="footer-ref">
-        ${eventConfig.eventId}<br/>
-        ${eventConfig.date}
-      </div>
+  <!-- ── 4. Footer ── -->
+  <div class="pass-footer">
+    <div>
+      <span class="footer-auth">Alagappa Institute of Management</span> · Alagappa University Campus, Karaikudi
+    </div>
+    <div style="font-style:italic;">
+      This pass is non-transferable · Generated via CGP2026 Portal
+    </div>
+    <div style="font-family:monospace;font-weight:bold;color:#0f2b5c;">
+      REF: ${student.registrationId}
     </div>
   </div>
 
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        window.focus();
+        window.print();
+      }, 350);
+    });
+  </script>
 </body>
 </html>`
 
-    const win = window.open('', '_blank', 'width=900,height=800')
+    const win = window.open('', '_blank', 'width=950,height=850')
     win.document.write(html)
     win.document.close()
-    win.onload = () => { win.focus(); win.print() }
   }
 
 
