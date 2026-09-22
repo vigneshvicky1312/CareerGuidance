@@ -436,7 +436,7 @@ export async function initDatabase() {
       port,
       database,
       waitForConnections: true,
-      connectionLimit: 10,
+      connectionLimit: 25,
       queueLimit: 0,
       connectTimeout: 5000,
       ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {}),
@@ -504,7 +504,9 @@ export async function initDatabase() {
           material_distribution_time DATETIME NULL,
           materials JSON,
           INDEX idx_registration_id (registration_id),
-          INDEX idx_event_id (event_id)
+          INDEX idx_event_id (event_id),
+          INDEX idx_registered_at (registered_at),
+          INDEX idx_mobile (mobile)
         ) ENGINE=InnoDB;
       `)
 

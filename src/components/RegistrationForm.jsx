@@ -85,7 +85,7 @@ export default function RegistrationForm() {
       navigate('/registration-success', { state: { student } })
     } catch (err) {
       console.error(err)
-      addToast('Something went wrong while saving your registration. Please try again.', 'error')
+      addToast(err.message || 'Something went wrong while saving your registration. Please try again.', 'error')
     } finally {
       setSubmitting(false)
     }

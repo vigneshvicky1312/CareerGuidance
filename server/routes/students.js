@@ -46,7 +46,18 @@ function mapRowToStudent(row) {
 
 // POST /api/students - Register a new student
 router.post('/', async (req, res) => {
-  const formData = req.body
+  const formData = req.body || {}
+
+  const name = formData.name ? formData.name.trim() : ''
+  const mobile = formData.mobile ? formData.mobile.trim() : ''
+
+  if (!name) {
+    return res.status(400).json({ error: 'Student name is required' })
+  }
+  if (!mobile || !/^[6-9]\d{9}$/.test(mobile)) {
+    return res.status(400).json({ error: 'A valid 10-digit mobile number is required' })
+  }
+
   const pool = getPool()
   const conn = await pool.getConnection()
 
@@ -77,13 +88,11 @@ router.post('/', async (req, res) => {
       materialsObj[key] = false
     })
 
-    const name = formData.name ? formData.name.trim() : ''
     const gender = formData.gender || ''
     const college = formData.college || ''
     const degree = formData.degree ? formData.degree.trim() : ''
     const department = formData.department ? formData.department.trim() : ''
     const year = formData.year || ''
-    const mobile = formData.mobile ? formData.mobile.trim() : ''
     const email = formData.email ? formData.email.trim().toLowerCase() : ''
     const district = formData.district ? formData.district.trim() : ''
     const careerInterest = formData.careerInterest || ''
@@ -114,13 +123,17 @@ router.post('/', async (req, res) => {
       ]
     )
 
+    const [insertedRows] = await conn.query('SELECT * FROM students WHERE doc_id = ?', [docId])
     await conn.commit()
 
-    const [insertedRows] = await pool.query('SELECT * FROM students WHERE doc_id = ?', [docId])
     const student = mapRowToStudent(insertedRows[0])
     res.status(201).json(student)
   } catch (err) {
-    await conn.rollback()
+    try {
+      await conn.rollback()
+    } catch {
+      // rollback error ignore
+    }
     console.error('Error registering student:', err)
     res.status(500).json({ error: 'Failed to register student' })
   } finally {
