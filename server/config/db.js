@@ -316,8 +316,8 @@ export const initialScheduleItems = [
 function getDefaultData() {
   return {
     admin_users: [],
-    counters: [{ event_id: 'CGP2026', value: 5 }],
-    students: initialSampleStudents,
+    counters: [{ event_id: 'CGP2026', value: 0 }],
+    students: [],
     sponsors: [],
     sponsor_enquiries: [],
     schedule_settings: [initialScheduleSettings],
@@ -345,10 +345,11 @@ function readData() {
     const raw = fs.readFileSync(dbFile, 'utf8')
     const data = JSON.parse(raw)
 
-    if (!data.students || data.students.length === 0) {
-      data.students = initialSampleStudents
-      if (!data.counters) data.counters = []
-      data.counters = [{ event_id: 'CGP2026', value: 5 }]
+    if (!data.students) {
+      data.students = []
+    }
+    if (!data.counters || data.counters.length === 0) {
+      data.counters = [{ event_id: 'CGP2026', value: 0 }]
     }
     if (!data.sponsors) {
       data.sponsors = []
@@ -596,28 +597,10 @@ export async function initDatabase() {
         console.log('✅ Seeded initial sample sponsors in MySQL')
       }
 
-      // Seed initial students in MySQL if empty
-      const [studentRows] = await connection.query('SELECT COUNT(*) as count FROM students')
-      if (studentRows[0].count === 0) {
-        for (const st of initialSampleStudents) {
-          await connection.query(
-            `INSERT INTO students (
-              doc_id, registration_id, event_id, name, gender, college, degree,
-              department, year, mobile, email, district, career_interest, food_preference,
-              checked_in, check_in_time, materials_distributed, material_distribution_time, materials, registered_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-              st.doc_id, st.registration_id, st.event_id, st.name, st.gender, st.college, st.degree,
-              st.department, st.year, st.mobile, st.email, st.district, st.career_interest, st.food_preference,
-              st.checked_in, st.check_in_time, st.materials_distributed, st.material_distribution_time, st.materials, st.registered_at
-            ]
-          )
-        }
-        await connection.query(
-          `INSERT INTO counters (event_id, value) VALUES ('CGP2026', 5) ON DUPLICATE KEY UPDATE value = GREATEST(value, 5)`
-        )
-        console.log('✅ Seeded initial sample students in MySQL')
-      }
+      // Ensure counters table has initial entry for CGP2026 if not exists
+      await connection.query(
+        `INSERT INTO counters (event_id, value) VALUES ('CGP2026', 0) ON DUPLICATE KEY UPDATE value = value`
+      )
 
       // Seed initial schedule settings in MySQL if empty
       const [scheduleSettingRows] = await connection.query('SELECT COUNT(*) as count FROM schedule_settings')
