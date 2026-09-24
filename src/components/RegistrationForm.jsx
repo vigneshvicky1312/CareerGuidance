@@ -16,7 +16,6 @@ const initialForm = {
   email: '',
   district: '',
   careerInterest: '',
-  foodPreference: '',
   consent: false,
 }
 
@@ -179,15 +178,6 @@ export default function RegistrationForm() {
               ))}
             </select>
             {errors.careerInterest && <p className="mt-1 text-xs text-red-600">{errors.careerInterest}</p>}
-          </div>
-
-          <div className="sm:col-span-2">
-            <label htmlFor="foodPreference">Food Preference (optional)</label>
-            <select id="foodPreference" value={form.foodPreference} onChange={(e) => update('foodPreference', e.target.value)}>
-              <option value="">Not specified</option>
-              <option>Vegetarian</option>
-              <option>Non-Vegetarian</option>
-            </select>
           </div>
         </div>
 
