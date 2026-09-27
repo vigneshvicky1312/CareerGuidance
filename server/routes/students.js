@@ -58,6 +58,13 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'A valid 10-digit mobile number is required' })
   }
 
+  const yearInput = formData.year ? formData.year.trim() : 'Final Year'
+  if (yearInput && yearInput !== 'Final Year') {
+    return res.status(400).json({
+      error: 'This event is exclusively for Final Year students completing their studies. Pre-final years are not eligible.',
+    })
+  }
+
   const pool = getPool()
   const conn = await pool.getConnection()
 
@@ -92,7 +99,7 @@ router.post('/', async (req, res) => {
     const college = formData.college || ''
     const degree = formData.degree ? formData.degree.trim() : ''
     const department = formData.department ? formData.department.trim() : ''
-    const year = formData.year || ''
+    const year = yearInput || 'Final Year'
     const email = formData.email ? formData.email.trim().toLowerCase() : ''
     const district = formData.district ? formData.district.trim() : ''
     const careerInterest = formData.careerInterest || ''

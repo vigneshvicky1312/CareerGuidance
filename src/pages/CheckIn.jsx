@@ -5,7 +5,6 @@ import {
   findStudentByRegistrationId,
   confirmAttendance,
   undoAttendance,
-  updateMaterials,
   watchAllStudents,
   tsToDate,
 } from '../services/studentService'
@@ -18,8 +17,6 @@ import {
   AlertTriangle,
   Search,
   ArrowRight,
-  PackageCheck,
-  PackageX,
   Sparkles,
   Volume2,
   VolumeX,
@@ -44,7 +41,6 @@ export default function CheckIn() {
   const [manualId, setManualId] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [busy, setBusy] = useState(false)
-  const [materials, setMaterials] = useState({})
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [autoNext, setAutoNext] = useState(false)
   const [countdown, setCountdown] = useState(null)
@@ -116,7 +112,7 @@ export default function CheckIn() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [mode, student, materials])
+  }, [mode, student])
 
   // Lookup student record by registration ID
   const lookup = useCallback(
@@ -133,11 +129,6 @@ export default function CheckIn() {
           return
         }
         setStudent(found)
-        // Default to all checked if new check-in or use existing materials
-        const studentMats = found.materials && Object.keys(found.materials).length > 0
-          ? found.materials
-          : eventConfig.materialsChecklist.reduce((acc, m) => ({ ...acc, [m.key]: true }), {})
-        setMaterials(studentMats)
 
         if (found.checkedIn) {
           setMode('already')
@@ -175,26 +166,17 @@ export default function CheckIn() {
     lookup(manualId.trim())
   }
 
-  async function handleConfirm(customMaterials = null) {
+  async function handleConfirm() {
     if (!student) return
     setBusy(true)
     try {
       await confirmAttendance(student.id)
 
-      const finalMaterials = customMaterials !== null ? customMaterials : materials
-      const anyChecked = Object.values(finalMaterials).some(Boolean)
-      const allChecked = eventConfig.materialsChecklist.every((m) => finalMaterials[m.key])
-
-      await updateMaterials(student.id, finalMaterials, anyChecked)
-
       setStudent((s) => ({
         ...s,
         checkedIn: true,
         checkInTime: new Date().toISOString(),
-        materials: finalMaterials,
-        materialsDistributed: anyChecked,
       }))
-      setMaterials(finalMaterials)
       setMode('confirmed')
       if (soundEnabled) playSuccessBeep()
     } catch (err) {
@@ -218,30 +200,6 @@ export default function CheckIn() {
       alert('Could not undo attendance.')
     } finally {
       setBusy(false)
-    }
-  }
-
-  function toggleMaterial(key) {
-    cancelCountdown() // Stop any auto-timer so user can select comfortably
-    const updated = { ...materials, [key]: !materials[key] }
-    setMaterials(updated)
-    if (student && student.checkedIn) {
-      const anyChecked = Object.values(updated).some(Boolean)
-      updateMaterials(student.id, updated, anyChecked).catch(console.error)
-      setStudent((s) => ({ ...s, materials: updated, materialsDistributed: anyChecked }))
-    }
-  }
-
-  function handleSelectAllMaterials(checked) {
-    cancelCountdown() // Stop any auto-timer
-    const updated = {}
-    eventConfig.materialsChecklist.forEach((m) => {
-      updated[m.key] = checked
-    })
-    setMaterials(updated)
-    if (student && student.checkedIn) {
-      updateMaterials(student.id, updated, checked).catch(console.error)
-      setStudent((s) => ({ ...s, materials: updated, materialsDistributed: checked }))
     }
   }
 
@@ -556,63 +514,15 @@ export default function CheckIn() {
             {/* Profile Overview Card */}
             <StudentDetailCard student={student} />
 
-            {/* Materials Checklist (Pre-selection before confirming) */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-800">
-                  <PackageCheck size={16} className="text-indigo-600" />
-                  Kit Materials to Issue
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handleSelectAllMaterials(true)}
-                    className="font-semibold text-indigo-600 hover:underline"
-                  >
-                    Select All
-                  </button>
-                  <span className="text-slate-300">|</span>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectAllMaterials(false)}
-                    className="font-semibold text-slate-500 hover:underline"
-                  >
-                    Clear
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                {eventConfig.materialsChecklist.map((m) => (
-                  <label
-                    key={m.key}
-                    className={`flex items-center gap-2.5 rounded-xl border p-2.5 text-sm cursor-pointer transition select-none ${
-                      materials[m.key]
-                        ? 'border-emerald-300 bg-emerald-50 text-emerald-900 font-medium'
-                        : 'border-slate-200 bg-white text-slate-600'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-slate-300 accent-emerald-600 cursor-pointer"
-                      checked={!!materials[m.key]}
-                      onChange={() => toggleMaterial(m.key)}
-                    />
-                    <span>{m.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="space-y-2 pt-1">
+            {/* Direct One-Click Action */}
+            <div className="space-y-3 pt-2">
               <button
                 type="button"
-                onClick={() => handleConfirm(materials)}
+                onClick={handleConfirm}
                 disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 transition active:scale-[0.98] disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 py-4 text-lg font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 transition active:scale-[0.98] disabled:opacity-50"
               >
-                <CheckCircle2 size={18} /> Confirm Attendance &amp; Issue Selected Kits (Enter)
+                <CheckCircle2 size={22} /> Confirm &amp; Mark Present (Enter)
               </button>
 
               <button
@@ -642,52 +552,10 @@ export default function CheckIn() {
 
             <StudentDetailCard student={student} showTime />
 
-            {/* Materials Distribution Checklist */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-200/60 pb-3">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-800">
-                  <PackageCheck size={16} className="text-indigo-600" />
-                  Kit &amp; Stationery Checklist
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handleSelectAllMaterials(true)}
-                    className="font-semibold text-indigo-600 hover:underline"
-                  >
-                    Select All
-                  </button>
-                  <span className="text-slate-300">|</span>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectAllMaterials(false)}
-                    className="font-semibold text-slate-500 hover:underline"
-                  >
-                    Clear
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                {eventConfig.materialsChecklist.map((m) => (
-                  <label
-                    key={m.key}
-                    className={`flex items-center gap-2.5 rounded-xl border p-2.5 text-sm cursor-pointer transition select-none ${
-                      materials[m.key]
-                        ? 'border-emerald-300 bg-emerald-50 text-emerald-900 font-medium'
-                        : 'border-slate-200 bg-white text-slate-600'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-slate-300 accent-emerald-600 cursor-pointer"
-                      checked={!!materials[m.key]}
-                      onChange={() => toggleMaterial(m.key)}
-                    />
-                    <span>{m.label}</span>
-                  </label>
-                ))}
-              </div>
+            <div className="flex items-center justify-center gap-2 py-1">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-bold text-emerald-800 border border-emerald-300 shadow-sm">
+                <Check size={15} className="stroke-[3]" /> Participant Marked Present
+              </span>
             </div>
 
             {/* Scan Next Button with optional countdown */}
@@ -749,44 +617,6 @@ export default function CheckIn() {
             </div>
 
             <StudentDetailCard student={student} showTime />
-
-            {/* Materials Status */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Kit Distribution
-                </span>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                    student.materialsDistributed
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-amber-100 text-amber-700'
-                  }`}
-                >
-                  {student.materialsDistributed ? 'All Distributed' : 'Pending Items'}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                {eventConfig.materialsChecklist.map((m) => (
-                  <label
-                    key={m.key}
-                    className={`flex items-center gap-2.5 rounded-xl border p-2 text-xs cursor-pointer transition select-none ${
-                      materials[m.key]
-                        ? 'border-emerald-300 bg-emerald-50 text-emerald-900 font-medium'
-                        : 'border-slate-200 bg-white text-slate-600'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      className="h-3.5 w-3.5 rounded border-slate-300 accent-emerald-600 cursor-pointer"
-                      checked={!!materials[m.key]}
-                      onChange={() => toggleMaterial(m.key)}
-                    />
-                    <span>{m.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
 
             {/* Actions */}
             <div className="space-y-2 pt-2">

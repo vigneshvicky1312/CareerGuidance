@@ -140,7 +140,9 @@ export default function Reports() {
               <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">Year of Study</p>
               <div className="space-y-2">
                 <MiniBar label="Final Year" value={stats.finalYear} max={stats.total} color="bg-amber-500" />
-                <MiniBar label="Pre-Final Year" value={stats.preYear} max={stats.total} color="bg-orange-400" />
+                {stats.preYear > 0 && (
+                  <MiniBar label="Pre-Final Year" value={stats.preYear} max={stats.total} color="bg-orange-400" />
+                )}
               </div>
             </div>
             <div>

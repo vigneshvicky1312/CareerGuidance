@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import eventConfig from '../config/eventConfig'
 import { registerStudent } from '../services/studentService'
-import { Loader2 } from 'lucide-react'
+import { Loader2, GraduationCap, AlertCircle } from 'lucide-react'
 import Toast from './Toast'
 
 const initialForm = {
@@ -11,7 +11,7 @@ const initialForm = {
   college: '',
   degree: '',
   department: '',
-  year: '',
+  year: 'Final Year',
   mobile: '',
   email: '',
   district: '',
@@ -26,12 +26,16 @@ function validate(form) {
   if (!form.college || !form.college.trim()) errors.college = 'Please select or enter your college.'
   if (!form.degree.trim()) errors.degree = 'Degree is required.'
   if (!form.department.trim()) errors.department = 'Department is required.'
-  if (!form.year) errors.year = 'Please select your year.'
+  if (!form.year) {
+    errors.year = 'Please select your year.'
+  } else if (form.year !== 'Final Year') {
+    errors.year = 'This event is exclusively for Final Year students.'
+  }
   if (!/^[6-9]\d{9}$/.test(form.mobile.trim())) errors.mobile = 'Enter a valid 10-digit mobile number.'
   if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) errors.email = 'Enter a valid email address.'
   if (!form.district.trim()) errors.district = 'District is required.'
   if (!form.careerInterest) errors.careerInterest = 'Please select a career interest.'
-  if (!form.consent) errors.consent = 'Please accept the consent to continue.'
+  if (!form.consent) errors.consent = 'Please confirm your eligibility and accept the consent to continue.'
   return errors
 }
 
@@ -95,6 +99,23 @@ export default function RegistrationForm() {
       <Toast toasts={toasts} remove={removeToast} />
 
       <form onSubmit={handleSubmit} noValidate className="card space-y-5">
+        {/* Eligibility Notice Banner */}
+        <div className="rounded-xl border border-amber-200 bg-amber-50/90 p-4 text-amber-950 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-200/80 text-amber-900">
+              <GraduationCap size={18} />
+            </div>
+            <div className="text-xs sm:text-sm">
+              <h3 className="font-bold text-amber-950">
+                Eligibility: Exclusively for Final-Year Students
+              </h3>
+              <p className="mt-0.5 text-amber-900/90 leading-relaxed">
+                This event is tailored specifically for <strong>final-year undergraduates</strong> who are completing their degree and taking steps toward their future career, job placements, and higher education. <em>Please note: This program is not open for pre-final years.</em>
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label htmlFor="name">Student Name *</label>
@@ -137,12 +158,23 @@ export default function RegistrationForm() {
           </div>
 
           <div>
-            <label htmlFor="year">Year *</label>
-            <select id="year" value={form.year} onChange={(e) => update('year', e.target.value)}>
-              <option value="">Select</option>
-              <option>Final Year</option>
-              <option>Pre-Final Year</option>
+            <div className="flex items-center justify-between">
+              <label htmlFor="year">Year of Study *</label>
+              <span className="text-[11px] font-semibold text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded border border-amber-300">
+                Final Year Only
+              </span>
+            </div>
+            <select
+              id="year"
+              value={form.year}
+              onChange={(e) => update('year', e.target.value)}
+              className="bg-slate-50 font-medium text-slate-800 border-slate-300"
+            >
+              <option value="Final Year">Final Year (Graduating / Outgoing Batch)</option>
             </select>
+            <p className="mt-1 text-[11px] leading-tight text-slate-500">
+              Only final-year outgoing students are eligible to attend. Pre-final years are not eligible.
+            </p>
             {errors.year && <p className="mt-1 text-xs text-red-600">{errors.year}</p>}
           </div>
 
@@ -181,15 +213,16 @@ export default function RegistrationForm() {
           </div>
         </div>
 
-        <label className="flex items-start gap-2.5 text-sm text-slate-600">
+        <label className="flex items-start gap-2.5 text-sm text-slate-600 cursor-pointer">
           <input
             type="checkbox"
-            className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300"
+            className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
             checked={form.consent}
             onChange={(e) => update('consent', e.target.checked)}
           />
-          I agree to share the above details with the {eventConfig.organizer} for the purpose of
-          registration, attendance and event communication.
+          <span>
+            I confirm that I am a <strong>final-year student</strong> completing my studies, and I agree to share the above details with {eventConfig.organizer} for the purpose of registration, attendance, and event communication.
+          </span>
         </label>
         {errors.consent && <p className="-mt-3 text-xs text-red-600">{errors.consent}</p>}
 
