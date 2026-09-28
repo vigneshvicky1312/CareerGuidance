@@ -6,7 +6,7 @@ const router = express.Router()
 
 const EVENT_ID = process.env.VITE_EVENT_ID || 'CGP2026'
 
-const MATERIALS_KEYS = ['kit', 'bag', 'notepad', 'pen', 'certificate', 'badge']
+const MATERIALS_KEYS = ['file', 'kit', 'bag', 'notepad', 'pen', 'brochure', 'certificate', 'badge']
 
 function mapRowToStudent(row) {
   let materials = {}
@@ -164,10 +164,20 @@ router.get('/', async (req, res) => {
 // GET /api/students/by-reg-id/:regId - Find student by registration ID
 router.get('/by-reg-id/:regId', async (req, res) => {
   try {
-    const regId = req.params.regId.trim().toUpperCase()
+    let regId = req.params.regId.trim().toUpperCase()
     const pool = getPool()
-    const [rows] = await pool.query('SELECT * FROM students WHERE registration_id = ?', [regId])
+    let [rows] = await pool.query('SELECT * FROM students WHERE registration_id = ?', [regId])
+
     if (rows.length === 0) {
+      // Check if user entered short number (e.g. "1" or "0001" or "CGP-0001")
+      const digits = regId.replace(/\D/g, '')
+      if (digits) {
+        const altId = `${EVENT_ID}-${digits.padStart(4, '0')}`
+        const [altRows] = await pool.query('SELECT * FROM students WHERE registration_id = ?', [altId])
+        if (altRows.length > 0) {
+          return res.json(mapRowToStudent(altRows[0]))
+        }
+      }
       return res.status(404).json({ error: 'Student not found' })
     }
     res.json(mapRowToStudent(rows[0]))

@@ -751,6 +751,15 @@ export default function RegistrationPass({ student }) {
 
   const qrValue = buildStudentQrValue(student.registrationId)
 
+  function handleSaveQrImage() {
+    const canvas = qrRef.current?.querySelector('canvas')
+    if (!canvas) return
+    const link = document.createElement('a')
+    link.download = `CGP2026-Pass-${student.registrationId || 'QR'}.png`
+    link.href = canvas.toDataURL('image/png')
+    link.click()
+  }
+
   return (
     <div className="w-full flex flex-col items-center gap-6">
 
@@ -773,18 +782,60 @@ export default function RegistrationPass({ student }) {
         admitNum="01"
       />
 
-      {/* Hidden QR canvas used for high-res PDF generation */}
-      <div ref={qrRef} style={{ display: 'none' }}>
-        <QRCodeCanvas value={qrValue} size={200} fgColor="#1a2744" bgColor="#ffffff" level="H" />
-      </div>
+      {/* ── Live Scannable QR Verification Pass Card ── */}
+      <div className="w-full max-w-md rounded-3xl border-2 border-indigo-500/30 bg-gradient-to-b from-white to-slate-50 p-6 shadow-xl text-center space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="text-left">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Official Verification Pass</span>
+            <h3 className="text-base font-bold text-slate-900">{student.name}</h3>
+          </div>
+          <span className="rounded-full bg-emerald-100 px-3 py-1 font-mono text-xs font-bold text-emerald-800 border border-emerald-200">
+            {student.registrationId}
+          </span>
+        </div>
 
-      {/* Download Action Button */}
-      <button
-        onClick={handlePrint}
-        className="w-full max-w-xs inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-700 transition active:scale-[0.98] shadow-md"
-      >
-        <Printer size={15} /> Download Entry Pass (PDF)
-      </button>
+        {/* High-Resolution Scannable QR Code Canvas */}
+        <div className="mx-auto flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-slate-200/80 shadow-inner w-fit">
+          <div ref={qrRef}>
+            <QRCodeCanvas
+              value={qrValue}
+              size={190}
+              fgColor="#0a1931"
+              bgColor="#ffffff"
+              level="H"
+              includeMargin
+            />
+          </div>
+          <p className="mt-2 font-mono text-xs font-bold tracking-wider text-slate-800">
+            {student.registrationId}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-indigo-50/80 p-3 text-xs text-indigo-900 leading-relaxed border border-indigo-100">
+          <p className="font-semibold text-indigo-950">Show this QR Code at the Registration Counter</p>
+          <p className="text-[11px] text-indigo-700 mt-0.5">
+            Volunteers will scan this code to confirm your attendance and issue your event file kit ({eventConfig.date}).
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs sm:text-sm font-semibold text-white hover:bg-slate-800 transition active:scale-[0.98] shadow-md"
+          >
+            <Printer size={15} /> Download PDF Pass
+          </button>
+          <button
+            type="button"
+            onClick={handleSaveQrImage}
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50 transition active:scale-[0.98] shadow-sm"
+          >
+            Save QR Image (PNG)
+          </button>
+        </div>
+      </div>
 
     </div>
   )
