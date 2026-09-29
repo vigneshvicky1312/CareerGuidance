@@ -32,7 +32,7 @@ function StatCard({ label, value, sub, icon: Icon, gradient, trend }) {
 function RecentRow({ student }) {
   const time = tsToDate(student.registeredAt)
   return (
-    <div className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-slate-50">
+    <div className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-slate-50 min-w-0">
       <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${student.checkedIn ? 'bg-emerald-500' : 'bg-slate-300'}`}>
         {student.name?.[0] || '?'}
       </div>
@@ -44,7 +44,7 @@ function RecentRow({ student }) {
         <p className="font-mono text-xs font-bold text-indigo-600">{student.registrationId}</p>
         <p className="text-xs text-slate-400">{time ? time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
       </div>
-      <span className={`hidden xs:inline-flex shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${student.checkedIn ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+      <span className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${student.checkedIn ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
         {student.checkedIn ? '✓ In' : 'Pending'}
       </span>
     </div>
@@ -84,15 +84,15 @@ export default function Dashboard() {
   }, [students])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 w-full max-w-full min-w-0">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="eyebrow flex items-center gap-2">
-            <Activity size={12} className="text-emerald-500" />
+            <Activity size={12} className="text-emerald-500 shrink-0" />
             Live Overview
           </p>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900">{eventConfig.eventName}</h1>
+          <h1 className="mt-1 text-2xl font-bold text-slate-900 break-words">{eventConfig.eventName}</h1>
           <p className="mt-1 text-sm text-slate-500">Real-time data — refreshes every 4 seconds</p>
         </div>
         <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">

@@ -40,7 +40,7 @@ export default function Distribution() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0">
       {/* Header */}
       <div>
         <p className="eyebrow">Volunteer Tracking</p>

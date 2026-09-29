@@ -309,16 +309,16 @@ export default function AdminSchedule() {
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
+    <div className="space-y-6 max-w-7xl mx-auto pb-16 w-full min-w-0">
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-2xl animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-2xl animate-fade-in max-w-[calc(100vw-3rem)]">
           {toast.type === 'error' ? (
             <AlertCircle size={18} className="text-red-400 shrink-0" />
           ) : (
             <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
           )}
-          <span>{toast.message}</span>
+          <span className="truncate">{toast.message}</span>
         </div>
       )}
 
@@ -326,11 +326,11 @@ export default function AdminSchedule() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-100">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-100">
               <CalendarDays size={20} />
             </div>
-            <div>
-              <h1 className="font-display text-2xl font-bold text-slate-900">Program Schedule</h1>
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl font-bold text-slate-900 truncate">Program Schedule</h1>
               <p className="text-xs text-slate-500">
                 Manage sessions, track agendas, timings, speakers, and public overview descriptions
               </p>
@@ -358,11 +358,11 @@ export default function AdminSchedule() {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200">
+      {/* Navigation Tabs - Horizontally scrollable on mobile */}
+      <div className="flex items-center gap-1 sm:gap-2 border-b border-slate-200 overflow-x-auto scrollbar-none flex-nowrap pb-px -mx-2 px-2 sm:mx-0 sm:px-0">
         <button
           onClick={() => setActiveTab('sessions')}
-          className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition ${
+          className={`flex items-center gap-2 border-b-2 px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold transition shrink-0 whitespace-nowrap ${
             activeTab === 'sessions'
               ? 'border-indigo-600 text-indigo-600'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -374,7 +374,7 @@ export default function AdminSchedule() {
 
         <button
           onClick={() => setActiveTab('settings')}
-          className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition ${
+          className={`flex items-center gap-2 border-b-2 px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold transition shrink-0 whitespace-nowrap ${
             activeTab === 'settings'
               ? 'border-indigo-600 text-indigo-600'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -386,7 +386,7 @@ export default function AdminSchedule() {
 
         <button
           onClick={() => setActiveTab('preview')}
-          className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-semibold transition ${
+          className={`flex items-center gap-2 border-b-2 px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold transition shrink-0 whitespace-nowrap ${
             activeTab === 'preview'
               ? 'border-indigo-600 text-indigo-600'
               : 'border-transparent text-slate-500 hover:text-slate-800'

@@ -91,7 +91,7 @@ export default function AdminLayout() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-50 lg:flex">
+    <div className="min-h-screen bg-slate-50 lg:flex w-full max-w-full overflow-x-hidden">
       {/* Desktop Sidebar */}
       <aside className="hidden w-64 shrink-0 bg-slate-900 lg:flex lg:flex-col">
         <NavContent />
@@ -101,35 +101,36 @@ export default function AdminLayout() {
       {navOpen && (
         <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setNavOpen(false)}>
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col bg-slate-900 shadow-2xl">
+          <aside className="absolute left-0 top-0 flex h-full w-64 max-w-[80vw] flex-col bg-slate-900 shadow-2xl">
             <NavContent />
           </aside>
         </div>
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 w-full max-w-full overflow-x-hidden">
         {/* Mobile Top Bar */}
-        <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3 shadow-sm lg:hidden">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 p-1 border border-slate-700">
+        <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-5 py-3 shadow-sm lg:hidden w-full max-w-full">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-900 p-1 border border-slate-700">
               <img
                 src="/images/cgp-logo-mark-dark-bg.png"
                 alt="CGP 2026 Logo"
                 className="h-full w-full object-contain"
               />
             </div>
-            <span className="font-bold text-slate-800">{eventConfig.eventId}</span>
+            <span className="font-bold text-slate-800 truncate">{eventConfig.eventId}</span>
           </div>
           <button
             onClick={() => setNavOpen((v) => !v)}
-            className="rounded-lg p-1.5 hover:bg-slate-100 transition"
+            className="rounded-lg p-1.5 hover:bg-slate-100 transition shrink-0"
+            aria-label="Toggle navigation menu"
           >
             {navOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </header>
 
-        <main className="flex-1 p-4 md:p-8 overflow-x-auto">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 w-full max-w-full min-w-0 overflow-x-hidden">
           <Outlet />
         </main>
       </div>

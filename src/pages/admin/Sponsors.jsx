@@ -159,7 +159,7 @@ export default function AdminSponsors() {
   }
 
   return (
-    <div>
+    <div className="w-full max-w-full min-w-0 space-y-6">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -172,10 +172,10 @@ export default function AdminSponsors() {
       </div>
 
       {/* Tabs */}
-      <div className="mt-5 flex gap-2 border-b border-slate-200">
+      <div className="mt-5 flex gap-2 border-b border-slate-200 overflow-x-auto scrollbar-none flex-nowrap pb-px">
         <button
           onClick={() => setTab('sponsors')}
-          className={`px-4 py-2.5 text-sm font-semibold transition ${
+          className={`px-4 py-2.5 text-sm font-semibold transition shrink-0 whitespace-nowrap ${
             tab === 'sponsors'
               ? 'border-b-2 border-navy-950 text-navy-950'
               : 'text-slate-500 hover:text-slate-800'
@@ -185,7 +185,7 @@ export default function AdminSponsors() {
         </button>
         <button
           onClick={() => setTab('enquiries')}
-          className={`relative px-4 py-2.5 text-sm font-semibold transition ${
+          className={`relative px-4 py-2.5 text-sm font-semibold transition shrink-0 whitespace-nowrap ${
             tab === 'enquiries'
               ? 'border-b-2 border-navy-950 text-navy-950'
               : 'text-slate-500 hover:text-slate-800'
@@ -202,7 +202,7 @@ export default function AdminSponsors() {
 
       {/* ── Tab 1: Active Sponsors ── */}
       {tab === 'sponsors' && (
-        <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm w-full max-w-full min-w-0">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="bg-navy-950 text-xs uppercase tracking-wide text-slate-300">
               <tr>

@@ -54,7 +54,7 @@ export default function Registrations() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -74,7 +74,7 @@ export default function Registrations() {
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <div className="relative w-full max-w-full">
         <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
         <input
           className="pl-11"
@@ -85,7 +85,7 @@ export default function Registrations() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm w-full max-w-full min-w-0">
         {loading ? (
           <div className="space-y-3 p-6">
             {[...Array(6)].map((_, i) => <div key={i} className="h-12 animate-pulse rounded-xl bg-slate-100" />)}
@@ -96,7 +96,7 @@ export default function Registrations() {
             <p className="text-sm text-slate-400">No registrations found</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto w-full max-w-full">
             <table className="w-full min-w-[1050px] text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-500">

@@ -19,7 +19,7 @@ export default function StudentDetailModal({ student, onClose, onMarkCheckedIn, 
           </button>
         </div>
 
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm min-w-0">
           {[
             ['Name', student.name],
             ['Gender', student.gender],
@@ -34,9 +34,9 @@ export default function StudentDetailModal({ student, onClose, onMarkCheckedIn, 
             ['Food Preference', student.foodPreference],
             ['Registered', regTime ? regTime.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'],
           ].map(([label, value]) => (
-            <div key={label} className="col-span-1">
-              <dt className="text-xs uppercase tracking-wide text-slate-400">{label}</dt>
-              <dd className="font-medium text-slate-800">{value || '—'}</dd>
+            <div key={label} className="col-span-1 min-w-0">
+              <dt className="text-xs uppercase tracking-wide text-slate-400 truncate">{label}</dt>
+              <dd className="font-medium text-slate-800 break-words">{value || '—'}</dd>
             </div>
           ))}
         </dl>
