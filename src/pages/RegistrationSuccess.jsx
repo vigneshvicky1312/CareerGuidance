@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import eventConfig from '../config/eventConfig'
 import RegistrationPass from '../components/RegistrationPass'
@@ -15,6 +16,10 @@ const sampleStudent = {
 export default function RegistrationSuccess() {
   const location = useLocation()
   const student = location.state?.student || sampleStudent
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [])
 
   return (
     <section className="section max-w-2xl w-full overflow-x-hidden text-center">

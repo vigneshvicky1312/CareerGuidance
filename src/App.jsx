@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import PublicLayout from './components/PublicLayout'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollToTop from './components/ScrollToTop'
 import AdminAuthProvider from './context/AdminAuthContext'
 import { Loader2 } from 'lucide-react'
 
@@ -38,6 +39,7 @@ function PageFallback() {
 export default function App() {
   return (
     <AdminAuthProvider>
+      <ScrollToTop />
       <Suspense fallback={<PageFallback />}>
         <Routes>
           {/* Public site */}

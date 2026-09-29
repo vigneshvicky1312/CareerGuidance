@@ -86,6 +86,7 @@ export default function RegistrationForm() {
     setSubmitting(true)
     try {
       const student = await registerStudent(form)
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
       navigate('/registration-success', { state: { student } })
     } catch (err) {
       console.error(err)
