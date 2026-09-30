@@ -65,11 +65,30 @@ router.post('/', async (req, res) => {
     })
   }
 
+  const cleanMobile = mobile.replace(/\D/g, '').slice(-10)
+  const cleanEmail = formData.email ? formData.email.trim().toLowerCase() : ''
+
   const pool = getPool()
   const conn = await pool.getConnection()
 
   try {
     await conn.beginTransaction()
+
+    // Check if student with same mobile or email already exists
+    const [existingRows] = await conn.query(
+      'SELECT * FROM students WHERE mobile = ? OR (email != "" AND email = ?) LIMIT 1',
+      [cleanMobile, cleanEmail || '___none___']
+    )
+
+    if (existingRows.length > 0) {
+      await conn.rollback()
+      const existingStudent = mapRowToStudent(existingRows[0])
+      return res.status(409).json({
+        error: 'already_registered',
+        message: `Student is already registered with mobile ${mobile} under ID: ${existingStudent.registrationId}.`,
+        student: existingStudent,
+      })
+    }
 
     // 1. Get next sequence atomically using FOR UPDATE
     const [counterRows] = await conn.query(
@@ -183,6 +202,29 @@ router.get('/by-reg-id/:regId', async (req, res) => {
     res.json(mapRowToStudent(rows[0]))
   } catch (err) {
     console.error('Error finding student:', err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// GET /api/students/by-mobile/:mobile - Find student by mobile number
+router.get('/by-mobile/:mobile', async (req, res) => {
+  try {
+    const rawMobile = req.params.mobile || ''
+    const cleanMobile = rawMobile.replace(/\D/g, '').slice(-10)
+    if (!cleanMobile || cleanMobile.length < 10) {
+      return res.status(400).json({ error: 'A valid 10-digit mobile number is required' })
+    }
+    const pool = getPool()
+    const [rows] = await pool.query(
+      'SELECT * FROM students WHERE mobile = ? OR mobile LIKE ? LIMIT 1',
+      [cleanMobile, `%${cleanMobile}`]
+    )
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No registered student found with this mobile number' })
+    }
+    res.json(mapRowToStudent(rows[0]))
+  } catch (err) {
+    console.error('Error finding student by mobile:', err)
     res.status(500).json({ error: 'Server error' })
   }
 })

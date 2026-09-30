@@ -782,6 +782,20 @@ function executeJsonQuery(sql, params = []) {
     return [list, []]
   }
 
+  // 8b. SELECT * FROM students WHERE mobile = ? OR (email != "" AND email = ?)
+  if (cleanSql.toUpperCase().includes('FROM STUDENTS WHERE MOBILE =')) {
+    const mobileParam = (params[0] || '').toString().replace(/\D/g, '').slice(-10)
+    const emailParam = (params[1] || '').toString().trim().toLowerCase()
+    const list = (data.students || []).filter((s) => {
+      const sMobile = (s.mobile || '').toString().replace(/\D/g, '').slice(-10)
+      const matchMobile = Boolean(mobileParam && sMobile === mobileParam)
+      const sEmail = (s.email || '').toString().trim().toLowerCase()
+      const matchEmail = Boolean(emailParam && emailParam !== '___none___' && sEmail === emailParam)
+      return matchMobile || matchEmail
+    })
+    return [list, []]
+  }
+
   // 9. UPDATE students SET checked_in = ... WHERE doc_id = ?
   if (cleanSql.toUpperCase().startsWith('UPDATE STUDENTS SET CHECKED_IN =')) {
     const docId = params[params.length - 1]

@@ -25,6 +25,7 @@ export default function Attendees() {
   const [collegeFilter, setCollegeFilter] = useState('All')
   const [departmentFilter, setDepartmentFilter] = useState('All')
   const [careerFilter, setCareerFilter] = useState('All')
+  const [duplicateOnly, setDuplicateOnly] = useState(false)
   const [selected, setSelected] = useState(null)
   const [pendingConfirm, setPendingConfirm] = useState(null)
   const [pendingDelete, setPendingDelete] = useState(null)
@@ -49,9 +50,24 @@ export default function Attendees() {
     return Array.from(new Set([...colleges, ...fromData])).sort()
   }, [students])
 
+  // Detect duplicate registrations by 10-digit mobile number
+  const duplicateMobiles = useMemo(() => {
+    const counts = {}
+    students.forEach((s) => {
+      const m = (s.mobile || '').replace(/\D/g, '').slice(-10)
+      if (m && m.length >= 10) {
+        counts[m] = (counts[m] || 0) + 1
+      }
+    })
+    return new Set(Object.keys(counts).filter((m) => counts[m] > 1))
+  }, [students])
+
   const filtered = useMemo(() => {
     const term = searchTerm.trim().toLowerCase()
     return students.filter((s) => {
+      const cleanMobile = (s.mobile || '').replace(/\D/g, '').slice(-10)
+      if (duplicateOnly && !duplicateMobiles.has(cleanMobile)) return false
+
       if (term) {
         const hay = `${s.name} ${s.registrationId} ${s.college} ${s.mobile} ${s.email}`.toLowerCase()
         if (!hay.includes(term)) return false
@@ -63,7 +79,7 @@ export default function Attendees() {
       if (careerFilter !== 'All' && s.careerInterest !== careerFilter) return false
       return true
     })
-  }, [students, searchTerm, checkinFilter, collegeFilter, departmentFilter, careerFilter])
+  }, [students, searchTerm, checkinFilter, collegeFilter, departmentFilter, careerFilter, duplicateOnly, duplicateMobiles])
 
   async function applyAttendanceChange(student, checkedIn) {
     if (checkedIn) await confirmAttendance(student.id)
@@ -131,9 +147,25 @@ export default function Attendees() {
             {eventConfig.careerInterests.map((c) => <option key={c}>{c}</option>)}
           </select>
         </div>
-        <p className="mt-3 text-xs text-slate-400">
-          Showing <span className="font-semibold text-slate-600">{filtered.length}</span> of {students.length} registrations
-        </p>
+        <div className="flex items-center justify-between gap-4 mt-3">
+          <p className="text-xs text-slate-400">
+            Showing <span className="font-semibold text-slate-600">{filtered.length}</span> of {students.length} registrations
+          </p>
+          {duplicateMobiles.size > 0 && (
+            <button
+              type="button"
+              onClick={() => setDuplicateOnly((d) => !d)}
+              className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition inline-flex items-center gap-1.5 ${
+                duplicateOnly
+                  ? 'bg-amber-600 text-white'
+                  : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+              }`}
+            >
+              <AlertTriangle size={13} />
+              {duplicateOnly ? 'Showing Duplicates (Click to view all)' : `Flagged Duplicates: ${duplicateMobiles.size} mobile(s)`}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
@@ -165,16 +197,25 @@ export default function Attendees() {
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((s) => {
                   const time = tsToDate(s.checkInTime)
+                  const cleanMobile = (s.mobile || '').replace(/\D/g, '').slice(-10)
+                  const isDuplicate = duplicateMobiles.has(cleanMobile)
                   return (
-                    <tr key={s.id} className="transition hover:bg-indigo-50/40">
+                    <tr key={s.id} className={`transition ${isDuplicate ? 'bg-amber-50/50 hover:bg-amber-50' : 'hover:bg-indigo-50/40'}`}>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
                           <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${s.checkedIn ? 'bg-emerald-500' : 'bg-slate-300'}`}>
                             {s.name?.[0] || '?'}
                           </div>
                           <div>
-                            <p className="font-semibold text-slate-800">{s.name}</p>
-                            <p className="text-xs text-slate-400">{s.year} • {s.gender}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="font-semibold text-slate-800">{s.name}</p>
+                              {isDuplicate && (
+                                <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800" title="This mobile number is registered more than once">
+                                  Duplicate Mobile
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-400">{s.year} • {s.gender} • {s.mobile}</p>
                           </div>
                         </div>
                       </td>

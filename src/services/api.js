@@ -21,8 +21,10 @@ export async function apiFetch(endpoint, options = {}) {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
-    const error = new Error(errorData.error || `HTTP error! status: ${response.status}`)
+    const error = new Error(errorData.message || errorData.error || `HTTP error! status: ${response.status}`)
     error.status = response.status
+    error.data = errorData
+    error.student = errorData.student
     throw error
   }
 

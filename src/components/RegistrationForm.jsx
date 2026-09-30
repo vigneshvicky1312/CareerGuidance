@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import eventConfig from '../config/eventConfig'
 import colleges from '../config/colleges'
-import { registerStudent } from '../services/studentService'
-import { Loader2, GraduationCap, AlertCircle } from 'lucide-react'
+import { registerStudent, findStudentByMobile } from '../services/studentService'
+import { Loader2, GraduationCap, AlertCircle, Ticket, Search, X } from 'lucide-react'
 import Toast from './Toast'
 
 const initialForm = {
@@ -45,6 +45,11 @@ export default function RegistrationForm() {
   const [errors, setErrors]       = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [toasts, setToasts]       = useState([])
+  const [existingStudent, setExistingStudent] = useState(null)
+  const [showLookup, setShowLookup] = useState(false)
+  const [lookupMobile, setLookupMobile] = useState('')
+  const [lookupLoading, setLookupLoading] = useState(false)
+  const [lookupError, setLookupError] = useState('')
   const navigate = useNavigate()
 
   /* ── Toast helpers ── */
@@ -60,6 +65,31 @@ export default function RegistrationForm() {
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
     setErrors((e) => ({ ...e, [field]: undefined }))
+  }
+
+  async function handleLookupSubmit(e) {
+    e.preventDefault()
+    const clean = lookupMobile.replace(/\D/g, '').slice(-10)
+    if (!clean || clean.length < 10) {
+      setLookupError('Please enter a valid 10-digit mobile number.')
+      return
+    }
+    setLookupLoading(true)
+    setLookupError('')
+    try {
+      const student = await findStudentByMobile(clean)
+      if (student) {
+        setShowLookup(false)
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+        navigate('/registration-success', { state: { student, isExisting: true } })
+      } else {
+        setLookupError('No existing registration found for this mobile number. Please register using the form below.')
+      }
+    } catch (err) {
+      setLookupError(err.message || 'Error looking up registration. Please try again.')
+    } finally {
+      setLookupLoading(false)
+    }
   }
 
   async function handleSubmit(e) {
@@ -90,6 +120,11 @@ export default function RegistrationForm() {
       navigate('/registration-success', { state: { student } })
     } catch (err) {
       console.error(err)
+      if ((err.status === 409 || err.data?.error === 'already_registered') && (err.student || err.data?.student)) {
+        const student = err.student || err.data?.student
+        setExistingStudent(student)
+        return
+      }
       addToast(err.message || 'Something went wrong while saving your registration. Please try again.', 'error')
     } finally {
       setSubmitting(false)
@@ -99,6 +134,166 @@ export default function RegistrationForm() {
   return (
     <>
       <Toast toasts={toasts} remove={removeToast} />
+
+      {/* Already Registered Quick-Link Banner */}
+      <div className="flex items-center justify-between gap-3 rounded-2xl bg-indigo-50/90 border border-indigo-200/80 px-4 py-3 text-xs sm:text-sm text-indigo-950 mb-5 shadow-sm">
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg bg-indigo-100 text-indigo-700 shrink-0">
+            <Ticket size={16} />
+          </div>
+          <span className="font-medium text-slate-700">Already registered previously?</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setLookupError('')
+            setLookupMobile(form.mobile || '')
+            setShowLookup(true)
+          }}
+          className="font-semibold text-indigo-600 hover:text-indigo-800 transition-colors inline-flex items-center gap-1 cursor-pointer shrink-0"
+        >
+          Find My Pass <span aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+
+      {/* Duplicate Registration Modal */}
+      {existingStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/70 backdrop-blur-sm animate-fadeIn">
+          <div className="card max-w-md w-full bg-white p-6 shadow-2xl rounded-2xl border border-amber-300 relative animate-scaleUp">
+            <button
+              type="button"
+              onClick={() => setExistingStudent(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex items-center gap-3 text-amber-600 mb-3">
+              <div className="p-2.5 bg-amber-100 rounded-xl">
+                <AlertCircle size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-slate-900 leading-tight">Already Registered!</h3>
+                <p className="text-xs text-amber-700 font-medium">Duplicate registration prevented</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-slate-600 mt-2">
+              This mobile number (<strong>{form.mobile}</strong>) is already registered in our system. You do not need to register again.
+            </p>
+
+            <div className="mt-4 p-3.5 bg-slate-50 rounded-xl border border-slate-200/90 text-sm space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-slate-500">Student Name:</span>
+                <span className="font-semibold text-slate-900">{existingStudent.name}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-slate-500">Registration ID:</span>
+                <span className="font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                  {existingStudent.registrationId}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-slate-500">College:</span>
+                <span className="text-slate-700 text-right truncate max-w-[200px]">{existingStudent.college}</span>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+                  navigate('/registration-success', { state: { student: existingStudent, isExisting: true } })
+                }}
+                className="btn-primary w-full justify-center py-2.5 shadow-md"
+              >
+                View & Download Your Entry Pass 🎟️
+              </button>
+              <button
+                type="button"
+                onClick={() => setExistingStudent(null)}
+                className="btn-outline w-full justify-center text-xs py-2 text-slate-600"
+              >
+                Close & Check My Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Find My Pass Lookup Modal */}
+      {showLookup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/70 backdrop-blur-sm animate-fadeIn">
+          <div className="card max-w-md w-full bg-white p-6 shadow-2xl rounded-2xl border border-indigo-200 relative animate-scaleUp">
+            <button
+              type="button"
+              onClick={() => {
+                setShowLookup(false)
+                setLookupError('')
+              }}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+              aria-label="Close"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex items-center gap-3 text-indigo-600 mb-3">
+              <div className="p-2.5 bg-indigo-100 rounded-xl">
+                <Ticket size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-slate-900 leading-tight">Retrieve Entry Pass</h3>
+                <p className="text-xs text-slate-500">Search using your registered mobile number</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleLookupSubmit} className="space-y-4 mt-4">
+              <div>
+                <label htmlFor="lookupMobile" className="text-xs font-semibold text-slate-700">
+                  Registered Mobile Number
+                </label>
+                <div className="mt-1 relative">
+                  <input
+                    id="lookupMobile"
+                    type="tel"
+                    value={lookupMobile}
+                    onChange={(e) => setLookupMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="Enter 10-digit mobile number"
+                    className="w-full pr-10 text-base"
+                    autoFocus
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                    <Search size={18} />
+                  </div>
+                </div>
+                {lookupError && (
+                  <p className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
+                    {lookupError}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="submit"
+                  disabled={lookupLoading}
+                  className="btn-primary w-full justify-center py-2.5"
+                >
+                  {lookupLoading ? <Loader2 size={16} className="animate-spin" /> : null}
+                  {lookupLoading ? 'Searching…' : 'Find My Pass'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowLookup(false)}
+                  className="btn-outline py-2.5 px-4 text-xs"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} noValidate className="card space-y-5">
         {/* Eligibility Notice Banner */}

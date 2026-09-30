@@ -21,6 +21,15 @@ export async function findStudentByRegistrationId(registrationId) {
   }
 }
 
+export async function findStudentByMobile(mobile) {
+  try {
+    return await apiFetch(`/api/students/by-mobile/${encodeURIComponent(mobile.trim())}`)
+  } catch (err) {
+    if (err.status === 404) return null
+    throw err
+  }
+}
+
 export async function confirmAttendance(studentDocId) {
   return apiFetch(`/api/students/${studentDocId}/check-in`, {
     method: 'PATCH',
