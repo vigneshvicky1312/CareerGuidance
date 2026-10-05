@@ -443,22 +443,23 @@ export async function initDatabase() {
     }
 
     try {
-      // Attempt database creation if user has root/admin rights
-      try {
-        const rootConn = await mysql.createConnection({
-          host,
-          user,
-          password,
-          port,
-          connectTimeout: 3000,
-          ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {}),
-        })
-        await rootConn.query(
-          `CREATE DATABASE IF NOT EXISTS \`${database}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
-        )
-        await rootConn.end()
-      } catch {
-        // Ignored if user lacks root CREATE DATABASE permission on managed cloud databases
+      // Attempt database creation only on local databases if user has root/admin rights
+      if (!isRemoteDb) {
+        try {
+          const rootConn = await mysql.createConnection({
+            host,
+            user,
+            password,
+            port,
+            connectTimeout: 3000,
+          })
+          await rootConn.query(
+            `CREATE DATABASE IF NOT EXISTS \`${database}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
+          )
+          await rootConn.end()
+        } catch {
+          // Ignored if user lacks root CREATE DATABASE permission
+        }
       }
 
       mysqlPool = mysql.createPool(poolConfig)
@@ -577,15 +578,21 @@ export async function initDatabase() {
       const defaultPassword = process.env.ADMIN_PASSWORD || 'cgp2026'
       const hashed = await bcrypt.hash(defaultPassword, 10)
       
-      // MySQL sync for admin & admin@cgp2026.org
-      const [users] = await connection.query(`SELECT * FROM admin_users WHERE email IN (?, ?)`, ['admin', 'admin@cgp2026.org'])
-      if (users.length === 0) {
-        await connection.query(`INSERT INTO admin_users (email, password_hash) VALUES (?, ?)`, ['admin', hashed])
-        console.log(`✅ Default admin user created in MySQL (username: admin / password: ${defaultPassword})`)
-      } else {
-        await connection.query(`UPDATE admin_users SET password_hash = ? WHERE email IN (?, ?)`, [hashed, 'admin', 'admin@cgp2026.org'])
-        console.log(`✅ Admin password synced in MySQL (username: admin / password: ${defaultPassword})`)
+      // Seed & sync all default admin identities in MySQL
+      const adminIdentities = ['admin', 'admin@cgp2026.org']
+      if (process.env.ADMIN_USERNAME && !adminIdentities.includes(process.env.ADMIN_USERNAME.toLowerCase())) {
+        adminIdentities.push(process.env.ADMIN_USERNAME.toLowerCase())
       }
+      for (const ident of adminIdentities) {
+        const [existing] = await connection.query(`SELECT id FROM admin_users WHERE email = ?`, [ident])
+        if (existing.length === 0) {
+          await connection.query(`INSERT INTO admin_users (email, password_hash) VALUES (?, ?)`, [ident, hashed])
+          console.log(`✅ Default admin user '${ident}' created in MySQL`)
+        } else {
+          await connection.query(`UPDATE admin_users SET password_hash = ? WHERE email = ?`, [hashed, ident])
+        }
+      }
+      console.log(`✅ Admin passwords synced in MySQL (password: ${defaultPassword})`)
 
       // Seed initial sponsors in MySQL if empty
       const [sponsorRows] = await connection.query('SELECT COUNT(*) as count FROM sponsors')

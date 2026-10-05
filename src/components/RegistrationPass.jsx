@@ -4,7 +4,10 @@ import { QRCodeCanvas } from 'qrcode.react'
 import { buildStudentQrValue } from '../utils/qrGenerator'
 import { Printer } from 'lucide-react'
 import TicketCard from './TicketCard'
+import sponsors from '../config/sponsors'
+
 export function generatePassHtml({ student, origin, qrDataUrl, autoPrint = true }) {
+  const primarySponsor = sponsors && sponsors.length > 0 ? sponsors[0] : null
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -654,8 +657,12 @@ body {
 
           <div class="sponsor-box">
             <div class="sponsor-tag">Official Sponsor</div>
-            <img src="${origin}/images/sponsors/vel-nutrition-centre.jpg" alt="Vel Nutrition Centre" class="sponsor-img" onerror="this.style.display='none'" />
-            <div class="sponsor-title">Vel Nutrition Centre</div>
+            ${primarySponsor ? `
+              <img src="${origin}${primarySponsor.logo}" alt="${primarySponsor.name}" class="sponsor-img" onerror="this.style.display='none'" />
+              <div class="sponsor-title">${primarySponsor.name}</div>
+            ` : `
+              <div class="sponsor-title" style="color:#64748b;font-weight:600;font-size:7pt;margin-top:6pt;">To Be Released Soon</div>
+            `}
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import SponsorCard from './SponsorCard'
 import { watchSponsors, getActiveSponsorsOnce } from '../services/sponsorService'
 import seedSponsors from '../config/sponsors'
 
-const SAMPLE_SPONSOR_IDS = ['sponsor-1', 'sponsor-2', 'sponsor-3', 'seed-title', 'seed-gold-1', 'seed-knowledge']
+const SAMPLE_SPONSOR_IDS = ['sponsor-1', 'sponsor-2', 'sponsor-3', 'seed-title', 'seed-gold-1', 'seed-knowledge', 'vel-nutrition-centre']
 const SAMPLE_SPONSOR_NAMES = [
   'tcs ion',
   'hcl techbee',
@@ -13,6 +13,7 @@ const SAMPLE_SPONSOR_NAMES = [
   'meridian technologies',
   'nova finserv',
   'brightpath institute',
+  'vel nutrition centre',
 ]
 
 function isSampleSponsor(s) {
@@ -81,14 +82,14 @@ export default function Sponsors({ compact = false }) {
               <Handshake size={28} className="text-sky-400" />
             </div>
             <h3 className="mt-5 font-display text-xl font-bold text-navy-950 sm:text-2xl">
-              Official Sponsors &amp; Partners Announcement Coming Soon
+              Official Sponsors &amp; Partners to be Released Soon
             </h3>
             <p className="mt-2 text-sm text-slate-600 leading-relaxed max-w-md mx-auto">
-              Corporate partnerships and sponsorship confirmations for Career Guidance Program 2026 are currently in progress. The official list of brand and education partners will be published shortly.
+              Corporate partnerships and sponsorship confirmations for Career Guidance Program 2026 are currently in progress. The official list of brand and education partners will be released soon.
             </p>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-sky-100/80 px-4 py-1.5 text-xs font-semibold text-sky-800">
               <span className="h-2 w-2 rounded-full bg-sky-500 animate-ping" />
-              Official Partner Lineup to be Released Shortly
+              Official Sponsor Lineup to be Released Soon
             </div>
 
             <div className="mt-8 border-t border-slate-200/60 pt-6">
