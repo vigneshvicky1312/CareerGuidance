@@ -66,7 +66,7 @@ export default function AdminLogin() {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter username or email (e.g. admin)"
+                  placeholder="Enter username or email"
                   required
                   autoComplete="username"
                 />
@@ -96,14 +96,9 @@ export default function AdminLogin() {
               </div>
 
               {error && (
-                <div className="flex items-start gap-2 rounded-xl bg-red-50 p-3.5 text-xs text-red-600 leading-relaxed border border-red-100">
+                <div className="flex items-center gap-2 rounded-xl bg-red-50 p-3.5 text-xs text-red-600 leading-relaxed border border-red-100">
                   <span className="text-sm font-bold">⚠</span>
-                  <div>
-                    <p className="font-semibold">{error}</p>
-                    <p className="mt-0.5 text-[11px] text-red-500">
-                      Default credentials: Username <code className="font-mono font-bold bg-red-100/70 px-1 py-0.5 rounded">admin</code> / Password <code className="font-mono font-bold bg-red-100/70 px-1 py-0.5 rounded">cgp2026</code>
-                    </p>
-                  </div>
+                  <p className="font-semibold">{error}</p>
                 </div>
               )}
 
@@ -115,20 +110,6 @@ export default function AdminLogin() {
                 {loading && <Loader2 size={16} className="animate-spin" />}
                 {loading ? 'Signing in…' : 'Sign In'}
               </button>
-
-              <div className="mt-4 pt-3 border-t border-slate-100 text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('admin')
-                    setPassword('cgp2026')
-                    setError('')
-                  }}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition cursor-pointer hover:underline"
-                >
-                  Fill Default Credentials (admin / cgp2026)
-                </button>
-              </div>
             </form>
           </div>
         </div>
