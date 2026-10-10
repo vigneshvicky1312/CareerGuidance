@@ -7,7 +7,7 @@ const links = [
   { to: '/about', label: 'About & Tracks' },
   { to: '/about#schedule', label: 'Program Schedule' },
   { to: '/about#chief-guest', label: 'Eminent Speakers' },
-  { to: '/register', label: 'Free Registration' },
+  { to: '/register', label: eventConfig.isRegistrationOpen === false ? 'Retrieve Entry Pass' : 'Free Registration' },
   { to: '/location', label: 'Venue & Directions' },
   { to: '/sponsors', label: 'Sponsor & Partner' },
   { to: '/contact', label: 'Contact Us' },
@@ -105,7 +105,9 @@ export default function Footer() {
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[11px] text-slate-400">
             <Link to="/about" className="hover:text-sky-400">About AIM</Link>
             <span>•</span>
-            <Link to="/register" className="hover:text-sky-400">Free Registration</Link>
+            <Link to="/register" className="hover:text-sky-400">
+              {eventConfig.isRegistrationOpen === false ? 'Retrieve Entry Pass' : 'Free Registration'}
+            </Link>
             <span>•</span>
             <Link to="/admin/login" className="hover:text-sky-400">Admin Portal</Link>
           </div>

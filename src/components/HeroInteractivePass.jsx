@@ -161,7 +161,7 @@ export default function HeroInteractivePass() {
             to="/register"
             className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-navy-950 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-navy-900 group-hover:bg-navy-900"
           >
-            <span>Claim Your Student Pass</span>
+            <span>{eventConfig.isRegistrationOpen === false ? 'Retrieve Entry Pass' : 'Claim Your Student Pass'}</span>
             <ArrowUpRight size={14} className="text-gold-400" />
           </Link>
         </div>

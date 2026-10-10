@@ -62,3 +62,90 @@ export function exportStudentsToCSV(students, filename = 'registrations.csv') {
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 }
+
+export function exportCollegeAttendanceCSV(students, collegeName = 'All_Colleges', filename) {
+  const safeName = collegeName.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40)
+  const finalFilename = filename || `Attendance_${safeName}_${new Date().toISOString().slice(0, 10)}.csv`
+
+  const headers = [
+    'S.No',
+    'Registration ID',
+    'Student Name',
+    'Gender',
+    'College',
+    'Degree',
+    'Department',
+    'Year',
+    'Mobile',
+    'Email',
+    'District',
+    'Check-In Time',
+    'Kit Distributed',
+  ]
+
+  const rows = students.map((s, idx) => [
+    idx + 1,
+    s.registrationId || '',
+    s.name || '',
+    s.gender || '',
+    s.college || '',
+    s.degree || '',
+    s.department || '',
+    s.year || '',
+    s.mobile || '',
+    s.email || '',
+    s.district || '',
+    formatDateTime(s.checkInTime),
+    s.materialsDistributed ? 'Yes' : 'No',
+  ])
+
+  const csvContent = [headers, ...rows]
+    .map((row) => row.map(csvEscape).join(','))
+    .join('\n')
+
+  const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', finalFilename)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
+export function exportCollegeSummaryCSV(collegesSummary, filename = `College_Attendance_Summary_${new Date().toISOString().slice(0, 10)}.csv`) {
+  const headers = [
+    'S.No',
+    'College Name',
+    'Registered Count',
+    'Present Count',
+    'Absent Count',
+    'Attendance %',
+    'Kits Distributed',
+  ]
+
+  const rows = collegesSummary.map((c, idx) => [
+    idx + 1,
+    c.name,
+    c.registered,
+    c.present,
+    c.absent,
+    `${c.rate}%`,
+    c.distributed,
+  ])
+
+  const csvContent = [headers, ...rows]
+    .map((row) => row.map(csvEscape).join(','))
+    .join('\n')
+
+  const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', filename)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}

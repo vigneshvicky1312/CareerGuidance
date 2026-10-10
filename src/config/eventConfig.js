@@ -39,6 +39,11 @@ const eventConfig = {
   facultyCoordinator: 'Dr. C.K. Muthukumaran, Professor & Faculty Coordinator, Career Guidance Programme 2026',
   studentCoordinator: 'M. Thilagar Aravindh, MBA Final Year',
 
+  // Registration Status
+  isRegistrationOpen: false,
+  registrationClosedMessage:
+    'Online registrations for Career Guidance Program 2026 are now closed. If you have already registered, you can retrieve and download your official entry pass below.',
+
   chiefGuest: null,
 
   distinguishedGuests: [

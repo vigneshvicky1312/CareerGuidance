@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import eventConfig from '../config/eventConfig'
 import colleges from '../config/colleges'
-import { registerStudent, findStudentByMobile } from '../services/studentService'
-import { Loader2, GraduationCap, AlertCircle, Ticket, Search, X } from 'lucide-react'
+import { registerStudent, findStudentByMobile, findStudentByRegistrationId } from '../services/studentService'
+import { Loader2, GraduationCap, AlertCircle, Ticket, Search, X, MapPin, Calendar, Phone, QrCode, ArrowRight } from 'lucide-react'
 import Toast from './Toast'
 
 const initialForm = {
@@ -68,22 +68,42 @@ export default function RegistrationForm() {
   }
 
   async function handleLookupSubmit(e) {
-    e.preventDefault()
-    const clean = lookupMobile.replace(/\D/g, '').slice(-10)
-    if (!clean || clean.length < 10) {
-      setLookupError('Please enter a valid 10-digit mobile number.')
+    e?.preventDefault()
+    const raw = lookupMobile.trim()
+    if (!raw) {
+      setLookupError('Please enter your 10-digit mobile number or Registration ID.')
       return
     }
+
     setLookupLoading(true)
     setLookupError('')
     try {
-      const student = await findStudentByMobile(clean)
+      let student = null
+      const digitsOnly = raw.replace(/\D/g, '')
+
+      // If looks like a 10-digit phone number
+      if (digitsOnly.length === 10 && !raw.toUpperCase().startsWith('CGP')) {
+        student = await findStudentByMobile(digitsOnly)
+      } else {
+        // Try searching as registration ID
+        student = await findStudentByRegistrationId(raw)
+        // If not found and input is numbers only (e.g. "42"), pad it
+        if (!student && /^\d+$/.test(raw)) {
+          const padded = `${eventConfig.eventId}-${raw.padStart(4, '0')}`
+          student = await findStudentByRegistrationId(padded)
+        }
+      }
+
       if (student) {
         setShowLookup(false)
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
         navigate('/registration-success', { state: { student, isExisting: true } })
       } else {
-        setLookupError('No existing registration found for this mobile number. Please register using the form below.')
+        setLookupError(
+          eventConfig.isRegistrationOpen === false
+            ? 'No registration found for these details. Online registrations have closed.'
+            : 'No existing registration found. Please check your details or register below.'
+        )
       }
     } catch (err) {
       setLookupError(err.message || 'Error looking up registration. Please try again.')
@@ -94,6 +114,10 @@ export default function RegistrationForm() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (eventConfig.isRegistrationOpen === false) {
+      addToast('Online registrations are currently closed.', 'error')
+      return
+    }
     if (submitting) return
 
     const validationErrors = validate(form)
@@ -129,6 +153,95 @@ export default function RegistrationForm() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // If Registrations Are Closed, Show Dedicated Pass Retrieval
+  // ─────────────────────────────────────────────────────────────
+  if (eventConfig.isRegistrationOpen === false) {
+    return (
+      <div className="space-y-6">
+        <Toast toasts={toasts} remove={removeToast} />
+
+        <div className="card border-rose-200 bg-white p-6 sm:p-8 shadow-xl rounded-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mt-6 -mr-6 h-28 w-28 rounded-full bg-rose-50 blur-2xl pointer-events-none" />
+
+          <div className="flex items-center gap-3.5 mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 shadow-sm shrink-0">
+              <Ticket size={24} />
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-bold text-rose-700 border border-rose-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-600" />
+                Registrations Closed
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-navy-950 mt-1">
+                Retrieve Your Event Entry Pass
+              </h2>
+            </div>
+          </div>
+
+          <p className="text-sm text-slate-600 leading-relaxed">
+            Online registration is now officially closed. If you previously registered, enter your <strong>10-digit registered mobile number</strong> or <strong>Registration ID</strong> (e.g. {eventConfig.eventId}-0042) below to view, download, or print your official QR Entry Pass.
+          </p>
+
+          <form onSubmit={handleLookupSubmit} className="mt-6 space-y-4">
+            <div>
+              <label htmlFor="closedLookup" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Registered Mobile Number or Registration ID
+              </label>
+              <div className="relative">
+                <input
+                  id="closedLookup"
+                  type="text"
+                  value={lookupMobile}
+                  onChange={(e) => setLookupMobile(e.target.value)}
+                  placeholder="e.g. 9876543210 or CGP2026-0042"
+                  className="w-full pr-12 text-base py-3 px-4 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
+                  autoFocus
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                  <Search size={20} />
+                </div>
+              </div>
+
+              {lookupError && (
+                <div className="mt-3 flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                  <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                  <span>{lookupError}</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={lookupLoading}
+              className="btn-primary w-full justify-center !py-3.5 text-sm font-bold shadow-lg shadow-indigo-600/20"
+            >
+              {lookupLoading ? <Loader2 size={18} className="animate-spin" /> : <Ticket size={18} />}
+              {lookupLoading ? 'Locating Your Pass…' : 'Find & Download My Pass'}
+            </button>
+          </form>
+
+          <div className="mt-8 pt-6 border-t border-slate-100 grid gap-3 sm:grid-cols-2 text-xs text-slate-600">
+            <div className="flex items-center gap-2">
+              <Calendar size={15} className="text-indigo-600 shrink-0" />
+              <span><strong>Date:</strong> {eventConfig.date} ({eventConfig.time})</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin size={15} className="text-indigo-600 shrink-0" />
+              <span className="truncate"><strong>Venue:</strong> {eventConfig.venue}</span>
+            </div>
+            <div className="flex items-center gap-2 sm:col-span-2">
+              <Phone size={15} className="text-indigo-600 shrink-0" />
+              <span>
+                <strong>Queries / Assistance:</strong> {eventConfig.facultyCoordinator} ({eventConfig.phone})
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -27,6 +27,7 @@ const Registrations = lazy(() => import('./pages/admin/Registrations'))
 const Distribution = lazy(() => import('./pages/admin/Distribution'))
 const AdminSponsors = lazy(() => import('./pages/admin/Sponsors'))
 const Reports = lazy(() => import('./pages/admin/Reports'))
+const CollegeAttendance = lazy(() => import('./pages/admin/CollegeAttendance'))
 
 function PageFallback() {
   return (
@@ -77,6 +78,7 @@ export default function App() {
             <Route path="registrations" element={<Registrations />} />
             <Route path="distribution" element={<Distribution />} />
             <Route path="sponsors" element={<AdminSponsors />} />
+            <Route path="college-attendance" element={<CollegeAttendance />} />
             <Route path="reports" element={<Reports />} />
           </Route>
 

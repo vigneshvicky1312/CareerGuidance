@@ -74,7 +74,7 @@ export default function Navbar() {
           ))}
 
           <Link to="/register" className="btn-primary !px-4 !py-2 text-xs">
-            <span>Register Free</span>
+            <span>{eventConfig.isRegistrationOpen === false ? 'Get Entry Pass' : 'Register Free'}</span>
             <ArrowRight size={13} />
           </Link>
         </nav>
@@ -110,7 +110,7 @@ export default function Navbar() {
               </NavLink>
             ))}
             <Link to="/register" className="btn-primary mt-3 w-full text-xs !py-3">
-              <span>Register Now · Free Pass</span>
+              <span>{eventConfig.isRegistrationOpen === false ? 'Retrieve Entry Pass' : 'Register Now · Free Pass'}</span>
               <ArrowRight size={14} />
             </Link>
           </nav>

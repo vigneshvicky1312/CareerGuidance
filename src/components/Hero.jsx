@@ -97,7 +97,7 @@ export default function Hero() {
           {/* CTA Buttons */}
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link to="/register" className="btn-primary">
-              <span>Register for Free</span>
+              <span>{eventConfig.isRegistrationOpen === false ? 'Get Entry Pass' : 'Register for Free'}</span>
               <ArrowRight size={16} />
             </Link>
             <a
